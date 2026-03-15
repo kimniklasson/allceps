@@ -3,7 +3,7 @@ import { useAuth } from "./useAuth";
 import type { ReactNode } from "react";
 
 export function AuthGuard({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, displayName } = useAuth();
 
   if (loading) {
     return (
@@ -15,6 +15,10 @@ export function AuthGuard({ children }: { children: ReactNode }) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (!displayName) {
+    return <Navigate to="/set-name" replace />;
   }
 
   return <>{children}</>;

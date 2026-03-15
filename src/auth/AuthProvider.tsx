@@ -10,10 +10,12 @@ export interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  displayName: string;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  updateName: (name: string) => Promise<{ error: string | null }>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -86,9 +88,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const updateName = async (name: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      data: { display_name: name },
+    });
+    if (data.user) setUser(data.user);
+    return { error: error?.message ?? null };
+  };
+
+  const displayName: string = user?.user_metadata?.display_name ?? "";
+
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, signUp, signIn, signInWithGoogle, signOut }}
+      value={{ user, session, loading, displayName, signUp, signIn, signInWithGoogle, signOut, updateName }}
     >
       {children}
     </AuthContext.Provider>

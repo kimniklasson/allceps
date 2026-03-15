@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Clock, LogOut } from "lucide-react";
+import { ArrowLeft, Clock, User } from "lucide-react";
 import { IconButton } from "../ui/IconButton";
-import { useAuth } from "../../auth/useAuth";
 
 function Logo() {
   return (
@@ -14,13 +13,7 @@ function Logo() {
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signOut } = useAuth();
   const isHome = location.pathname === "/";
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/login");
-  };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
@@ -33,13 +26,9 @@ export function Header() {
         >
           {/* Left */}
           <div className="flex-1 flex items-center gap-1">
-            {!isHome ? (
+            {!isHome && (
               <IconButton onClick={() => navigate(-1)}>
                 <ArrowLeft size={16} />
-              </IconButton>
-            ) : (
-              <IconButton onClick={handleSignOut}>
-                <LogOut size={16} />
               </IconButton>
             )}
           </div>
@@ -48,7 +37,10 @@ export function Header() {
           <Logo />
 
           {/* Right */}
-          <div className="flex-1 flex items-center justify-end">
+          <div className="flex-1 flex items-center justify-end gap-1">
+            <IconButton onClick={() => navigate("/profile")}>
+              <User size={16} />
+            </IconButton>
             <IconButton onClick={() => navigate("/history")}>
               <Clock size={16} />
             </IconButton>
