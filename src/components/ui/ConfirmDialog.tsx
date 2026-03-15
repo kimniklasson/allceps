@@ -1,11 +1,12 @@
 interface ConfirmDialogProps {
   isOpen: boolean;
   message: string;
+  confirmLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export function ConfirmDialog({ isOpen, message, onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ isOpen, message, confirmLabel = "Ta bort", onConfirm, onCancel }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
   return (
@@ -29,7 +30,7 @@ export function ConfirmDialog({ isOpen, message, onConfirm, onCancel }: ConfirmD
             onClick={onConfirm}
             className="flex-1 py-3 px-4 rounded-button bg-black text-white text-[12px] font-bold uppercase tracking-wider"
           >
-            Ta bort
+            {confirmLabel}
           </button>
         </div>
       </div>

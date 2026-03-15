@@ -22,6 +22,8 @@ export function SetNamePage() {
   if (!user) return <Navigate to="/login" replace />;
   if (displayName) return <Navigate to="/" replace />;
 
+  const canSubmit = name.trim().length > 0 && !submitting;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "" || NAME_REGEX.test(value)) {
@@ -30,17 +32,9 @@ export function SetNamePage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     const trimmed = name.trim();
-    if (!trimmed) {
-      setError("Ange ditt namn.");
-      return;
-    }
-    if (!NAME_REGEX.test(trimmed)) {
-      setError("Namnet får bara innehålla bokstäver.");
-      return;
-    }
+    if (!trimmed) return;
     setSubmitting(true);
     const { error } = await updateName(trimmed);
     if (error) {
@@ -49,6 +43,10 @@ export function SetNamePage() {
     } else {
       navigate("/", { replace: true });
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
@@ -79,28 +77,32 @@ export function SetNamePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="w-full max-w-[345px] flex flex-col gap-4">
-        <div className="bg-card rounded-card p-4 border border-transparent">
+      <div className="w-full max-w-[345px]">
+        <div className="border border-black/10 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
           <input
             type="text"
-            placeholder="Ditt namn"
+            placeholder="Fyll i ditt namn"
             value={name}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             maxLength={60}
             autoFocus
-            className="w-full bg-transparent text-[15px] outline-none"
-            required
+            className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
           />
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors ${
+              canSubmit
+                ? "bg-black text-white"
+                : "bg-black/5 text-black/30"
+            }`}
+          >
+            {submitting ? "..." : "Fortsätt"}
+          </button>
         </div>
-
-        <button
-          type="submit"
-          disabled={submitting || name.trim().length === 0}
-          className="w-full py-4 bg-black text-white text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50"
-        >
-          {submitting ? "Sparar..." : "Fortsätt"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

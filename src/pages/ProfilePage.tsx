@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
@@ -19,39 +20,33 @@ export function ProfilePage() {
   const [name, setName] = useState(displayName);
   const [nameError, setNameError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const hasChanged = name.trim() !== displayName && name.trim().length > 0;
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "" || NAME_REGEX.test(value)) {
       setName(value);
       setNameError(null);
-      setSaved(false);
     }
   };
 
-  const handleNameSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNameSave = async () => {
     const trimmed = name.trim();
-    if (!trimmed) {
-      setNameError("Ange ditt namn.");
-      return;
-    }
-    if (!NAME_REGEX.test(trimmed)) {
-      setNameError("Namnet får bara innehålla bokstäver.");
-      return;
-    }
+    if (!trimmed || !hasChanged) return;
     setSaving(true);
     const { error } = await updateName(trimmed);
     setSaving(false);
-    if (error) {
-      setNameError(error);
-    } else {
-      setSaved(true);
-    }
+    if (error) setNameError(error);
   };
 
-  const handleSignOut = async () => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleNameSave();
+  };
+
+  const handleConfirmSignOut = async () => {
+    setShowLogoutConfirm(false);
     await signOut();
     navigate("/login", { replace: true });
   };
@@ -67,7 +62,8 @@ export function ProfilePage() {
           <span className="text-[15px] leading-[18px] opacity-50">{providerLabel}</span>
         </div>
         <button
-          onClick={handleSignOut}
+          type="button"
+          onClick={() => setShowLogoutConfirm(true)}
           className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 hover:bg-red-600 transition-colors"
           aria-label="Logga ut"
         >
@@ -75,25 +71,34 @@ export function ProfilePage() {
         </button>
       </div>
 
-      {/* Name field */}
-      <form onSubmit={handleNameSave} className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
+        {/* Name field */}
         <div className="flex flex-col gap-2">
           <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
             Ditt namn
           </span>
-          <div
-            className={`bg-white rounded-card p-4 border ${
-              nameError ? "border-red-300" : "border-black/10"
-            }`}
-          >
+          <div className={`border rounded-card flex items-center gap-2 pl-6 pr-4 py-4 ${nameError ? "border-red-300" : "border-black/10"}`}>
             <input
               type="text"
               value={name}
               onChange={handleNameChange}
+              onKeyDown={handleKeyDown}
               maxLength={60}
-              className="w-full bg-transparent text-[15px] outline-none"
               placeholder="Ditt namn"
+              className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
             />
+            <button
+              type="button"
+              onClick={handleNameSave}
+              disabled={!hasChanged || saving}
+              className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors ${
+                hasChanged && !saving
+                  ? "bg-black text-white"
+                  : "bg-black/5 text-black/30"
+              }`}
+            >
+              {saving ? "..." : "Spara"}
+            </button>
           </div>
           {nameError && (
             <span className="text-[12px] text-red-500">{nameError}</span>
@@ -105,7 +110,7 @@ export function ProfilePage() {
           <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
             Din e-postadress
           </span>
-          <div className="bg-white rounded-card p-4 border border-black/10 opacity-50">
+          <div className="border border-black/10 rounded-card pl-6 pr-4 py-4 opacity-50">
             <input
               type="email"
               value={user?.email ?? ""}
@@ -114,17 +119,7 @@ export function ProfilePage() {
             />
           </div>
         </div>
-
-        {name.trim() !== displayName && (
-          <button
-            type="submit"
-            disabled={saving || name.trim().length === 0}
-            className="w-full py-4 bg-black text-white text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50 transition-opacity"
-          >
-            {saving ? "Sparar..." : saved ? "Sparat!" : "Spara namn"}
-          </button>
-        )}
-      </form>
+      </div>
 
       {/* About section */}
       <div className="flex flex-col gap-1 pt-2">
@@ -133,6 +128,14 @@ export function ProfilePage() {
           Den här appen är designad av Kim Niklasson och framtagen med hjälp av AI.
         </span>
       </div>
+
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        message="Är du säker på att du vill logga ut?"
+        confirmLabel="Logga ut"
+        onConfirm={handleConfirmSignOut}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   );
 }
