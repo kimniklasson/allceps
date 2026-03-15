@@ -4,7 +4,7 @@ import type {
   WorkoutSession,
   ExerciseAdjustment,
 } from "../types/models";
-import { sessionRepository } from "../data/repositories/sessionRepository";
+import { getSessionRepository } from "../data/repositories";
 
 interface SessionState {
   /** The currently active workout session, or null */
@@ -40,18 +40,23 @@ interface SessionState {
   getExerciseSetCount: (exerciseId: string) => number;
   hasActiveSession: () => boolean;
   isSessionForCategory: (categoryId: string) => boolean;
+  reset: () => void;
 }
+
+const initialState = {
+  activeSession: null,
+  adjustments: [],
+  isRunning: false,
+  isPaused: false,
+  startTimestamp: null,
+  pausedDuration: 0,
+  pauseStartedAt: null,
+};
 
 export const useSessionStore = create<SessionState>()(
   persist(
     (set, get) => ({
-      activeSession: null,
-      adjustments: [],
-      isRunning: false,
-      isPaused: false,
-      startTimestamp: null,
-      pausedDuration: 0,
-      pauseStartedAt: null,
+      ...initialState,
 
       startSession: (categoryId, categoryName) => {
         const session: WorkoutSession = {
@@ -64,7 +69,7 @@ export const useSessionStore = create<SessionState>()(
           exerciseLogs: [],
           status: "active",
         };
-        sessionRepository.save(session);
+        getSessionRepository().save(session);
         set({
           activeSession: session,
           adjustments: [],
@@ -101,14 +106,13 @@ export const useSessionStore = create<SessionState>()(
         });
 
         const updatedSession = { ...activeSession, exerciseLogs: updatedLogs };
-        sessionRepository.save(updatedSession);
+        getSessionRepository().save(updatedSession);
         set({ activeSession: updatedSession });
       },
 
       togglePause: () => {
         const { isPaused, pauseStartedAt, pausedDuration } = get();
         if (isPaused && pauseStartedAt) {
-          // Resume
           const additionalPause = Date.now() - pauseStartedAt;
           set({
             isPaused: false,
@@ -116,7 +120,6 @@ export const useSessionStore = create<SessionState>()(
             pausedDuration: pausedDuration + additionalPause,
           });
         } else {
-          // Pause
           set({
             isPaused: true,
             pauseStartedAt: Date.now(),
@@ -128,7 +131,6 @@ export const useSessionStore = create<SessionState>()(
         const { activeSession, isPaused, pauseStartedAt, pausedDuration } = get();
         if (!activeSession) return null;
 
-        // Account for any ongoing pause
         let totalPaused = pausedDuration;
         if (isPaused && pauseStartedAt) {
           totalPaused += Date.now() - pauseStartedAt;
@@ -140,17 +142,9 @@ export const useSessionStore = create<SessionState>()(
           pausedDuration: totalPaused,
           status: "completed",
         };
-        sessionRepository.save(finishedSession);
+        getSessionRepository().save(finishedSession);
 
-        set({
-          activeSession: null,
-          adjustments: [],
-          isRunning: false,
-          isPaused: false,
-          startTimestamp: null,
-          pausedDuration: 0,
-          pauseStartedAt: null,
-        });
+        set({ ...initialState });
 
         return finishedSession;
       },
@@ -158,17 +152,9 @@ export const useSessionStore = create<SessionState>()(
       cancelSession: () => {
         const { activeSession } = get();
         if (activeSession) {
-          sessionRepository.delete(activeSession.id);
+          getSessionRepository().delete(activeSession.id);
         }
-        set({
-          activeSession: null,
-          adjustments: [],
-          isRunning: false,
-          isPaused: false,
-          startTimestamp: null,
-          pausedDuration: 0,
-          pauseStartedAt: null,
-        });
+        set({ ...initialState });
       },
 
       getAdjustment: (exerciseId, baseReps, baseWeight) => {
@@ -201,6 +187,10 @@ export const useSessionStore = create<SessionState>()(
 
       isSessionForCategory: (categoryId) => {
         return get().activeSession?.categoryId === categoryId;
+      },
+
+      reset: () => {
+        set({ ...initialState });
       },
     }),
     {

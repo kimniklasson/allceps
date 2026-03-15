@@ -23,8 +23,8 @@ export function CategoryList() {
     if (deleteId) {
       setExitingId(deleteId);
       setDeleteId(null);
-      setTimeout(() => {
-        deleteCategory(deleteId);
+      setTimeout(async () => {
+        await deleteCategory(deleteId);
         setExitingId(null);
       }, 180);
     }

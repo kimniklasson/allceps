@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { WorkoutSession } from "../types/models";
-import { sessionRepository } from "../data/repositories/sessionRepository";
+import { getSessionRepository } from "../data/repositories";
 import { groupSessionsByMonth } from "../utils/groupByMonth";
 
 export interface MonthGroup {
@@ -10,18 +10,20 @@ export interface MonthGroup {
 
 interface HistoryState {
   sessions: WorkoutSession[];
-  loadSessions: () => void;
+  loadSessions: () => Promise<void>;
   getGroupedByMonth: () => MonthGroup[];
   getSessionById: (id: string) => WorkoutSession | undefined;
-  deleteSession: (id: string) => void;
+  deleteSession: (id: string) => Promise<void>;
+  reset: () => void;
 }
 
 export const useHistoryStore = create<HistoryState>()((set, get) => ({
   sessions: [],
 
-  loadSessions: () => {
-    const all = sessionRepository.getAll().filter((s) => s.status === "completed");
-    set({ sessions: all });
+  loadSessions: async () => {
+    const repo = getSessionRepository();
+    const all = await repo.getAll();
+    set({ sessions: all.filter((s) => s.status === "completed") });
   },
 
   getGroupedByMonth: () => {
@@ -32,10 +34,15 @@ export const useHistoryStore = create<HistoryState>()((set, get) => ({
     return get().sessions.find((s) => s.id === id);
   },
 
-  deleteSession: (id) => {
-    sessionRepository.delete(id);
+  deleteSession: async (id) => {
+    const repo = getSessionRepository();
+    await repo.delete(id);
     set((state) => ({
       sessions: state.sessions.filter((s) => s.id !== id),
     }));
+  },
+
+  reset: () => {
+    set({ sessions: [] });
   },
 }));

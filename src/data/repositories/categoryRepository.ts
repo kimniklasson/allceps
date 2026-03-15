@@ -13,7 +13,7 @@ function saveCategories(categories: Category[]): void {
 }
 
 export const categoryRepository: CategoryRepository = {
-  getAll() {
+  async getAll() {
     return loadCategories()
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((cat) => ({
@@ -22,11 +22,11 @@ export const categoryRepository: CategoryRepository = {
       }));
   },
 
-  getById(id: string) {
+  async getById(id: string) {
     return loadCategories().find((c) => c.id === id) ?? null;
   },
 
-  create(name: string) {
+  async create(name: string) {
     const categories = loadCategories();
     const newCategory: Category = {
       id: crypto.randomUUID(),
@@ -40,7 +40,7 @@ export const categoryRepository: CategoryRepository = {
     return newCategory;
   },
 
-  update(id, data) {
+  async update(id, data) {
     const categories = loadCategories();
     const index = categories.findIndex((c) => c.id === id);
     if (index === -1) throw new Error(`Category ${id} not found`);
@@ -49,12 +49,12 @@ export const categoryRepository: CategoryRepository = {
     return categories[index];
   },
 
-  delete(id) {
+  async delete(id) {
     const categories = loadCategories().filter((c) => c.id !== id);
     saveCategories(categories);
   },
 
-  addExercise(categoryId, data) {
+  async addExercise(categoryId, data) {
     const categories = loadCategories();
     const category = categories.find((c) => c.id === categoryId);
     if (!category) throw new Error(`Category ${categoryId} not found`);
@@ -73,7 +73,7 @@ export const categoryRepository: CategoryRepository = {
     return newExercise;
   },
 
-  updateExercise(categoryId, exerciseId, data) {
+  async updateExercise(categoryId, exerciseId, data) {
     const categories = loadCategories();
     const category = categories.find((c) => c.id === categoryId);
     if (!category) throw new Error(`Category ${categoryId} not found`);
@@ -86,7 +86,7 @@ export const categoryRepository: CategoryRepository = {
     return category.exercises[index];
   },
 
-  deleteExercise(categoryId, exerciseId) {
+  async deleteExercise(categoryId, exerciseId) {
     const categories = loadCategories();
     const category = categories.find((c) => c.id === categoryId);
     if (!category) return;
@@ -95,7 +95,7 @@ export const categoryRepository: CategoryRepository = {
     saveCategories(categories);
   },
 
-  reorderCategories(orderedIds) {
+  async reorderCategories(orderedIds) {
     const categories = loadCategories();
     orderedIds.forEach((id, index) => {
       const cat = categories.find((c) => c.id === id);
@@ -104,7 +104,7 @@ export const categoryRepository: CategoryRepository = {
     saveCategories(categories);
   },
 
-  reorderExercises(categoryId, orderedIds) {
+  async reorderExercises(categoryId, orderedIds) {
     const categories = loadCategories();
     const category = categories.find((c) => c.id === categoryId);
     if (!category) return;

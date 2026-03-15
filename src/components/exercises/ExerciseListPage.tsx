@@ -41,8 +41,8 @@ export function ExerciseListPage() {
   const sessionBlocked =
     activeSession !== null && activeSession.categoryId !== categoryId;
 
-  const handleAddExercise = (data: ExerciseFormData) => {
-    addExercise(category.id, {
+  const handleAddExercise = async (data: ExerciseFormData) => {
+    await addExercise(category.id, {
       name: data.name,
       baseReps: data.baseReps,
       baseWeight: data.baseWeight,
@@ -50,15 +50,15 @@ export function ExerciseListPage() {
     });
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteId) {
-      deleteExercise(categoryId!, deleteId);
+      await deleteExercise(categoryId!, deleteId);
       setDeleteId(null);
     }
   };
 
-  const handleEditExercise = (exerciseId: string, data: ExerciseFormData) => {
-    updateExercise(category.id, exerciseId, {
+  const handleEditExercise = async (exerciseId: string, data: ExerciseFormData) => {
+    await updateExercise(category.id, exerciseId, {
       name: data.name,
       baseReps: data.baseReps,
       baseWeight: data.baseWeight,

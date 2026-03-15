@@ -1,26 +1,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Category, Exercise } from "../types/models";
-import { categoryRepository } from "../data/repositories/categoryRepository";
+import { getCategoryRepository } from "../data/repositories";
 
 interface CategoryState {
   categories: Category[];
-  loadCategories: () => void;
-  createCategory: (name: string) => Category;
-  deleteCategory: (id: string) => void;
+  loadCategories: () => Promise<void>;
+  createCategory: (name: string) => Promise<Category>;
+  deleteCategory: (id: string) => Promise<void>;
   addExercise: (
     categoryId: string,
     data: Pick<Exercise, "name" | "baseReps" | "baseWeight" | "isBodyweight">
-  ) => Exercise;
+  ) => Promise<Exercise>;
   updateExercise: (
     categoryId: string,
     exerciseId: string,
     data: Partial<Pick<Exercise, "name" | "baseReps" | "baseWeight" | "isBodyweight">>
-  ) => Exercise;
-  deleteExercise: (categoryId: string, exerciseId: string) => void;
+  ) => Promise<Exercise>;
+  deleteExercise: (categoryId: string, exerciseId: string) => Promise<void>;
   getCategoryById: (id: string) => Category | undefined;
-  reorderCategories: (orderedIds: string[]) => void;
-  reorderExercises: (categoryId: string, orderedIds: string[]) => void;
+  reorderCategories: (orderedIds: string[]) => Promise<void>;
+  reorderExercises: (categoryId: string, orderedIds: string[]) => Promise<void>;
+  reset: () => void;
 }
 
 export const useCategoryStore = create<CategoryState>()(
@@ -28,50 +29,70 @@ export const useCategoryStore = create<CategoryState>()(
     (set, get) => ({
       categories: [],
 
-      loadCategories: () => {
-        set({ categories: categoryRepository.getAll() });
+      loadCategories: async () => {
+        const repo = getCategoryRepository();
+        const categories = await repo.getAll();
+        set({ categories });
       },
 
-      createCategory: (name: string) => {
-        const category = categoryRepository.create(name);
-        set({ categories: categoryRepository.getAll() });
+      createCategory: async (name: string) => {
+        const repo = getCategoryRepository();
+        const category = await repo.create(name);
+        const categories = await repo.getAll();
+        set({ categories });
         return category;
       },
 
-      deleteCategory: (id: string) => {
-        categoryRepository.delete(id);
-        set({ categories: categoryRepository.getAll() });
+      deleteCategory: async (id: string) => {
+        const repo = getCategoryRepository();
+        await repo.delete(id);
+        const categories = await repo.getAll();
+        set({ categories });
       },
 
-      addExercise: (categoryId, data) => {
-        const exercise = categoryRepository.addExercise(categoryId, data);
-        set({ categories: categoryRepository.getAll() });
+      addExercise: async (categoryId, data) => {
+        const repo = getCategoryRepository();
+        const exercise = await repo.addExercise(categoryId, data);
+        const categories = await repo.getAll();
+        set({ categories });
         return exercise;
       },
 
-      updateExercise: (categoryId, exerciseId, data) => {
-        const exercise = categoryRepository.updateExercise(categoryId, exerciseId, data);
-        set({ categories: categoryRepository.getAll() });
+      updateExercise: async (categoryId, exerciseId, data) => {
+        const repo = getCategoryRepository();
+        const exercise = await repo.updateExercise(categoryId, exerciseId, data);
+        const categories = await repo.getAll();
+        set({ categories });
         return exercise;
       },
 
-      deleteExercise: (categoryId, exerciseId) => {
-        categoryRepository.deleteExercise(categoryId, exerciseId);
-        set({ categories: categoryRepository.getAll() });
+      deleteExercise: async (categoryId, exerciseId) => {
+        const repo = getCategoryRepository();
+        await repo.deleteExercise(categoryId, exerciseId);
+        const categories = await repo.getAll();
+        set({ categories });
       },
 
       getCategoryById: (id: string) => {
         return get().categories.find((c) => c.id === id);
       },
 
-      reorderCategories: (orderedIds) => {
-        categoryRepository.reorderCategories(orderedIds);
-        set({ categories: categoryRepository.getAll() });
+      reorderCategories: async (orderedIds) => {
+        const repo = getCategoryRepository();
+        await repo.reorderCategories(orderedIds);
+        const categories = await repo.getAll();
+        set({ categories });
       },
 
-      reorderExercises: (categoryId, orderedIds) => {
-        categoryRepository.reorderExercises(categoryId, orderedIds);
-        set({ categories: categoryRepository.getAll() });
+      reorderExercises: async (categoryId, orderedIds) => {
+        const repo = getCategoryRepository();
+        await repo.reorderExercises(categoryId, orderedIds);
+        const categories = await repo.getAll();
+        set({ categories });
+      },
+
+      reset: () => {
+        set({ categories: [] });
       },
     }),
     {

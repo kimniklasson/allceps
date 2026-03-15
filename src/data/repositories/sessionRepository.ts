@@ -13,21 +13,21 @@ function saveSessions(sessions: WorkoutSession[]): void {
 }
 
 export const sessionRepository: SessionRepository = {
-  getAll() {
+  async getAll() {
     return loadSessions().sort(
       (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
     );
   },
 
-  getById(id: string) {
+  async getById(id: string) {
     return loadSessions().find((s) => s.id === id) ?? null;
   },
 
-  getActive() {
+  async getActive() {
     return loadSessions().find((s) => s.status === "active") ?? null;
   },
 
-  save(session: WorkoutSession) {
+  async save(session: WorkoutSession) {
     const sessions = loadSessions();
     const index = sessions.findIndex((s) => s.id === session.id);
     if (index >= 0) {
@@ -38,7 +38,7 @@ export const sessionRepository: SessionRepository = {
     saveSessions(sessions);
   },
 
-  delete(id: string) {
+  async delete(id: string) {
     const sessions = loadSessions().filter((s) => s.id !== id);
     saveSessions(sessions);
   },

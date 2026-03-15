@@ -7,9 +7,9 @@ export function CreateCategoryInput() {
 
   const canCreate = name.trim().length > 0;
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!canCreate) return;
-    createCategory(name.trim());
+    await createCategory(name.trim());
     setName("");
   };
 

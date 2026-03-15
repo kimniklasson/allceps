@@ -14,9 +14,9 @@ export function CompletedWorkoutsList() {
   const groups = getGroupedByMonth();
   const isEmpty = groups.length === 0;
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteId) {
-      deleteSession(deleteId);
+      await deleteSession(deleteId);
       setDeleteId(null);
     }
   };
