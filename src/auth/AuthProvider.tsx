@@ -25,55 +25,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const reloadStores = useCallback(async () => {
-    await useCategoryStore.getState().loadCategories();
-    await useHistoryStore.getState().loadSessions();
+  const loadData = useCallback(async () => {
+    try {
+      await migrateLocalDataToSupabase();
+      await useCategoryStore.getState().loadCategories();
+      await useHistoryStore.getState().loadSessions();
+    } catch (e) {
+      console.error("Failed to load data:", e);
+    }
   }, []);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        try {
-          await migrateLocalDataToSupabase();
-          await reloadStores();
-        } catch (e) {
-          console.error("Failed to initialise data:", e);
-        }
-      }
-      setLoading(false);
-    }).catch(() => {
-      // Supabase call itself failed — ensure we still stop loading
-      setLoading(false);
-    });
-
-    // Listen for auth changes
+    // Listen for auth changes — also fires INITIAL_SESSION on startup
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        try {
-          await migrateLocalDataToSupabase();
-          await reloadStores();
-        } catch (e) {
-          console.error("Failed to reload data:", e);
-        }
+        // Load data in the background — don't block the UI
+        loadData();
       } else {
-        // User signed out — reset stores
         useCategoryStore.getState().reset();
         useSessionStore.getState().reset();
         useHistoryStore.getState().reset();
       }
+
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, [reloadStores]);
+    // Safety timeout — if onAuthStateChange never fires, stop loading anyway
+    const timeout = setTimeout(() => setLoading(false), 4000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, [loadData]);
 
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({ email, password });
