@@ -28,7 +28,7 @@ export function CreateCategoryInput() {
     <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
       <input
         type="text"
-        placeholder="Skapa en kategori"
+        placeholder="Skapa ett pass"
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={handleKeyDown}

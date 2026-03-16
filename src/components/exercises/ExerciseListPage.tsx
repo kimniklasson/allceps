@@ -84,7 +84,7 @@ export function ExerciseListPage() {
         <div className="flex-1 flex flex-col">
           <span className="font-bold text-[15px] leading-[1.22]">{category.name}</span>
           <span className="text-[15px] leading-[1.22] opacity-50">
-            Lägg till de övningar du vill
+            Tips! Tryck på ett värde för att ändra det
           </span>
         </div>
       </div>
