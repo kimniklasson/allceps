@@ -61,6 +61,11 @@ textarea:focus::placeholder {
   color: transparent;
 }
 
+[data-theme=dark] input::placeholder,
+[data-theme=dark] textarea::placeholder {
+  opacity: 0.4;
+}
+
 /* ── Page transitions ── */
 
 @keyframes page-fade-in {
