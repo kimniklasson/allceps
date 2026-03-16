@@ -22,7 +22,7 @@ export function CompletedWorkoutsList() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {/* Header text */}
       <div className="flex flex-col">
         <span className="text-[15px] font-bold leading-[18px]">Träningspass</span>
