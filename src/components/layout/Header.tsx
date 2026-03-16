@@ -1,6 +1,9 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton } from "../ui/IconButton";
-import { IconArrowLeft, IconProfile, IconSessions } from "../ui/icons";
+import { IconArrowLeft } from "../ui/icons";
+
+// Top-level routes that live in the bottom nav — no back arrow here
+const TOP_LEVEL = ["/", "/profile", "/history"];
 
 function Logo() {
   return (
@@ -13,7 +16,7 @@ function Logo() {
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isHome = location.pathname === "/";
+  const isTopLevel = TOP_LEVEL.includes(location.pathname);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
@@ -22,9 +25,9 @@ export function Header() {
           className="flex items-center gap-2 px-6 py-8 justify-center"
           style={{ background: "var(--header-bg)" }}
         >
-          {/* Left */}
+          {/* Left — back arrow only when deeper than top-level */}
           <div className="flex-1 flex items-center gap-1">
-            {!isHome && (
+            {!isTopLevel && (
               <IconButton onClick={() => navigate(-1)}>
                 <IconArrowLeft size={16} />
               </IconButton>
@@ -36,15 +39,8 @@ export function Header() {
             <Logo />
           </button>
 
-          {/* Right */}
-          <div className="flex-1 flex items-center justify-end gap-1">
-            <IconButton onClick={() => navigate("/profile")}>
-              <IconProfile size={16} />
-            </IconButton>
-            <IconButton onClick={() => navigate("/history")}>
-              <IconSessions size={16} />
-            </IconButton>
-          </div>
+          {/* Right — empty, keeps logo centered */}
+          <div className="flex-1" />
         </div>
       </div>
     </div>

@@ -20,11 +20,13 @@
 /* CSS custom properties that change per theme */
 :root {
   --header-bg: linear-gradient(to bottom, white 26.9%, rgba(255, 255, 255, 0));
+  --footer-bg: linear-gradient(to top, white 40%, rgba(255, 255, 255, 0));
 }
 
 [data-theme=dark] {
   --color-card: #1c1c1e;
   --header-bg: linear-gradient(to bottom, #111111 26.9%, rgba(17, 17, 17, 0));
+  --footer-bg: linear-gradient(to top, #111111 40%, rgba(17, 17, 17, 0));
   color-scheme: dark;
 }
 
