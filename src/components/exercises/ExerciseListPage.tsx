@@ -97,7 +97,7 @@ export function ExerciseListPage() {
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
           placeholder="Lägg till övning"
-          className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+          className="flex-1 text-[15px] bg-transparent outline-none"
         />
         <button
           onClick={handleAdd}

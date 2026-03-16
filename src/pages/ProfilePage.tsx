@@ -104,7 +104,7 @@ export function ProfilePage() {
               onKeyDown={handleKeyDown}
               maxLength={60}
               placeholder="Ditt namn"
-              className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+              className="flex-1 text-[15px] bg-transparent outline-none"
             />
             <button
               type="button"

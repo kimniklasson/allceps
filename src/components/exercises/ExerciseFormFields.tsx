@@ -48,7 +48,7 @@ export function ExerciseFormFields({
             placeholder="Fyll i t.ex. Hantelpress"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+            className="flex-1 text-[15px] bg-transparent outline-none"
           />
         </div>
       </div>
@@ -64,7 +64,7 @@ export function ExerciseFormFields({
             placeholder="Fyll i t.ex. 8"
             value={baseReps}
             onChange={(e) => setBaseReps(e.target.value)}
-            className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+            className="flex-1 text-[15px] bg-transparent outline-none"
           />
           <span className="text-[15px] text-right shrink-0">rep</span>
         </div>
@@ -81,7 +81,7 @@ export function ExerciseFormFields({
             placeholder="Fyll i t.ex. 30"
             value={baseWeight}
             onChange={(e) => setBaseWeight(e.target.value)}
-            className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+            className="flex-1 text-[15px] bg-transparent outline-none"
           />
           <span className="text-[15px] text-right shrink-0">kg</span>
         </div>

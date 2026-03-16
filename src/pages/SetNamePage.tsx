@@ -87,7 +87,7 @@ export function SetNamePage() {
             onKeyDown={handleKeyDown}
             maxLength={60}
             autoFocus
-            className="flex-1 text-[15px] bg-transparent outline-none placeholder:opacity-30"
+            className="flex-1 text-[15px] bg-transparent outline-none"
           />
           <button
             type="button"
