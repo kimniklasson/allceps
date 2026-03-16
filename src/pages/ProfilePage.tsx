@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IconLogout, IconTrash } from "../components/ui/icons";
 import { useAuth } from "../auth/useAuth";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
-import { useSettingsStore, type Appearance, type WeightUnit } from "../stores/useSettingsStore";
+import { useSettingsStore, type Appearance } from "../stores/useSettingsStore";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
@@ -17,7 +17,7 @@ function getProviderLabel(user: ReturnType<typeof useAuth>["user"]): string {
 export function ProfilePage() {
   const { user, displayName, updateName, signOut, deleteAccount } = useAuth();
   const navigate = useNavigate();
-  const { appearance, weightUnit, setAppearance, setWeightUnit } = useSettingsStore();
+  const { appearance, setAppearance } = useSettingsStore();
 
   const [name, setName] = useState(displayName);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -70,11 +70,6 @@ export function ProfilePage() {
     { value: "ljus", label: "Ljus" },
     { value: "mörkt", label: "Mörkt" },
     { value: "auto", label: "Auto" },
-  ];
-
-  const weightOptions: { value: WeightUnit; label: string }[] = [
-    { value: "kg", label: "KG" },
-    { value: "lbs", label: "LBS" },
   ];
 
   return (
@@ -177,26 +172,6 @@ export function ProfilePage() {
             </div>
           </div>
 
-          {/* Weight unit row */}
-          <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4">
-            <span className="flex-1 text-[15px]">Viktmått</span>
-            <div className="flex gap-1">
-              {weightOptions.map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setWeightUnit(value)}
-                  className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors ${
-                    weightUnit === value
-                      ? "bg-black dark:bg-white text-white dark:text-black"
-                      : "bg-black/5 dark:bg-white/10 text-black/40 dark:text-white/40"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
