@@ -21,7 +21,7 @@ export function BottomNav() {
           style={{ background: activeSession ? "transparent" : "var(--footer-bg)" }}
         >
           {NAV_ITEMS.map(({ path, Icon, label }) => {
-            const isActive = location.pathname === path;
+            const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
             return (
               <button
                 key={path}
