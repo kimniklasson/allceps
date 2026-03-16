@@ -3,10 +3,10 @@ import { useSessionStore } from "../../stores/useSessionStore";
 import { useTimer } from "../../hooks/useTimer";
 import { formatTime } from "../../utils/formatTime";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
-import { IconClose, IconPlay, IconPause, IconCheck } from "../ui/icons";
+import { IconClose, IconCheck } from "../ui/icons";
 
 export function SessionTimerBar() {
-  const { activeSession, isPaused, togglePause, finishSession, cancelSession } = useSessionStore();
+  const { activeSession, finishSession, cancelSession } = useSessionStore();
   const elapsed = useTimer();
   const [confirmCancel, setConfirmCancel] = useState(false);
 
@@ -17,7 +17,7 @@ export function SessionTimerBar() {
     <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
-          className="flex items-center justify-center gap-2 px-6 pt-6 pb-32 transition-all duration-300"
+          className="flex items-center gap-2 px-6 pt-6 pb-32 transition-all duration-300"
           style={{ backgroundColor: "rgba(255, 217, 0, 0.95)" }}
         >
           {/* Cancel */}
@@ -30,7 +30,7 @@ export function SessionTimerBar() {
           </button>
 
           {/* Timer info */}
-          <div className="flex flex-col gap-2 px-2">
+          <div className="flex-1 flex flex-col gap-2 items-center">
             <span className="font-bold text-[12px] uppercase tracking-wider text-black">
               TIMER
             </span>
@@ -38,14 +38,6 @@ export function SessionTimerBar() {
               {formatTime(elapsed)}
             </span>
           </div>
-
-          {/* Pause / Play */}
-          <button
-            onClick={togglePause}
-            className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0"
-          >
-            {isPaused ? <IconPlay size={16} /> : <IconPause size={16} />}
-          </button>
 
           {/* Finish */}
           <button
