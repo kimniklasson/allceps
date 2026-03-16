@@ -46,11 +46,11 @@ export function WorkoutDetailView() {
             {log.sets.map((set) => (
               <div
                 key={set.setNumber}
-                className="flex py-3 text-[15px] leading-[18px] border-b border-black/5 last:border-0"
+                className="flex py-3 text-[15px] leading-[18px] border-b border-black/10 dark:border-white/20 last:border-0"
               >
-                <span className="w-[99px]">S{set.setNumber}</span>
-                <span className="w-[99px]">{set.reps} rep</span>
-                <span className="w-[99px]">
+                <span className="flex-1 font-bold">S{set.setNumber}</span>
+                <span className="flex-1">{set.reps} rep</span>
+                <span className="flex-1">
                   {log.isBodyweight && set.weight > 0
                     ? `+${set.weight} kg`
                     : `${set.weight} kg`}
