@@ -17,13 +17,13 @@ export function SessionTimerBar() {
     <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
-          className="flex items-center gap-2 px-6 pt-6 pb-30 transition-all duration-300"
+          className="flex items-center gap-2 px-6 pt-6 pb-30 transition-all duration-300 pointer-events-auto"
           style={{ backgroundColor: "rgba(255, 217, 0, 0.95)" }}
         >
           {/* Cancel */}
           <button
             onClick={() => setConfirmCancel(true)}
-            className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+            className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 pointer-events-auto"
             style={{ border: "1px solid rgba(0,0,0,0.1)" }}
           >
             <IconClose size={16} color="black" />
@@ -42,7 +42,7 @@ export function SessionTimerBar() {
           {/* Finish */}
           <button
             onClick={finishSession}
-            className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shrink-0"
+            className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shrink-0 pointer-events-auto"
           >
             <IconCheck size={16} />
           </button>
