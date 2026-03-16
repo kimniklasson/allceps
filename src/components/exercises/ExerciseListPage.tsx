@@ -53,6 +53,12 @@ export function ExerciseListPage() {
       baseWeight: 50,
       isBodyweight: false,
     });
+    // Reorder so new exercise is first — use getState() to get the updated list
+    const updatedExercises = useCategoryStore
+      .getState()
+      .categories.find((c) => c.id === categoryId)?.exercises ?? [];
+    const reordered = [exercise.id, ...updatedExercises.filter((e) => e.id !== exercise.id).map((e) => e.id)];
+    await reorderExercises(categoryId!, reordered);
     setNewExerciseId(exercise.id);
     setNewName("");
     setSaving(false);
@@ -84,7 +90,7 @@ export function ExerciseListPage() {
       </div>
 
       {/* Add exercise form */}
-      <div className="bg-card rounded-card flex items-center gap-2 pl-6 pr-2 py-2">
+      <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
         <input
           ref={inputRef}
           type="text"
@@ -97,7 +103,7 @@ export function ExerciseListPage() {
         <button
           onClick={handleAdd}
           disabled={!newName.trim() || saving}
-          className={`px-4 py-3 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shrink-0 min-w-[72px] ${
+          className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center shrink-0 min-w-[52px] ${
             newName.trim() && !saving
               ? "bg-black dark:bg-white text-white dark:text-black"
               : "bg-black/5 dark:bg-white/10 text-black/30 dark:text-white/30"
