@@ -17,7 +17,7 @@ export function SessionTimerBar() {
     <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
-          className="flex items-center gap-2 px-6 pt-6 pb-32 transition-all duration-300"
+          className="flex items-center gap-2 px-6 pt-6 pb-30 transition-all duration-300"
           style={{ backgroundColor: "rgba(255, 217, 0, 0.95)" }}
         >
           {/* Cancel */}
