@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconHome, IconProfile, IconSessions } from "../ui/icons";
+import { useSessionStore } from "../../stores/useSessionStore";
 
 const NAV_ITEMS = [
   { path: "/", Icon: IconHome, label: "Hem" },
@@ -10,13 +11,14 @@ const NAV_ITEMS = [
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { activeSession } = useSessionStore();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
           className="flex items-end justify-around px-6 pb-12 pt-14"
-          style={{ background: "var(--footer-bg)" }}
+          style={{ background: activeSession ? "transparent" : "var(--footer-bg)" }}
         >
           {NAV_ITEMS.map(({ path, Icon, label }) => {
             const isActive = location.pathname === path;

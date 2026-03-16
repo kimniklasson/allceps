@@ -14,11 +14,11 @@ export function SessionTimerBar() {
 
   return (
     <>
-    <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
+    <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
-          className="flex items-center gap-2 p-6 backdrop-blur-lg transition-all duration-300"
-          style={{ backgroundColor: "rgba(255, 217, 0, 0.7)" }}
+          className="mx-4 flex items-center gap-2 px-6 pt-6 pb-24 rounded-card transition-all duration-300"
+          style={{ backgroundColor: "rgba(255, 217, 0, 0.95)" }}
         >
           {/* Cancel */}
           <button
