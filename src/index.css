@@ -61,9 +61,14 @@ textarea:focus::placeholder {
   color: transparent;
 }
 
+input::placeholder,
+textarea::placeholder {
+  opacity: 0.4;
+}
+
 [data-theme=dark] input::placeholder,
 [data-theme=dark] textarea::placeholder {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 /* ── Page transitions ── */
