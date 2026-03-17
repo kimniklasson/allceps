@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const IMAGES = [
   "/gallery/1.jpg",
@@ -16,12 +17,17 @@ function Lightbox({ images, startIndex, onClose }: {
   const [index, setIndex] = useState(startIndex);
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [visible, setVisible] = useState(false);
   const startXRef = useRef(0);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+  }, []);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     startXRef.current = e.clientX;
     setDragging(true);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -32,34 +38,42 @@ function Lightbox({ images, startIndex, onClose }: {
   const handlePointerUp = () => {
     if (!dragging) return;
     setDragging(false);
-    if (dragX < -60 && index < images.length - 1) setIndex(index + 1);
-    else if (dragX > 60 && index > 0) setIndex(index - 1);
+    if (dragX < -60 && index < images.length - 1) setIndex(i => i + 1);
+    else if (dragX > 60 && index > 0) setIndex(i => i - 1);
     setDragX(0);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200] bg-black flex flex-col"
+      style={{
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.2s ease",
+      }}
+    >
+      {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-10 text-white/70 text-3xl leading-none !transform-none"
+        className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center text-white/70 text-2xl !transform-none"
         aria-label="Stäng"
       >
         ✕
       </button>
 
       {/* Dot indicators */}
-      <div className="absolute bottom-8 flex gap-2 z-10">
+      <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-2 z-10">
         {images.map((_, i) => (
           <div
             key={i}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${i === index ? "bg-white scale-125" : "bg-white/40"}`}
+            className="w-1.5 h-1.5 rounded-full transition-all duration-200"
+            style={{ background: i === index ? "white" : "rgba(255,255,255,0.35)", transform: i === index ? "scale(1.3)" : "scale(1)" }}
           />
         ))}
       </div>
 
+      {/* Swipeable carousel */}
       <div
-        className="w-full h-full flex items-center overflow-hidden cursor-grab active:cursor-grabbing"
-        onClick={(e) => e.stopPropagation()}
+        className="flex-1 overflow-hidden cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -68,16 +82,16 @@ function Lightbox({ images, startIndex, onClose }: {
         <div
           className="flex h-full"
           style={{
-            width: `${images.length * 100}%`,
-            transform: `translateX(calc(${-index * (100 / images.length)}% + ${dragX / images.length}px))`,
-            transition: dragging ? "none" : "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+            width: `${images.length * 100}vw`,
+            transform: `translateX(calc(${-index * 100}vw + ${dragX}px))`,
+            transition: dragging ? "none" : "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           {images.map((src, i) => (
             <div
               key={i}
-              className="h-full flex items-center justify-center"
-              style={{ width: `${100 / images.length}%` }}
+              className="h-full flex items-center justify-center flex-shrink-0"
+              style={{ width: "100vw" }}
             >
               <img
                 src={src}
@@ -88,7 +102,8 @@ function Lightbox({ images, startIndex, onClose }: {
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -100,7 +115,7 @@ export function ScrollingGallery() {
     <>
       <div className="w-full overflow-hidden">
         <div
-          className="flex gap-3"
+          className="flex gap-4"
           style={{
             width: "max-content",
             animation: `gallery-scroll ${IMAGES.length * 6}s linear infinite`,
@@ -110,8 +125,8 @@ export function ScrollingGallery() {
             <img
               key={i}
               src={src}
-              className="h-[360px] w-auto rounded-xl cursor-pointer flex-shrink-0 object-cover"
               onClick={() => setLightboxIndex(i % IMAGES.length)}
+              className="h-[360px] w-auto rounded-xl cursor-pointer flex-shrink-0 object-cover border border-black/10 dark:border-white/15"
               draggable={false}
             />
           ))}
