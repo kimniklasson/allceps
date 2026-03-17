@@ -76,9 +76,9 @@ export function ProfilePage() {
     <div className="flex flex-col gap-8">
       {/* Title row */}
       <div className="flex items-center gap-6">
-        <div className="flex-1 flex flex-col">
-          <span className="text-[15px] font-bold leading-[18px]">Kontoöversikt</span>
-          <span className="text-[15px] leading-[18px] opacity-50">{providerLabel}</span>
+        <div className="flex-1 flex flex-col items-center text-center">
+          <span className="text-[20px] font-bold leading-[1.22]">Kontoöversikt</span>
+          <span className="text-[20px] leading-[1.22] opacity-50">{providerLabel}</span>
         </div>
         <button
           type="button"
