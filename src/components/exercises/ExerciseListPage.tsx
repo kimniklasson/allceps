@@ -77,7 +77,7 @@ export function ExerciseListPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-10">
       {/* Category header */}
       <div className="flex flex-col items-center text-center">
         <span className="font-bold text-[20px] leading-[1.22]">{category.name}</span>
