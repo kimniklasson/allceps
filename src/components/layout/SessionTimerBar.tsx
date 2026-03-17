@@ -5,7 +5,7 @@ import { useHistoryStore } from "../../stores/useHistoryStore";
 import { useTimer } from "../../hooks/useTimer";
 import { formatTime, formatDuration } from "../../utils/formatTime";
 import { calculateWorkoutTotals } from "../../utils/calculations";
-import { computeHistoricalPBs } from "../../utils/personalBest";
+import { buildPBRecord, isSetPB } from "../../utils/personalBest";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { IconClose, IconCheck } from "../ui/icons";
 import type { WorkoutSession } from "../../types/models";
@@ -40,10 +40,12 @@ export function SessionTimerBar() {
   const pbSets = useMemo(() => {
     if (!finishedSession) return [];
     const result: PBSet[] = [];
+    // Build PB record from all sessions EXCEPT the finished one
+    const priorSessions = allSessions.filter((s) => s.id !== finishedSession.id);
     for (const log of finishedSession.exerciseLogs) {
-      const pbTimestamps = computeHistoricalPBs(log.exerciseId, allSessions);
+      let record = buildPBRecord(log.exerciseId, priorSessions);
       for (const set of log.sets) {
-        if (pbTimestamps.has(set.completedAt)) {
+        if (isSetPB(set.reps, set.weight, record)) {
           result.push({
             setNumber: set.setNumber,
             reps: set.reps,
@@ -51,6 +53,12 @@ export function SessionTimerBar() {
             exerciseName: log.exerciseName,
             isBodyweight: log.isBodyweight,
           });
+          // Advance the record so subsequent sets are compared correctly
+          if (set.weight > record.maxWeight) {
+            record = { maxWeight: set.weight, maxRepsAtMaxWeight: set.reps };
+          } else if (set.weight === record.maxWeight && set.reps > record.maxRepsAtMaxWeight) {
+            record = { ...record, maxRepsAtMaxWeight: set.reps };
+          }
         }
       }
     }
