@@ -79,13 +79,11 @@ export function ExerciseListPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Category header */}
-      <div className="flex items-center gap-6">
-        <div className="flex-1 flex flex-col">
-          <span className="font-bold text-[15px] leading-[1.22]">{category.name}</span>
-          <span className="text-[15px] leading-[1.22] opacity-50">
-            Tips! Tryck på ett värde för att ändra det
-          </span>
-        </div>
+      <div className="flex flex-col items-center text-center">
+        <span className="font-bold text-[20px] leading-[1.22]">{category.name}</span>
+        <span className="text-[20px] leading-[1.22] opacity-50">
+          Tips! Tryck på ett värde för att ändra det
+        </span>
       </div>
 
       {/* Add exercise form */}
