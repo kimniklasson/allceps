@@ -79,13 +79,14 @@ export function LoginPage() {
         </button>
       </form>
 
-      <div className="w-full max-w-[345px] flex items-center gap-4 my-6">
+      {/* TODO: Enable when Google sign-in is implemented */}
+      {false && <div className="w-full max-w-[345px] flex items-center gap-4 my-6">
         <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
         <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">eller</span>
         <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
-      </div>
+      </div>}
 
-      <button
+      {false && <button
         onClick={handleGoogle}
         className="w-full max-w-[345px] py-4 bg-card text-[12px] font-bold uppercase tracking-wider rounded-button flex items-center justify-center gap-3"
       >
@@ -108,7 +109,7 @@ export function LoginPage() {
           />
         </svg>
         Fortsätt med Google
-      </button>
+      </button>}
 
       <p className="mt-8 text-[13px] text-black/50 dark:text-white/50">
         Inget konto?{" "}
