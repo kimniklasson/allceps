@@ -76,10 +76,10 @@ function Lightbox({
       {/* Handle bar */}
       <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mt-4 mb-6 flex-shrink-0" />
 
-      {/* Carousel — fills remaining space */}
-      <div ref={containerRef} className="overflow-hidden flex-1">
+      {/* Carousel — fills remaining space, images sized by their natural aspect ratio */}
+      <div ref={containerRef} className="overflow-hidden flex-1 flex items-center min-h-0">
         <div
-          className="flex h-full cursor-grab active:cursor-grabbing"
+          className="flex items-center cursor-grab active:cursor-grabbing"
           style={{
             transform: `translateX(${trackOffset}px)`,
             transition: dragging ? "none" : "transform 0.38s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -93,12 +93,13 @@ function Lightbox({
           {GALLERY_ITEMS.map((item, i) => (
             <div
               key={i}
-              className="flex-shrink-0 h-full flex items-center"
+              className="flex-shrink-0"
               style={{ width: cardWidth }}
             >
               <img
                 src={item.src}
-                className="w-full h-full rounded-2xl object-contain select-none border border-white/10"
+                className="w-full h-auto rounded-2xl object-cover select-none border border-white/10"
+                style={{ maxHeight: "calc(100vh - 180px)" }}
                 draggable={false}
               />
             </div>
