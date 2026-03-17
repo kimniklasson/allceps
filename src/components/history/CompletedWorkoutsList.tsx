@@ -25,11 +25,9 @@ export function CompletedWorkoutsList() {
     <div className="flex flex-col gap-8">
       {/* Header text */}
       <div className="flex flex-col">
-        <span className="text-[15px] font-bold leading-[18px]">Träningspass</span>
-        <span className="text-[15px] leading-[18px] opacity-50">
-          Här hittar du alla dina genomförda och sparade träningspass. Ett pass börjar så
-          fort du tryckt på &ldquo;Set 1&rdquo; på en övning och avslutas när du trycker
-          på bocken.
+        <span className="text-[20px] font-bold leading-[1.22]">Träningspass</span>
+        <span className="text-[20px] leading-[1.22] opacity-50">
+          Här hittar du alla dina genomförda träningspass
         </span>
       </div>
 
