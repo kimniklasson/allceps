@@ -5,6 +5,7 @@ import type {
   ExerciseAdjustment,
 } from "../types/models";
 import { getSessionRepository } from "../data/repositories";
+import { useHistoryStore } from "./useHistoryStore";
 
 interface SessionState {
   /** The currently active workout session, or null */
@@ -29,7 +30,7 @@ interface SessionState {
     weight: number
   ) => void;
   togglePause: () => void;
-  finishSession: () => WorkoutSession | null;
+  finishSession: () => Promise<WorkoutSession | null>;
   cancelSession: () => void;
 
   // Adjustment helpers
@@ -127,7 +128,7 @@ export const useSessionStore = create<SessionState>()(
         }
       },
 
-      finishSession: () => {
+      finishSession: async () => {
         const { activeSession, isPaused, pauseStartedAt, pausedDuration } = get();
         if (!activeSession) return null;
 
@@ -142,9 +143,11 @@ export const useSessionStore = create<SessionState>()(
           pausedDuration: totalPaused,
           status: "completed",
         };
-        getSessionRepository().save(finishedSession);
+        await getSessionRepository().save(finishedSession);
 
         set({ ...initialState });
+
+        await useHistoryStore.getState().loadSessions();
 
         return finishedSession;
       },
