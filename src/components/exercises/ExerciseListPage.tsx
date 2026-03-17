@@ -16,6 +16,7 @@ export function ExerciseListPage() {
   const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
   const [newExerciseId, setNewExerciseId] = useState<string | null>(null);
+  const [duplicateAfterId, setDuplicateAfterId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -24,13 +25,22 @@ export function ExerciseListPage() {
 
   const category = categories.find((c) => c.id === categoryId);
 
-  // Put newly added exercise first for animation
+  // Put newly added exercise first (or after source if duplicating) for animation
   const exercisesForSort = (() => {
     const exs = category?.exercises ?? [];
     if (!newExerciseId) return exs;
     const newEx = exs.find((e) => e.id === newExerciseId);
     const rest = exs.filter((e) => e.id !== newExerciseId);
-    return newEx ? [newEx, ...rest] : exs;
+    if (!newEx) return exs;
+    if (duplicateAfterId) {
+      const afterIdx = rest.findIndex((e) => e.id === duplicateAfterId);
+      if (afterIdx >= 0) {
+        const result = [...rest];
+        result.splice(afterIdx + 1, 0, newEx);
+        return result;
+      }
+    }
+    return [newEx, ...rest];
   })();
 
   const { draggingId, displayItems, containerProps, getDragHandleProps, getItemProps } =
@@ -63,6 +73,31 @@ export function ExerciseListPage() {
     // Persist order to server in background (no await — don't block UI)
     const exercises = useCategoryStore.getState().categories.find((c) => c.id === categoryId)?.exercises ?? [];
     reorderExercises(categoryId!, exercises.map((e) => e.id));
+  };
+
+  const handleDuplicate = async (exerciseId: string) => {
+    const exercise = category.exercises.find((e) => e.id === exerciseId);
+    if (!exercise) return;
+    const newExercise = await addExercise(category.id, {
+      name: `${exercise.name} kopia`,
+      baseReps: exercise.baseReps,
+      baseWeight: exercise.baseWeight,
+      isBodyweight: exercise.isBodyweight,
+    });
+    setNewExerciseId(newExercise.id);
+    setDuplicateAfterId(exerciseId);
+    setTimeout(() => {
+      setNewExerciseId(null);
+      setDuplicateAfterId(null);
+    }, 800);
+    // Persist correct order (new exercise after source)
+    const storeExercises = useCategoryStore.getState().categories
+      .find((c) => c.id === categoryId)?.exercises ?? [];
+    const rest = storeExercises.filter((e) => e.id !== newExercise.id);
+    const afterIdx = rest.findIndex((e) => e.id === exerciseId);
+    const ordered = [...rest];
+    if (afterIdx >= 0) ordered.splice(afterIdx + 1, 0, newExercise);
+    reorderExercises(categoryId!, ordered.map((e) => e.id));
   };
 
   const handleRename = async (exerciseId: string, name: string) => {
@@ -125,6 +160,7 @@ export function ExerciseListPage() {
             categoryName={category.name}
             onRename={handleRename}
             onDelete={setDeleteId}
+            onDuplicate={handleDuplicate}
             sessionBlocked={sessionBlocked}
             isNew={exercise.id === newExerciseId}
             isDragging={draggingId === exercise.id}

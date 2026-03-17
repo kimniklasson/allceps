@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { IconTrash, IconDrag } from "../ui/icons";
+import { IconTrash, IconDrag, IconDuplicate } from "../ui/icons";
 import type { Exercise } from "../../types/models";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { RepWeightAdjuster } from "./RepWeightAdjuster";
@@ -11,6 +11,7 @@ interface ExerciseCardProps {
   categoryName: string;
   onRename: (id: string, name: string) => Promise<void>;
   onDelete: (id: string) => void;
+  onDuplicate: (id: string) => void;
   sessionBlocked: boolean;
   isNew?: boolean;
   isDragging?: boolean;
@@ -25,6 +26,7 @@ export function ExerciseCard({
   categoryName,
   onRename,
   onDelete,
+  onDuplicate,
   sessionBlocked,
   isNew,
   isDragging,
@@ -119,7 +121,7 @@ export function ExerciseCard({
         {/* Drag handle */}
         <div
           {...dragHandleProps}
-          className="flex items-center justify-center opacity-25 hover:opacity-60 transition-opacity shrink-0"
+          className="w-8 h-8 flex items-center justify-center opacity-25 hover:opacity-60 transition-opacity shrink-0"
         >
           <IconDrag
             size={16}
@@ -149,22 +151,34 @@ export function ExerciseCard({
           )}
         </div>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(exercise.id);
-          }}
-          className="w-8 flex items-center justify-center opacity-50 shrink-0"
-        >
-          <IconTrash size={16} />
-        </button>
+        <div className="flex items-center gap-4 shrink-0">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate(exercise.id);
+            }}
+            className="w-8 h-8 flex items-center justify-center opacity-50"
+          >
+            <IconDuplicate size={16} />
+          </button>
 
-        <button
-          onClick={handleSetPress}
-          className="bg-black dark:bg-white text-white dark:text-black px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider shrink-0"
-        >
-          SET {setCount + 1}
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(exercise.id);
+            }}
+            className="w-8 h-8 flex items-center justify-center opacity-50"
+          >
+            <IconTrash size={16} />
+          </button>
+
+          <button
+            onClick={handleSetPress}
+            className="bg-black dark:bg-white text-white dark:text-black px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider shrink-0"
+          >
+            SET {setCount + 1}
+          </button>
+        </div>
       </div>
 
       {/* Adjusters */}

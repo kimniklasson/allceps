@@ -146,6 +146,14 @@ export function IconStop({ size = 16, className, color }: IconProps) {
   );
 }
 
+export function IconDuplicate({ size = 16, className, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>
+      <path fillRule="evenodd" clipRule="evenodd" d="M15.75 10.75H10.75V15.75H0.25V5.25H5.25V0.25H15.75V10.75ZM1.75 14.25H9.25V6.75H1.75V14.25ZM6.75 5.25H10.75V9.25H14.25V1.75H6.75V5.25Z" fill="currentColor"/>
+    </svg>
+  );
+}
+
 export function IconDrag({ size = 16, className, color }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>
