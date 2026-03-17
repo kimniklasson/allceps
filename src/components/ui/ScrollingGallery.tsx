@@ -33,7 +33,7 @@ export function ScrollingGallery() {
             <img
               key={i}
               src={src}
-              className="h-[400px] w-auto rounded-xl flex-shrink-0 object-cover border border-black/10 dark:border-white/15"
+              className="h-[500px] w-auto rounded-xl flex-shrink-0 object-cover border border-black/10 dark:border-white/15"
               draggable={false}
             />
           ))}
