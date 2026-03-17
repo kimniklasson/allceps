@@ -92,11 +92,11 @@ export function SignUpPage() {
         <div className="bg-card rounded-card p-4 border border-transparent">
           <input
             type="password"
-            placeholder="Lösenord (minst 6 tecken)"
+            placeholder="Lösenord (minst 8 tecken)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full bg-transparent text-[15px] outline-none"
-            minLength={6}
+            minLength={8}
             required
           />
         </div>

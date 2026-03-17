@@ -41,6 +41,11 @@ export function LoginPage() {
     <div className="mx-auto max-w-[600px] min-h-screen bg-white dark:bg-[#111111] flex flex-col items-center justify-center px-8">
       <Header />
 
+      <div className="w-full max-w-[345px] mb-8 text-center">
+        <p className="text-[20px] font-bold">Välkommen till Allceps!</p>
+        <p className="text-[20px]">Logga in eller skapa konto nedan</p>
+      </div>
+
       {error && (
         <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[13px] text-red-700 text-center">
           {error}
