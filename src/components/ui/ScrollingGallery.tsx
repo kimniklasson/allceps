@@ -10,7 +10,7 @@ const GALLERY_ITEMS = [
 ];
 
 const CARD_RATIO = 0.78; // card width relative to container
-const GAP = 16; // px between cards
+const GAP = 24; // px between cards
 
 function Lightbox({
   startIndex,
