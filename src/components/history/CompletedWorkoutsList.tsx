@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { CompletedWorkoutItem } from "./CompletedWorkoutItem";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { WorkoutBarChart } from "./WorkoutBarChart";
 
 export function CompletedWorkoutsList() {
   const { loadSessions, getGroupedByMonth, deleteSession } = useHistoryStore();
@@ -11,6 +12,7 @@ export function CompletedWorkoutsList() {
     loadSessions();
   }, [loadSessions]);
 
+  const { sessions } = useHistoryStore();
   const groups = getGroupedByMonth();
   const isEmpty = groups.length === 0;
 
@@ -30,6 +32,9 @@ export function CompletedWorkoutsList() {
           Här hittar du alla dina genomförda träningspass
         </span>
       </div>
+
+      {/* Bar chart */}
+      <WorkoutBarChart sessions={sessions} />
 
       {isEmpty && (
         <p className="text-[15px] opacity-50 text-center pt-4">
