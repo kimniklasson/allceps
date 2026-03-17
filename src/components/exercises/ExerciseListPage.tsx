@@ -86,6 +86,7 @@ export function ExerciseListPage() {
         </span>
       </div>
 
+      <div className="flex flex-col gap-6">
       {/* Add exercise form */}
       <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
         <input
@@ -132,6 +133,7 @@ export function ExerciseListPage() {
             itemProps={getItemProps(exercise.id)}
           />
         ))}
+      </div>
       </div>
 
       <ConfirmDialog
