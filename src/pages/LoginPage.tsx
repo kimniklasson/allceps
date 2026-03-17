@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import { Header } from "../components/layout/Header";
 
 export function LoginPage() {
   const { user, loading, signIn, signInWithGoogle } = useAuth();
@@ -38,22 +39,7 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto max-w-[600px] min-h-screen bg-white dark:bg-[#111111] flex flex-col items-center justify-center px-8">
-      {/* Logo */}
-      <svg
-        width="48"
-        height="16"
-        viewBox="0 0 48 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="mb-12"
-      >
-        <path
-          d="M6 0V16H4V0H6ZM10 0V7H38V0H40V16H38V9H10V16H8V0H10ZM44 0V16H42V0H44ZM2 4V12H0V4H2ZM48 4V12H46V4H48Z"
-          className="fill-black dark:fill-white"
-        />
-      </svg>
-
-      <h1 className="text-[20px] font-bold mb-8">Logga in</h1>
+      <Header />
 
       {error && (
         <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[13px] text-red-700 text-center">

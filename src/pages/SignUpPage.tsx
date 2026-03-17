@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import { Header } from "../components/layout/Header";
 
 export function SignUpPage() {
   const { user, loading, signUp, signInWithGoogle } = useAuth();
@@ -12,8 +13,8 @@ export function SignUpPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[600px] min-h-screen bg-white flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="mx-auto max-w-[600px] min-h-screen bg-white dark:bg-[#111111] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-black dark:border-white border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -43,7 +44,8 @@ export function SignUpPage() {
 
   if (success) {
     return (
-      <div className="mx-auto max-w-[600px] min-h-screen bg-white flex flex-col items-center justify-center px-8">
+      <div className="mx-auto max-w-[600px] min-h-screen bg-white dark:bg-[#111111] flex flex-col items-center justify-center px-8">
+        <Header />
         <div className="w-full max-w-[345px] text-center">
           <div className="w-14 h-14 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5">
@@ -51,12 +53,12 @@ export function SignUpPage() {
             </svg>
           </div>
           <h1 className="text-[20px] font-bold mb-3">Kolla din e-post</h1>
-          <p className="text-[15px] text-black/50 mb-8">
-            Vi har skickat en bekräftelselänk till <strong className="text-black">{email}</strong>. Klicka på länken för att aktivera ditt konto.
+          <p className="text-[15px] text-black/50 dark:text-white/50 mb-8">
+            Vi har skickat en bekräftelselänk till <strong className="text-black dark:text-white">{email}</strong>. Klicka på länken för att aktivera ditt konto.
           </p>
           <Link
             to="/login"
-            className="inline-block py-4 px-8 bg-black text-white text-[12px] font-bold uppercase tracking-wider rounded-button"
+            className="inline-block py-4 px-8 bg-black dark:bg-white text-white dark:text-black text-[12px] font-bold uppercase tracking-wider rounded-button"
           >
             Tillbaka till inloggning
           </Link>
@@ -66,23 +68,8 @@ export function SignUpPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[600px] min-h-screen bg-white flex flex-col items-center justify-center px-8">
-      {/* Logo */}
-      <svg
-        width="48"
-        height="16"
-        viewBox="0 0 48 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="mb-12"
-      >
-        <path
-          d="M6 0V16H4V0H6ZM10 0V7H38V0H40V16H38V9H10V16H8V0H10ZM44 0V16H42V0H44ZM2 4V12H0V4H2ZM48 4V12H46V4H48Z"
-          fill="black"
-        />
-      </svg>
-
-      <h1 className="text-[20px] font-bold mb-8">Skapa konto</h1>
+    <div className="mx-auto max-w-[600px] min-h-screen bg-white dark:bg-[#111111] flex flex-col items-center justify-center px-8">
+      <Header />
 
       {error && (
         <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[13px] text-red-700 text-center">
@@ -117,16 +104,16 @@ export function SignUpPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-4 bg-black text-white text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50"
+          className="w-full py-4 bg-black dark:bg-white text-white dark:text-black text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50"
         >
           {submitting ? "Skapar konto..." : "Skapa konto"}
         </button>
       </form>
 
       <div className="w-full max-w-[345px] flex items-center gap-4 my-6">
-        <div className="flex-1 h-px bg-black/10" />
-        <span className="text-[12px] text-black/40 uppercase tracking-wider">eller</span>
-        <div className="flex-1 h-px bg-black/10" />
+        <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
+        <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">eller</span>
+        <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
       </div>
 
       <button
@@ -154,9 +141,9 @@ export function SignUpPage() {
         Fortsätt med Google
       </button>
 
-      <p className="mt-8 text-[13px] text-black/50">
+      <p className="mt-8 text-[13px] text-black/50 dark:text-white/50">
         Redan har ett konto?{" "}
-        <Link to="/login" className="text-black font-bold underline">
+        <Link to="/login" className="text-black dark:text-white font-bold underline">
           Logga in
         </Link>
       </p>
