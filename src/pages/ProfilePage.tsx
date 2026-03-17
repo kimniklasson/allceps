@@ -173,26 +173,28 @@ export function ProfilePage() {
         </span>
       </div>
 
-      {/* Logout */}
-      <button
-        type="button"
-        onClick={() => setShowLogoutConfirm(true)}
-        className="w-full flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 rounded-card px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-white transition-colors"
-      >
-        Logga ut
-        <IconLogout size={18} />
-      </button>
+      <div className="flex flex-col gap-4">
+        {/* Logout */}
+        <button
+          type="button"
+          onClick={() => setShowLogoutConfirm(true)}
+          className="w-full flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 rounded-card px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-white transition-colors"
+        >
+          Logga ut
+          <IconLogout size={18} />
+        </button>
 
-      {/* Delete account */}
-      <button
-        type="button"
-        onClick={() => setShowDeleteConfirm(true)}
-        disabled={deleting}
-        className="w-full flex items-center justify-center gap-3 bg-black/5 dark:bg-white/10 rounded-card px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-red-500 hover:bg-black/10 dark:hover:bg-white/15 transition-colors"
-      >
-        {deleting ? "Tar bort..." : "Ta bort konto"}
-        <IconTrash size={18} />
-      </button>
+        {/* Delete account */}
+        <button
+          type="button"
+          onClick={() => setShowDeleteConfirm(true)}
+          disabled={deleting}
+          className="w-full flex items-center justify-center gap-3 bg-black/5 dark:bg-white/10 rounded-card px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-red-500 hover:bg-black/10 dark:hover:bg-white/15 transition-colors"
+        >
+          {deleting ? "Tar bort..." : "Ta bort konto"}
+          <IconTrash size={18} />
+        </button>
+      </div>
 
       <ConfirmDialog
         isOpen={showLogoutConfirm}
