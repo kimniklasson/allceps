@@ -33,7 +33,7 @@ export function BottomNav() {
                   isActive ? "opacity-100" : "opacity-50"
                 }`}
               >
-                <Icon size={16} />
+                <Icon size={20} />
               </button>
             );
           })}
