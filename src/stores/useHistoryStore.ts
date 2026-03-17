@@ -13,6 +13,7 @@ interface HistoryState {
   loadSessions: () => Promise<void>;
   getGroupedByMonth: () => MonthGroup[];
   getSessionById: (id: string) => WorkoutSession | undefined;
+  updateSession: (session: WorkoutSession) => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
   reset: () => void;
 }
@@ -32,6 +33,14 @@ export const useHistoryStore = create<HistoryState>()((set, get) => ({
 
   getSessionById: (id) => {
     return get().sessions.find((s) => s.id === id);
+  },
+
+  updateSession: async (session) => {
+    const repo = getSessionRepository();
+    await repo.save(session);
+    set((state) => ({
+      sessions: state.sessions.map((s) => s.id === session.id ? session : s),
+    }));
   },
 
   deleteSession: async (id) => {
