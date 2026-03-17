@@ -41,9 +41,9 @@ export function CategoryList() {
   const isEmpty = categories.length === 0;
 
   return (
-    <div className="flex flex-col gap-10 items-center pt-[76px]">
+    <div className="flex flex-col gap-10 items-center">
       <div className="text-center text-[20px] leading-[1.22]">
-        <p>Hej {displayName}!</p>
+        <p className="font-bold">Hej {displayName}!</p>
         <p>Vad har du gjort idag?</p>
       </div>
 
