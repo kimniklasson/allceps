@@ -3,7 +3,7 @@ import { IconButton } from "../ui/IconButton";
 import { IconArrowLeft } from "../ui/icons";
 
 // Top-level routes that live in the bottom nav — no back arrow here
-const TOP_LEVEL = ["/", "/profile", "/history", "/login", "/signup"];
+const TOP_LEVEL = ["/", "/profile", "/history", "/stats", "/login", "/signup"];
 
 function Logo() {
   return (

@@ -154,6 +154,14 @@ export function IconDuplicate({ size = 16, className, color }: IconProps) {
   );
 }
 
+export function IconStats({ size = 16, className, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>
+      <path fillRule="evenodd" clipRule="evenodd" d="M11.25 9.25H15.25V15.75H0.75V6.25H4.75V1.25H11.25V9.25ZM2.25 14.25H4.75V7.75H2.25V14.25ZM6.25 14.25H9.75V2.75H6.25V14.25ZM11.25 14.25H13.75V10.75H11.25V14.25Z" fill="currentColor"/>
+    </svg>
+  );
+}
+
 export function IconDrag({ size = 16, className, color }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>

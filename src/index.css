@@ -157,3 +157,13 @@ body {
 [data-theme=dark] body {
   background-color: #000000;
 }
+
+/* ── Hide scrollbar on pill selectors ── */
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

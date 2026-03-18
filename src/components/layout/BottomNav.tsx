@@ -1,10 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { IconHome, IconProfile, IconSessions } from "../ui/icons";
+import { IconHome, IconProfile, IconSessions, IconStats } from "../ui/icons";
 import { useSessionStore } from "../../stores/useSessionStore";
 
 const NAV_ITEMS = [
   { path: "/", Icon: IconHome, label: "Hem" },
   { path: "/history", Icon: IconSessions, label: "Historik" },
+  { path: "/stats", Icon: IconStats, label: "Statistik" },
   { path: "/profile", Icon: IconProfile, label: "Profil" },
 ];
 
