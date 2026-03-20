@@ -23,14 +23,18 @@ export function ImportExercisesModal({
   categoryId,
   currentExerciseNames,
 }: ImportExercisesModalProps) {
-  const { categories, addExercise, reorderExercises } = useCategoryStore();
-  const [checkedNames, setCheckedNames] = useState<Set<string>>(new Set());
+  const { categories, addExercise, deleteExercise, reorderExercises } = useCategoryStore();
+  // Track names the user has toggled ON (to add)
+  const [addedNames, setAddedNames] = useState<Set<string>>(new Set());
+  // Track names the user has toggled OFF (to remove from this category)
+  const [removedNames, setRemovedNames] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
 
   // Reset checked state when modal opens
   useEffect(() => {
     if (isOpen) {
-      setCheckedNames(new Set());
+      setAddedNames(new Set());
+      setRemovedNames(new Set());
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -67,24 +71,39 @@ export function ImportExercisesModal({
 
   uniqueExercises.sort((a, b) => a.name.localeCompare(b.name, "sv"));
 
-  const toggleCheck = (normalizedName: string) => {
-    setCheckedNames((prev) => {
-      const next = new Set(prev);
-      if (next.has(normalizedName)) {
-        next.delete(normalizedName);
-      } else {
-        next.add(normalizedName);
-      }
-      return next;
-    });
+  const toggleCheck = (normalizedName: string, alreadyInCategory: boolean) => {
+    if (alreadyInCategory) {
+      // Toggle removal of an existing exercise
+      setRemovedNames((prev) => {
+        const next = new Set(prev);
+        if (next.has(normalizedName)) {
+          next.delete(normalizedName);
+        } else {
+          next.add(normalizedName);
+        }
+        return next;
+      });
+    } else {
+      // Toggle addition of a new exercise
+      setAddedNames((prev) => {
+        const next = new Set(prev);
+        if (next.has(normalizedName)) {
+          next.delete(normalizedName);
+        } else {
+          next.add(normalizedName);
+        }
+        return next;
+      });
+    }
   };
 
   const handleSave = async () => {
-    if (checkedNames.size === 0) return;
+    if (addedNames.size === 0 && removedNames.size === 0) return;
     setSaving(true);
 
+    // Add newly checked exercises
     const toAdd = uniqueExercises.filter(
-      (e) => checkedNames.has(e.normalizedName) && !e.alreadyInCategory
+      (e) => addedNames.has(e.normalizedName) && !e.alreadyInCategory
     );
 
     for (const ex of toAdd) {
@@ -92,6 +111,21 @@ export function ImportExercisesModal({
         name: ex.name,
         ...ex.template,
       });
+    }
+
+    // Remove unchecked exercises from this category (not deleted globally)
+    if (removedNames.size > 0) {
+      const category = useCategoryStore
+        .getState()
+        .categories.find((c) => c.id === categoryId);
+      if (category) {
+        const exercisesToRemove = category.exercises.filter((e) =>
+          removedNames.has(e.name.trim().toLowerCase())
+        );
+        for (const ex of exercisesToRemove) {
+          await deleteExercise(categoryId, ex.id);
+        }
+      }
     }
 
     // Persist order
@@ -105,9 +139,7 @@ export function ImportExercisesModal({
     onClose();
   };
 
-  const hasNewSelections = [...checkedNames].some(
-    (name) => !currentExerciseNames.has(name)
-  );
+  const hasChanges = addedNames.size > 0 || removedNames.size > 0;
 
   return (
     <div
@@ -140,21 +172,17 @@ export function ImportExercisesModal({
               </p>
             ) : (
               uniqueExercises.map((ex) => {
-                const isChecked =
-                  ex.alreadyInCategory ||
-                  checkedNames.has(ex.normalizedName);
-                const isDisabled = ex.alreadyInCategory;
+                const isChecked = ex.alreadyInCategory
+                  ? !removedNames.has(ex.normalizedName)
+                  : addedNames.has(ex.normalizedName);
 
                 return (
                   <button
                     key={ex.normalizedName}
                     onClick={() =>
-                      !isDisabled && toggleCheck(ex.normalizedName)
+                      toggleCheck(ex.normalizedName, ex.alreadyInCategory)
                     }
-                    disabled={isDisabled}
-                    className={`bg-card rounded-card px-4 py-3 flex items-center justify-between text-left ${
-                      isDisabled ? "opacity-50" : ""
-                    }`}
+                    className="bg-card rounded-card px-4 py-3 flex items-center justify-between text-left"
                   >
                     <span className="text-[15px]">{ex.name}</span>
                     <div
@@ -182,9 +210,9 @@ export function ImportExercisesModal({
         <div className="px-4 pt-4 pb-8 shrink-0">
           <button
             onClick={handleSave}
-            disabled={!hasNewSelections || saving}
+            disabled={!hasChanges || saving}
             className={`w-full py-3 rounded-card font-bold text-[15px] transition-colors ${
-              hasNewSelections && !saving
+              hasChanges && !saving
                 ? "bg-black dark:bg-white text-white dark:text-black"
                 : "bg-black/10 dark:bg-white/10 text-black/30 dark:text-white/30"
             }`}
