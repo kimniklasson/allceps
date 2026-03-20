@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { IconClose, IconCheck } from "../ui/icons";
 import type { Exercise } from "../../types/models";
@@ -141,7 +142,7 @@ export function ImportExercisesModal({
 
   const hasChanges = addedNames.size > 0 || removedNames.size > 0;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-70 flex flex-col justify-end modal-backdrop bg-black/40"
       onClick={onClose}
@@ -225,6 +226,7 @@ export function ImportExercisesModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
