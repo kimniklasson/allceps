@@ -48,7 +48,7 @@ export function CompletedWorkoutsList() {
           <span className="font-bold text-[12px] uppercase tracking-wider">
             {group.label}
           </span>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             {group.sessions.map((session) => (
               <CompletedWorkoutItem
                 key={session.id}
