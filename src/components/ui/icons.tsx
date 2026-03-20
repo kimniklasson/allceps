@@ -175,6 +175,19 @@ export function IconDrag({ size = 16, className, color }: IconProps) {
   );
 }
 
+export function IconList({ size = 16, className, color }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>
+      <path d="M6.03027 1.53027L3.81055 3.75H1.5V2.25H3.18945L4.96973 0.469727L6.03027 1.53027Z" fill="currentColor"/>
+      <path d="M6.03027 6.53027L3.81055 8.75H1.5V7.25H3.18945L4.96973 5.46973L6.03027 6.53027Z" fill="currentColor"/>
+      <path d="M6.03027 11.5303L3.81055 13.75H1.5V12.25H3.18945L4.96973 10.4697L6.03027 11.5303Z" fill="currentColor"/>
+      <path d="M14.5 2.25V3.75H6.5V2.25H14.5Z" fill="currentColor"/>
+      <path d="M14.5 7.25V8.75H6.5V7.25H14.5Z" fill="currentColor"/>
+      <path d="M14.5 12.25V13.75H6.5V12.25H14.5Z" fill="currentColor"/>
+    </svg>
+  );
+}
+
 export function IconShow({ size = 16, className, color }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={color ? { color } : undefined}>

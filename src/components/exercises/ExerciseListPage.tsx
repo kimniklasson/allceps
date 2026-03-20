@@ -4,6 +4,8 @@ import { useCategoryStore } from "../../stores/useCategoryStore";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { ExerciseCard } from "./ExerciseCard";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { ImportExercisesModal } from "./ImportExercisesModal";
+import { IconList } from "../ui/icons";
 import { useDragSort } from "../../hooks/useDragSort";
 
 export function ExerciseListPage() {
@@ -17,6 +19,7 @@ export function ExerciseListPage() {
   const [saving, setSaving] = useState(false);
   const [newExerciseId, setNewExerciseId] = useState<string | null>(null);
   const [duplicateAfterId, setDuplicateAfterId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -122,31 +125,39 @@ export function ExerciseListPage() {
       </div>
 
       <div className="flex flex-col gap-6">
-      {/* Add exercise form */}
-      <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
-        <input
-          ref={inputRef}
-          type="text"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
-          placeholder="Lägg till övning"
-          className="flex-1 text-[15px] bg-transparent outline-none"
-        />
+      {/* Add exercise form + import button */}
+      <div className="flex gap-2">
+        <div className="flex-1 border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
+          <input
+            ref={inputRef}
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
+            placeholder="Lägg till övning"
+            className="flex-1 text-[15px] bg-transparent outline-none"
+          />
+          <button
+            onClick={handleAdd}
+            disabled={!newName.trim() || saving}
+            className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center shrink-0 min-w-[52px] ${
+              newName.trim() && !saving
+                ? "bg-black dark:bg-white text-white dark:text-black"
+                : "bg-black/5 dark:bg-white/10 text-black/30 dark:text-white/30"
+            }`}
+          >
+            {saving ? (
+              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              "Skapa"
+            )}
+          </button>
+        </div>
         <button
-          onClick={handleAdd}
-          disabled={!newName.trim() || saving}
-          className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center shrink-0 min-w-[52px] ${
-            newName.trim() && !saving
-              ? "bg-black dark:bg-white text-white dark:text-black"
-              : "bg-black/5 dark:bg-white/10 text-black/30 dark:text-white/30"
-          }`}
+          onClick={() => setImportOpen(true)}
+          className="bg-card rounded-card px-4 flex items-center justify-center shrink-0"
         >
-          {saving ? (
-            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            "Skapa"
-          )}
+          <IconList size={16} />
         </button>
       </div>
 
@@ -177,6 +188,13 @@ export function ExerciseListPage() {
         message="Är du säker på att du vill ta bort denna övning?"
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteId(null)}
+      />
+
+      <ImportExercisesModal
+        isOpen={importOpen}
+        onClose={() => setImportOpen(false)}
+        categoryId={category.id}
+        currentExerciseNames={new Set(category.exercises.map((e) => e.name.trim().toLowerCase()))}
       />
     </div>
   );
