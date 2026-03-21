@@ -1,7 +1,3 @@
-import { useRef, useEffect, useCallback } from "react";
-
-const DRAW_DURATION = 3.0;
-
 /* Path data for each character, indexed 0–12:
    Row 1: F(0) o(1) r(2)
    Row 2: f(3) u(4) t(5) u(6) r(7) e(8)
@@ -35,68 +31,18 @@ const PATHS = [
   "M429.749 398.4C424.949 398.4 420.815 396.733 417.349 393.4C414.015 389.933 412.349 385.8 412.349 381C412.349 376.2 414.015 372.133 417.349 368.8C420.815 365.467 424.949 363.8 429.749 363.8C434.549 363.8 438.615 365.467 441.949 368.8C445.415 372.133 447.149 376.2 447.149 381C447.149 385.8 445.415 389.933 441.949 393.4C438.615 396.733 434.549 398.4 429.749 398.4Z",
 ];
 
-/**
- * Animated "For future you." SVG.
- * Each letter is revealed via a mask that follows the character's natural form.
- */
+/** Static "For future you." SVG — no animation. */
 export function ForFutureYou() {
-  const svgRef = useRef<SVGSVGElement>(null);
-
-  const animate = useCallback(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const maskPaths = svg.querySelectorAll<SVGPathElement>(".ffy-mask");
-
-    // Reset: fully hide all characters
-    maskPaths.forEach((el) => {
-      el.style.transition = "none";
-      const len = el.getTotalLength();
-      el.style.strokeDasharray = `${len}`;
-      el.style.strokeDashoffset = `${len}`;
-    });
-
-    // Force reflow then animate
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        maskPaths.forEach((el) => {
-          el.style.transition = `stroke-dashoffset ${DRAW_DURATION}s cubic-bezier(0.15, 0, 0.35, 1)`;
-          el.style.strokeDashoffset = "0";
-        });
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    animate();
-  }, [animate]);
-
   return (
     <svg
-      ref={svgRef}
       viewBox="0 0 535 441"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="w-[200px] h-auto"
       style={{ overflow: "visible" }}
     >
-      <defs>
-        {PATHS.map((d, i) => (
-          <mask id={`ffy-mask-${i}`} key={`mask-${i}`}>
-            <path
-              className="ffy-mask"
-              data-idx={i}
-              d={d}
-              fill="none"
-              stroke="white"
-              strokeWidth={200}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </mask>
-        ))}
-      </defs>
       {PATHS.map((d, i) => (
-        <path key={i} d={d} fill="#F5C800" mask={`url(#ffy-mask-${i})`} />
+        <path key={i} d={d} fill="#F5C800" />
       ))}
     </svg>
   );
