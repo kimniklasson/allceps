@@ -43,7 +43,9 @@ export function CategoryList() {
 
   return (
     <div className="flex flex-col gap-10 items-center">
-      <ForFutureYou />
+      <div className="mb-10">
+        <ForFutureYou />
+      </div>
 
       <div className="w-full flex flex-col gap-6">
         <CreateCategoryInput onCreated={handleCategoryCreated} />
