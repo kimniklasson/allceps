@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useHistoryStore } from "../stores/useHistoryStore";
 import { computeExercisePRs, computeEventProgression } from "../utils/statistics";
-import type { EventPoint } from "../utils/statistics";
 import { StatsLineChart } from "../components/stats/StatsLineChart";
 import { IconArrowLeft } from "../components/ui/icons";
 
