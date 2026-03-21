@@ -5,7 +5,6 @@ import { StatsPersonalRecords } from "../components/stats/StatsPersonalRecords";
 import { StatsStreaks } from "../components/stats/StatsStreaks";
 import { StatsSessionOverview } from "../components/stats/StatsSessionOverview";
 import { StatsExerciseInsights } from "../components/stats/StatsExerciseInsights";
-import { StatsFunMotivational } from "../components/stats/StatsFunMotivational";
 import * as stats from "../utils/statistics";
 
 export function StatsPage() {
@@ -18,9 +17,6 @@ export function StatsPage() {
   }, [loadSessions, loadCategories]);
 
   const prs = useMemo(() => stats.computeExercisePRs(sessions), [sessions]);
-  const volumeRecord = useMemo(() => stats.computeVolumeRecord(sessions), [sessions]);
-  const setsRecord = useMemo(() => stats.computeMostSetsRecord(sessions), [sessions]);
-  const longestWorkout = useMemo(() => stats.computeLongestWorkout(sessions), [sessions]);
   const streaks = useMemo(() => stats.computeStreaks(sessions), [sessions]);
   const sessionStats = useMemo(() => stats.computeSessionStats(sessions), [sessions]);
 
@@ -32,8 +28,6 @@ export function StatsPage() {
     () => stats.computeExerciseInsights(sessions, allExercises),
     [sessions, allExercises]
   );
-  const funStats = useMemo(() => stats.computeFunStats(sessions), [sessions]);
-
   const isEmpty = sessions.length === 0;
 
   return (
@@ -52,16 +46,10 @@ export function StatsPage() {
         </p>
       ) : (
         <>
-          <StatsPersonalRecords
-            prs={prs}
-            volumeRecord={volumeRecord}
-            setsRecord={setsRecord}
-            longestWorkout={longestWorkout}
-          />
+          <StatsPersonalRecords prs={prs} />
           <StatsStreaks streaks={streaks} />
           <StatsSessionOverview stats={sessionStats} />
           <StatsExerciseInsights insights={insights} />
-          <StatsFunMotivational funStats={funStats} />
         </>
       )}
     </div>

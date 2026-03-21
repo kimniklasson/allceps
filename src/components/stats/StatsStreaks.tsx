@@ -6,8 +6,6 @@ interface Props {
 
 export function StatsStreaks({ streaks }: Props) {
   const cards = [
-    { value: `${streaks.currentStreak}`, label: "Aktuell streak", unit: "veckor" },
-    { value: `${streaks.longestStreak}`, label: "Längsta streak", unit: "veckor" },
     { value: `${streaks.mostWorkoutsInWeek}`, label: "Bästa vecka", unit: "pass" },
     { value: `${streaks.mostWorkoutsInMonth}`, label: "Bästa månad", unit: "pass" },
     { value: `${streaks.avgWorkoutsPerWeek4w}`, label: "Snitt/vecka (4v)", unit: "pass" },

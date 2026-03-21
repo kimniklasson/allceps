@@ -39,14 +39,6 @@ export function StatsExerciseInsights({ insights }: Props) {
           />
         )}
 
-        {/* Variety */}
-        <InsightCard
-          label="Variation (30 dagar)"
-          value={`${insights.exerciseVarietyScore} övningar`}
-          detail="unika övningar senaste månaden"
-          delay={2}
-        />
-
         {/* Category balance */}
         {insights.categoryBalance.length > 0 && (
           <div

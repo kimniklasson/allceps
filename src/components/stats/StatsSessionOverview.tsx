@@ -1,5 +1,4 @@
 import type { SessionStats } from "../../utils/statistics";
-import { formatKg } from "../../utils/formatNumber";
 
 interface Props {
   stats: SessionStats;
@@ -22,9 +21,7 @@ function formatTotalTime(ms: number): string {
 export function StatsSessionOverview({ stats }: Props) {
   const cards = [
     { value: formatMs(stats.avgDurationMs), label: "Snittlängd" },
-    { value: formatMs(stats.avgPauseDurationMs), label: "Snitt vila" },
     { value: formatTotalTime(stats.totalTrainingTimeMs), label: "Total träningstid" },
-    { value: formatKg(stats.totalKgAllTime), label: "Totalt lyft" },
   ];
 
   return (
