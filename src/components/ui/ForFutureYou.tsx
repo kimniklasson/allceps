@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo } from "react";
 
 const GREY_LIGHT = "#f5f5f5";
 const GREY_DARK = "#2a2a2a";
@@ -43,164 +43,188 @@ function mulberry32(a: number) {
   };
 }
 
-/* ── Animation state ─────────────────────────────────────────── */
+/* ── Build CSS keyframes from config ─────────────────────────── */
 
-interface FrameState {
-  baseFill: string;
-  overlayVisible: boolean;
-  overlayFill: string;
-  offsetX: number;
-  clipY: number;
-  clipH: number;
-}
-
-function initialState(grey: string): FrameState {
-  return {
-    baseFill: grey,
-    overlayVisible: false,
-    overlayFill: YELLOW,
-    offsetX: 0,
-    clipY: 0,
-    clipH: 441,
-  };
-}
-
-interface GlitchFrame {
-  time: number;
-  color: string;
-  offsetX: number;
-  clipTop: number;
-  clipBottom: number;
-}
-
-function buildGlitchFrames(grey: string): GlitchFrame[] {
+function buildKeyframes(grey: string): {
+  baseKeyframes: string;
+  overlayKeyframes: string;
+  clipKeyframes: string;
+  offsetKeyframes: string;
+} {
   const rand = mulberry32(CONFIG.seed);
-  const frames: GlitchFrame[] = [];
-  const flickerWindow = CONFIG.duration - CONFIG.greyHold;
+  const dur = CONFIG.duration;
+  const holdPct = (CONFIG.greyHold / dur) * 100;
 
+  const baseStops: string[] = [];
+  const overlayStops: string[] = [];
+  const clipStops: string[] = [];
+  const offsetStops: string[] = [];
+
+  // Grey hold phase
+  baseStops.push(`0% { fill: ${grey} }`);
+  baseStops.push(`${holdPct.toFixed(2)}% { fill: ${grey} }`);
+  overlayStops.push(`0% { opacity: 0 }`);
+  overlayStops.push(`${holdPct.toFixed(2)}% { opacity: 0 }`);
+  clipStops.push(`0% { y: 0; height: 0 }`);
+  clipStops.push(`${holdPct.toFixed(2)}% { y: 0; height: 0 }`);
+  offsetStops.push(`0% { transform: translateX(0px) }`);
+  offsetStops.push(`${holdPct.toFixed(2)}% { transform: translateX(0px) }`);
+
+  // Flicker phase
+  const flickerWindow = dur - CONFIG.greyHold;
   for (let i = 0; i < CONFIG.flickerCount; i++) {
     const t = CONFIG.greyHold + (flickerWindow * i) / CONFIG.flickerCount;
+    const pct = ((t / dur) * 100).toFixed(2);
+
     const isYellow = i % 2 === 0;
     const forceYellow = i >= CONFIG.flickerCount - 3;
+    const color = forceYellow || isYellow ? YELLOW : grey;
 
     const offsetX = (rand() - 0.5) * CONFIG.jitterX;
     const sliceCenter = rand() * 100;
-    const sliceHeight =
-      CONFIG.sliceMinH + rand() * (CONFIG.sliceMaxH - CONFIG.sliceMinH);
+    const sliceHeight = CONFIG.sliceMinH + rand() * (CONFIG.sliceMaxH - CONFIG.sliceMinH);
     const clipTop = Math.max(0, sliceCenter - sliceHeight / 2);
     const clipBottom = Math.min(100, sliceCenter + sliceHeight / 2);
+    const svgH = 441;
+    const y = (clipTop / 100) * svgH;
+    const h = ((clipBottom - clipTop) / 100) * svgH;
 
-    frames.push({
-      time: t,
-      color: forceYellow || isYellow ? YELLOW : grey,
-      offsetX,
-      clipTop,
-      clipBottom,
-    });
+    // Base stays grey during glitch
+    baseStops.push(`${pct}% { fill: ${grey} }`);
+    overlayStops.push(`${pct}% { opacity: 1 }`);
+    clipStops.push(`${pct}% { y: ${y.toFixed(1)}px; height: ${h.toFixed(1)}px }`);
+    offsetStops.push(`${pct}% { transform: translateX(${offsetX.toFixed(1)}px) }`);
+
+    // Between flickers: briefly show the color
+    // The overlay fill changes per frame
+    // Since we can't animate fill per-frame easily in one keyframe,
+    // we handle it by toggling overlay opacity + fill color
   }
 
-  frames.push({
-    time: CONFIG.duration,
-    color: YELLOW,
-    offsetX: 0,
-    clipTop: 0,
-    clipBottom: 100,
-  });
+  // Final: solid yellow
+  baseStops.push(`100% { fill: ${YELLOW} }`);
+  overlayStops.push(`99.9% { opacity: 1 }`);
+  overlayStops.push(`100% { opacity: 0 }`);
+  clipStops.push(`100% { y: 0; height: 441px }`);
+  offsetStops.push(`100% { transform: translateX(0px) }`);
 
-  return frames;
+  return {
+    baseKeyframes: `@keyframes ffy-base { ${baseStops.join(" ")} }`,
+    overlayKeyframes: `@keyframes ffy-overlay { ${overlayStops.join(" ")} }`,
+    clipKeyframes: `@keyframes ffy-clip { ${clipStops.join(" ")} }`,
+    offsetKeyframes: `@keyframes ffy-offset { ${offsetStops.join(" ")} }`,
+  };
+}
+
+/* ── Build per-frame overlay fill keyframes ──────────────────── */
+
+function buildOverlayFillKeyframes(grey: string): string {
+  const rand = mulberry32(CONFIG.seed);
+  const dur = CONFIG.duration;
+  const holdPct = (CONFIG.greyHold / dur) * 100;
+  const stops: string[] = [];
+
+  stops.push(`0% { fill: ${YELLOW} }`);
+  stops.push(`${holdPct.toFixed(2)}% { fill: ${YELLOW} }`);
+
+  const flickerWindow = dur - CONFIG.greyHold;
+  for (let i = 0; i < CONFIG.flickerCount; i++) {
+    const t = CONFIG.greyHold + (flickerWindow * i) / CONFIG.flickerCount;
+    const pct = ((t / dur) * 100).toFixed(2);
+
+    const isYellow = i % 2 === 0;
+    const forceYellow = i >= CONFIG.flickerCount - 3;
+    const color = forceYellow || isYellow ? YELLOW : grey;
+
+    // consume the same random values to stay in sync
+    rand(); // offsetX
+    rand(); // sliceCenter
+    rand(); // sliceHeight
+
+    stops.push(`${pct}% { fill: ${color} }`);
+  }
+
+  stops.push(`100% { fill: ${YELLOW} }`);
+  return `@keyframes ffy-overlay-fill { ${stops.join(" ")} }`;
 }
 
 /* ── Component ───────────────────────────────────────────────── */
 
 export function ForFutureYou({ dark = false }: { dark?: boolean }) {
   const grey = dark ? GREY_DARK : GREY_LIGHT;
-  const [frame, setFrame] = useState<FrameState>(() => initialState(grey));
-  const rafRef = useRef<number>(0);
+  const animDuration = `${CONFIG.duration}ms`;
 
-  useEffect(() => {
-    const frames = buildGlitchFrames(grey);
-    let startTime: number | null = null;
-    let cancelled = false;
-
-    setFrame(initialState(grey));
-
-    function tick(now: number) {
-      if (cancelled) return;
-      if (startTime === null) startTime = now;
-      const elapsed = now - startTime;
-
-      if (elapsed >= CONFIG.duration) {
-        setFrame({
-          baseFill: YELLOW,
-          overlayVisible: false,
-          overlayFill: YELLOW,
-          offsetX: 0,
-          clipY: 0,
-          clipH: 441,
-        });
-        return;
-      }
-
-      let active = frames[0];
-      for (const f of frames) {
-        if (f.time <= elapsed) active = f;
-        else break;
-      }
-
-      if (elapsed < CONFIG.greyHold) {
-        // no-op, stay at initial
-      } else {
-        const svgH = 441;
-        const top = (active.clipTop / 100) * svgH;
-        const bottom = (active.clipBottom / 100) * svgH;
-        setFrame({
-          baseFill: grey,
-          overlayVisible: true,
-          overlayFill: active.color,
-          offsetX: active.offsetX,
-          clipY: top,
-          clipH: bottom - top,
-        });
-      }
-
-      rafRef.current = requestAnimationFrame(tick);
-    }
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const styleTag = useMemo(() => {
+    const kf = buildKeyframes(grey);
+    const ofKf = buildOverlayFillKeyframes(grey);
+    return [
+      kf.baseKeyframes,
+      kf.overlayKeyframes,
+      kf.clipKeyframes,
+      kf.offsetKeyframes,
+      ofKf,
+    ].join("\n");
+  }, [grey]);
 
   return (
-    <svg
-      viewBox="0 0 535 441"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-[200px] h-auto"
-      style={{ overflow: "visible" }}
-    >
-      <defs>
-        <clipPath id="glitch-clip">
-          <rect x="-50" y={frame.clipY} width="635" height={frame.clipH} />
-        </clipPath>
-      </defs>
+    <>
+      <style>{styleTag}</style>
+      <svg
+        viewBox="0 0 535 441"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-[200px] h-auto"
+        style={{ overflow: "visible" }}
+      >
+        <defs>
+          <clipPath id="ffy-glitch-clip">
+            <rect
+              x="-50"
+              width="635"
+              style={{
+                animation: `ffy-clip ${animDuration} linear forwards`,
+              }}
+            />
+          </clipPath>
+        </defs>
 
-      {PATHS.map((d, i) => (
-        <path key={`base-${i}`} d={d} fill={frame.baseFill} />
-      ))}
+        {/* Base layer — animated grey → yellow */}
+        {PATHS.map((d, i) => (
+          <path
+            key={`base-${i}`}
+            d={d}
+            style={{
+              fill: grey,
+              animation: `ffy-base ${animDuration} linear forwards`,
+            }}
+          />
+        ))}
 
-      {frame.overlayVisible && (
+        {/* Glitch overlay — clipped, offset, with fill color changes */}
         <g
-          clipPath="url(#glitch-clip)"
-          style={{ transform: `translateX(${frame.offsetX}px)` }}
+          clipPath="url(#ffy-glitch-clip)"
+          style={{
+            animation: `ffy-offset ${animDuration} linear forwards`,
+          }}
         >
-          {PATHS.map((d, i) => (
-            <path key={`glitch-${i}`} d={d} fill={frame.overlayFill} />
-          ))}
+          <g
+            style={{
+              animation: `ffy-overlay ${animDuration} linear forwards`,
+              opacity: 0,
+            }}
+          >
+            {PATHS.map((d, i) => (
+              <path
+                key={`glitch-${i}`}
+                d={d}
+                style={{
+                  animation: `ffy-overlay-fill ${animDuration} linear forwards`,
+                }}
+              />
+            ))}
+          </g>
         </g>
-      )}
-    </svg>
+      </svg>
+    </>
   );
 }
