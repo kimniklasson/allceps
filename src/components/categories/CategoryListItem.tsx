@@ -51,7 +51,7 @@ export function CategoryListItem({
 
       {/* Name — tap navigates */}
       <p
-        className="flex-1 font-bold text-[15px] leading-[16px] cursor-pointer"
+        className="flex-1 font-mono font-normal text-[15px] leading-[16px] uppercase cursor-pointer"
         onClick={() => !isDragging && navigate(`/category/${category.id}`)}
       >
         {category.name}

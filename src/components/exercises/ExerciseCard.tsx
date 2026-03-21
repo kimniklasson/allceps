@@ -146,11 +146,11 @@ export function ExerciseCard({
               onChange={(e) => setEditName(e.target.value)}
               onBlur={handleNameBlur}
               onKeyDown={handleNameKeyDown}
-              className="w-full font-bold text-[15px] leading-[18px] bg-transparent outline-none border-b border-black/20 dark:border-white/20"
+              className="w-full font-mono font-normal text-[15px] leading-[18px] uppercase bg-transparent outline-none border-b border-black/20 dark:border-white/20"
             />
           ) : (
             <span
-              className="font-bold text-[15px] leading-[18px] truncate block cursor-text"
+              className="font-mono font-normal text-[15px] leading-[18px] uppercase truncate block cursor-text"
               onClick={() => setIsEditingName(true)}
             >
               {exercise.name}
