@@ -27,9 +27,9 @@ export function CompletedWorkoutsList() {
     <div className="flex flex-col gap-10">
       {/* Header text */}
       <div className="flex flex-col items-center text-center">
-        <span className="text-[20px] font-bold leading-[1.22]">Träningspass</span>
+        <span className="text-[20px] font-bold leading-[1.22]">Historik</span>
         <span className="text-[20px] leading-[1.22] opacity-50">
-          Här hittar du alla dina genomförda träningspass
+          Dina genomförda träningspass
         </span>
       </div>
 
