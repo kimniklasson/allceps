@@ -131,6 +131,8 @@ export function SessionTimerBar() {
     <ConfirmDialog
       isOpen={confirmCancel}
       message="Avbryta pågående pass? Dina loggade set sparas inte."
+      cancelLabel="Nej"
+      confirmLabel="Ja"
       onConfirm={() => { cancelSession(); setConfirmCancel(false); }}
       onCancel={() => setConfirmCancel(false)}
     />

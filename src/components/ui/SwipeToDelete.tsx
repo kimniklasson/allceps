@@ -135,7 +135,7 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
 
   return (
     <>
-      <div ref={containerRef} className="relative overflow-hidden rounded-card">
+      <div ref={containerRef} className="relative overflow-hidden rounded-card" style={{ margin: "-2px", padding: "2px" }}>
         {/* Red background for delete (swipe left) */}
         {(swipingLeft || showConfirm) && (
           <div

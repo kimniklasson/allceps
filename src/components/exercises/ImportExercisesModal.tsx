@@ -183,7 +183,7 @@ export function ImportExercisesModal({
                     onClick={() =>
                       toggleCheck(ex.normalizedName, ex.alreadyInCategory)
                     }
-                    className="bg-card rounded-card px-4 py-3 flex items-center justify-between text-left"
+                    className="bg-card dark:bg-white/10 rounded-card px-4 py-3 flex items-center justify-between text-left"
                   >
                     <span className="text-[15px]">{ex.name}</span>
                     <div
@@ -208,11 +208,20 @@ export function ImportExercisesModal({
         </div>
 
         {/* Sticky footer */}
-        <div className="px-8 pt-4 pb-8 shrink-0">
+        <div
+          className="px-8 pb-8 shrink-0"
+          style={{
+            paddingTop: "16px",
+            background: "var(--footer-bg)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            marginTop: "-24px",
+          }}
+        >
           <button
             onClick={handleSave}
             disabled={!hasChanges || saving}
-            className={`w-full py-3 rounded-card font-bold text-[15px] transition-colors ${
+            className={`w-full py-3 rounded-card font-bold text-[15px] uppercase tracking-wider transition-colors ${
               hasChanges && !saving
                 ? "bg-black dark:bg-white text-white dark:text-black"
                 : "bg-black/10 dark:bg-white/10 text-black/30 dark:text-white/30"
@@ -221,7 +230,7 @@ export function ImportExercisesModal({
             {saving ? (
               <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" />
             ) : (
-              "Spara"
+              "SPARA"
             )}
           </button>
         </div>

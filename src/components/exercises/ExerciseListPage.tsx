@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { useSessionStore } from "../../stores/useSessionStore";
@@ -19,7 +19,22 @@ export function ExerciseListPage() {
   const [newExerciseId, setNewExerciseId] = useState<string | null>(null);
   const [duplicateAfterId, setDuplicateAfterId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [tipIndex, setTipIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const tips = useMemo(() => [
+    "Tryck på Set 1 för att starta session",
+    "Tryck på ett värde för att ändra",
+    "Svep åt vänster för att ta bort",
+    "Svep åt höger för att duplicera",
+  ], []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTipIndex((i) => (i + 1) % tips.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [tips]);
 
   useEffect(() => {
     loadCategories();
@@ -111,9 +126,19 @@ export function ExerciseListPage() {
       {/* Category header */}
       <div className="flex flex-col items-center text-center">
         <span className="font-bold text-[20px] leading-[1.22]">{category.name}</span>
-        <span className="text-[20px] leading-[1.22] opacity-50">
-          Tips! Tryck på ett värde för att ändra det
-        </span>
+        <div className="text-[20px] leading-[1.22] opacity-50 relative">
+          {/* Invisible spacer — tallest tip sets width */}
+          <span className="invisible whitespace-nowrap">{tips[tipIndex]}</span>
+          {tips.map((tip, i) => (
+            <span
+              key={tip}
+              className="absolute inset-0 transition-opacity duration-700 whitespace-nowrap text-center"
+              style={{ opacity: i === tipIndex ? 1 : 0 }}
+            >
+              {tip}
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col gap-6">
@@ -160,7 +185,7 @@ export function ExerciseListPage() {
             key={exercise.id}
             onDelete={() => deleteExercise(categoryId!, exercise.id)}
             onDuplicate={() => handleDuplicate(exercise.id)}
-            confirmMessage={`Är du säker på att du vill ta bort övningen från kategorin ${category.name}?`}
+            confirmMessage={`Är du säker på att du vill ta bort ${exercise.name} från ${category.name}?`}
           >
             <ExerciseCard
               exercise={exercise}
