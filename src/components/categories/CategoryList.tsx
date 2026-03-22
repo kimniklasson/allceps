@@ -90,7 +90,7 @@ export function CategoryList() {
         <ForFutureYou />
       </div>
 
-      <div className="w-full flex flex-col gap-6">
+      <div className="w-full flex flex-col gap-2">
         <CreateCategoryInput onCreated={handleCategoryCreated} />
 
         {!isEmpty && (
@@ -121,7 +121,7 @@ export function CategoryList() {
       </div>
 
       {lastTrainedDate && (
-        <p className="text-[13px] opacity-40 text-center">
+        <p className="text-[15px] text-center">
           Senaste träningen var {formatTimeSince(lastTrainedDate)} sedan
         </p>
       )}
