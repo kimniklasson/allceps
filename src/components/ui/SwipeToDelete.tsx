@@ -130,7 +130,6 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
 
   const swipingLeft = offsetX < 0;
   const swipingRight = offsetX > 0;
-  const isSwipingActive = offsetX !== 0 || showConfirm;
   const progress = Math.min(Math.abs(offsetX) / getThreshold(), 1);
   const bgOpacity = 0.3 + progress * 0.7;
 
