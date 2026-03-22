@@ -248,6 +248,8 @@ export function ImportExercisesModal({
             style={{
               paddingTop: "16px",
               marginTop: "-24px",
+              position: "relative",
+              zIndex: 1,
             }}
           >
             <button
