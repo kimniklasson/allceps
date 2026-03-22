@@ -56,7 +56,7 @@ export function CategoryList() {
   const lastSession = sessions.length > 0 ? sessions[0] : null;
   const lastTrainedDate = lastSession?.finishedAt ?? lastSession?.startedAt;
 
-  const { draggingId, displayItems, containerProps, getDragHandleProps, getItemProps } =
+  const { draggingId, displayItems, containerProps, getItemProps } =
     useDragSort(categories, reorderCategories);
 
   const handleCategoryCreated = (id: string) => {
@@ -98,7 +98,6 @@ export function CategoryList() {
                 isExiting={exitingId === category.id}
                 isDragging={draggingId === category.id}
                 isDimmed={draggingId !== null && draggingId !== category.id}
-                dragHandleProps={getDragHandleProps(category.id)}
                 itemProps={getItemProps(category.id)}
               />
             ))}

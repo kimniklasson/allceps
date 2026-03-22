@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { IconTrash, IconDrag } from "../ui/icons";
+import { IconTrash } from "../ui/icons";
 import type { Category } from "../../types/models";
 
 interface CategoryListItemProps {
@@ -10,8 +10,7 @@ interface CategoryListItemProps {
   isExiting?: boolean;
   isDragging?: boolean;
   isDimmed?: boolean;
-  dragHandleProps: React.HTMLAttributes<HTMLElement> & { style?: React.CSSProperties };
-  itemProps: Record<string, string>;
+  itemProps: Record<string, unknown>;
 }
 
 export function CategoryListItem({
@@ -22,7 +21,6 @@ export function CategoryListItem({
   isExiting,
   isDragging,
   isDimmed,
-  dragHandleProps,
   itemProps,
 }: CategoryListItemProps) {
   const navigate = useNavigate();
@@ -31,7 +29,7 @@ export function CategoryListItem({
     <div
       {...itemProps}
       className={[
-        "bg-card rounded-card flex items-center gap-2 pr-4 py-6 select-none",
+        "bg-card rounded-card flex items-center gap-2 px-4 py-6 select-none",
         hasActiveSession ? "border-2 border-accent" : "",
         isDragging ? "shadow-xl scale-[1.01]" : "",
         isDimmed ? "opacity-40" : "opacity-100",
@@ -41,14 +39,6 @@ export function CategoryListItem({
         .filter(Boolean)
         .join(" ")}
     >
-      {/* Drag handle */}
-      <div
-        {...dragHandleProps}
-        className="pl-4 pr-1 self-stretch flex items-center justify-center opacity-25 hover:opacity-60 transition-opacity"
-      >
-        <IconDrag size={16} className={isDragging ? "cursor-grabbing" : "cursor-grab"} />
-      </div>
-
       {/* Name — tap navigates */}
       <p
         className="flex-1 font-mono font-normal text-[15px] leading-[16px] uppercase cursor-pointer"
