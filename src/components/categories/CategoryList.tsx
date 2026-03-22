@@ -130,7 +130,7 @@ export function CategoryList() {
             ? `Kom igen nu${firstName ? ` ${firstName}` : ""}!`
             : `Dags att ta tag i det${firstName ? ` ${firstName}` : ""}!`;
         return (
-          <div className="flex flex-col gap-1 text-center">
+          <div className="flex flex-col gap-0 text-center">
             <p className="text-[15px] font-bold">{motivation}</p>
             <p className="text-[15px]">
               Senaste träningen var {formatTimeSince(lastTrainedDate)} sedan
