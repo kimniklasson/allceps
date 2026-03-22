@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useExerciseStore } from "../../stores/useExerciseStore";
 import { useCategoryStore } from "../../stores/useCategoryStore";
-import { IconClose, IconCheck, IconTrash } from "../ui/icons";
+import { IconClose, IconTrash } from "../ui/icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 interface ImportExercisesModalProps {

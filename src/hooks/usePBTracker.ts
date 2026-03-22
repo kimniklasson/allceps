@@ -23,9 +23,12 @@ export function usePBTracker(exerciseId: string) {
         pbs.add(set.setNumber);
         // Advance record so subsequent sets are compared against updated PB
         if (set.weight > rec.maxWeight) {
-          rec = { maxWeight: set.weight, maxRepsAtMaxWeight: set.reps };
+          rec = { ...rec, maxWeight: set.weight, maxRepsAtMaxWeight: set.reps };
         } else if (set.weight === rec.maxWeight && set.reps > rec.maxRepsAtMaxWeight) {
           rec = { ...rec, maxRepsAtMaxWeight: set.reps };
+        }
+        if (set.reps > rec.maxRepsBodyweight) {
+          rec = { ...rec, maxRepsBodyweight: set.reps };
         }
       }
     }

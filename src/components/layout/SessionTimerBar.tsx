@@ -55,9 +55,12 @@ export function SessionTimerBar() {
           });
           // Advance the record so subsequent sets are compared correctly
           if (set.weight > record.maxWeight) {
-            record = { maxWeight: set.weight, maxRepsAtMaxWeight: set.reps };
+            record = { ...record, maxWeight: set.weight, maxRepsAtMaxWeight: set.reps };
           } else if (set.weight === record.maxWeight && set.reps > record.maxRepsAtMaxWeight) {
             record = { ...record, maxRepsAtMaxWeight: set.reps };
+          }
+          if (set.reps > record.maxRepsBodyweight) {
+            record = { ...record, maxRepsBodyweight: set.reps };
           }
         }
       }
