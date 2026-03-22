@@ -66,7 +66,7 @@ export function ExerciseListPage() {
     return [newEx, ...rest];
   })();
 
-  const { draggingId, displayItems, containerProps, getDragHandleProps, getItemProps } =
+  const { draggingId, displayItems, containerProps, getItemProps } =
     useDragSort(exercisesForSort, (newIds) => reorderExercises(categoryId!, newIds));
 
   if (!category) {
@@ -167,7 +167,6 @@ export function ExerciseListPage() {
                   isNew={exercise.id === newExerciseId}
                   isDragging={draggingId === exercise.id}
                   isDimmed={draggingId !== null && draggingId !== exercise.id}
-                  dragHandleProps={getDragHandleProps(exercise.id)}
                   itemProps={getItemProps(exercise.id)}
                 />
               </SwipeActions>

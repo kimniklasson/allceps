@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { IconDrag, IconCheck } from "../ui/icons";
+import { IconCheck } from "../ui/icons";
 import type { Exercise } from "../../types/models";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useExerciseStore } from "../../stores/useExerciseStore";
@@ -18,8 +18,7 @@ interface ExerciseCardProps {
   isNew?: boolean;
   isDragging?: boolean;
   isDimmed?: boolean;
-  dragHandleProps: React.HTMLAttributes<HTMLElement> & { style?: React.CSSProperties };
-  itemProps: Record<string, string>;
+  itemProps: Record<string, unknown>;
 }
 
 export function ExerciseCard({
@@ -31,7 +30,6 @@ export function ExerciseCard({
   isNew,
   isDragging,
   isDimmed,
-  dragHandleProps,
   itemProps,
 }: ExerciseCardProps) {
   const {
@@ -134,17 +132,6 @@ export function ExerciseCard({
     >
       {/* Header row */}
       <div className="flex items-center gap-2">
-        {/* Drag handle */}
-        <div
-          {...dragHandleProps}
-          className="w-8 h-8 flex items-center justify-center opacity-25 hover:opacity-60 transition-opacity shrink-0"
-        >
-          <IconDrag
-            size={16}
-            className={isDragging ? "cursor-grabbing" : "cursor-grab"}
-          />
-        </div>
-
         {/* Name — inline editable */}
         <div className="flex-1 min-w-0">
           {isEditingName ? (

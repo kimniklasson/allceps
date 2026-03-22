@@ -16,7 +16,7 @@ interface ActiveDrag {
 export function useDragSort<T extends { id: string }>(
   items: T[],
   onReorder: (newIds: string[]) => void,
-  longPressDelay = 200
+  longPressDelay = 600
 ) {
   // State for rendering: draggingId + live overIndex
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -45,11 +45,14 @@ export function useDragSort<T extends { id: string }>(
     return best;
   }
 
-  // Called from each drag handle's onPointerDown
-  function onHandlePointerDown(e: React.PointerEvent, id: string) {
+  // Called from each item's onPointerDown (long-press on whole card)
+  function onItemPointerDown(e: React.PointerEvent, id: string) {
     // Don't start a new drag if one is already active
     if (activeRef.current) return;
-    e.preventDefault();
+    // Don't hijack interactions on buttons, inputs, etc.
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
+    // Don't call preventDefault here — allow normal touch scrolling until long press fires
     const target = e.currentTarget as Element;
     const pointerId = e.pointerId;
     const fromIndex = items.findIndex((item) => item.id === id);
@@ -66,6 +69,17 @@ export function useDragSort<T extends { id: string }>(
       setDraggingId(id);
       setOverIndex(fromIndex);
     }, longPressDelay);
+  }
+
+  // Cancel long-press timer if pointer moves before activation
+  function onItemPointerMove(e: React.PointerEvent) {
+    if (timerRef.current && !activeRef.current) {
+      // Pointer moved before long-press activated — cancel
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    // Forward to container move handler for active drag
+    onContainerPointerMove(e);
   }
 
   function onContainerPointerMove(e: React.PointerEvent) {
@@ -116,14 +130,12 @@ export function useDragSort<T extends { id: string }>(
     onPointerCancel: onContainerPointerUp,
   };
 
-  const getDragHandleProps = (id: string) => ({
-    onPointerDown: (e: React.PointerEvent) => onHandlePointerDown(e, id),
+  const getItemProps = (id: string) => ({
+    "data-sort-id": id,
+    onPointerDown: (e: React.PointerEvent) => onItemPointerDown(e, id),
+    onPointerMove: onItemPointerMove,
     style: { touchAction: "none" } as React.CSSProperties,
   });
 
-  const getItemProps = (id: string) => ({
-    "data-sort-id": id,
-  });
-
-  return { draggingId, displayItems, containerProps, getDragHandleProps, getItemProps };
+  return { draggingId, displayItems, containerProps, getItemProps };
 }
