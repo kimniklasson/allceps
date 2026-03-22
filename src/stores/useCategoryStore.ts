@@ -8,6 +8,7 @@ interface CategoryState {
   loadCategories: () => Promise<void>;
   createCategory: (name: string) => Promise<Category>;
   duplicateCategory: (id: string) => Promise<void>;
+  renameCategory: (id: string, name: string) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
   addExerciseToCategory: (categoryId: string, exerciseId: string) => Promise<void>;
   removeExerciseFromCategory: (categoryId: string, exerciseId: string) => Promise<void>;
@@ -33,6 +34,13 @@ export const useCategoryStore = create<CategoryState>()(
         const category = await repo.create(name);
         set((state) => ({ categories: [category, ...state.categories] }));
         return category;
+      },
+
+      renameCategory: async (id: string, name: string) => {
+        const repo = getCategoryRepository();
+        await repo.update(id, { name });
+        const categories = await repo.getAll();
+        set({ categories });
       },
 
       duplicateCategory: async (id: string) => {

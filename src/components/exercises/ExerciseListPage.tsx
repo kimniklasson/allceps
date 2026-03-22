@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { useExerciseStore } from "../../stores/useExerciseStore";
@@ -7,14 +7,18 @@ import { ExerciseCard } from "./ExerciseCard";
 import { SwipeActions } from "../ui/SwipeToDelete";
 import { ImportExercisesModal } from "./ImportExercisesModal";
 import { useDragSort } from "../../hooks/useDragSort";
+import { IconEdit } from "../ui/icons";
 
 export function ExerciseListPage() {
   const { id: categoryId } = useParams<{ id: string }>();
-  const { categories, loadCategories, removeExerciseFromCategory, reorderExercises } =
+  const { categories, loadCategories, removeExerciseFromCategory, reorderExercises, renameCategory } =
     useCategoryStore();
   const { loadExercises } = useExerciseStore();
   const { activeSession } = useSessionStore();
 
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [newExerciseId, setNewExerciseId] = useState<string | null>(null);
   const [duplicateAfterId, setDuplicateAfterId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -73,6 +77,25 @@ export function ExerciseListPage() {
     return <p className="text-center opacity-50 pt-10">Kategori hittades inte.</p>;
   }
 
+  const handleStartEditName = () => {
+    setNameValue(category.name);
+    setIsEditingName(true);
+    setTimeout(() => nameInputRef.current?.select(), 0);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = nameValue.trim();
+    if (trimmed && trimmed !== category.name) {
+      await renameCategory(category.id, trimmed);
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") e.currentTarget.blur();
+    if (e.key === "Escape") setIsEditingName(false);
+  };
+
   const sessionBlocked =
     activeSession !== null && activeSession.categoryId !== categoryId;
 
@@ -124,7 +147,25 @@ export function ExerciseListPage() {
     <div className="flex flex-col gap-10">
       {/* Category header */}
       <div className="flex flex-col items-center text-center">
-        <span className="font-bold text-[20px] leading-[1.22]">{category.name}</span>
+        {isEditingName ? (
+          <input
+            ref={nameInputRef}
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onBlur={handleSaveName}
+            onKeyDown={handleNameKeyDown}
+            className="font-bold text-[20px] leading-[1.22] text-center bg-transparent border-b border-current outline-none w-full max-w-xs"
+            autoFocus
+          />
+        ) : (
+          <button
+            onClick={handleStartEditName}
+            className="flex items-center gap-1.5 group"
+          >
+            <IconEdit size={14} className="opacity-50" />
+            <span className="font-bold text-[20px] leading-[1.22]">{category.name}</span>
+          </button>
+        )}
         {!isEmpty && (
           <div className="text-[20px] leading-[1.22] opacity-50 relative">
             <span className="invisible whitespace-nowrap">{tips[tipIndex]}</span>
