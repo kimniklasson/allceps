@@ -52,7 +52,7 @@ export function RepWeightAdjuster({
   };
 
   return (
-    <div className="bg-white dark:bg-[#2c2c2e] rounded-button flex items-center h-8">
+    <div className="bg-white dark:bg-[#2c2c2e] rounded-button flex items-center h-10">
       <button
         onClick={() => onChange(Math.max(0, value - step))}
         className="w-16 h-full flex items-center justify-center rounded-button"
@@ -69,11 +69,11 @@ export function RepWeightAdjuster({
             onChange={(e) => setInputValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleKeyDown}
-            className="w-full text-center font-bold text-[12px] bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full text-center font-bold text-[15px] bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         ) : (
           <span
-            className="font-bold text-[12px] text-center whitespace-nowrap cursor-text select-none"
+            className="font-bold text-[15px] text-center whitespace-nowrap cursor-text select-none"
             onClick={handleDisplayClick}
           >
             {displayValue}
