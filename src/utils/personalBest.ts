@@ -71,3 +71,28 @@ export function computeHistoricalPBs(
 
   return pbTimestamps;
 }
+
+/**
+ * Like computeHistoricalPBs but also records whether each PB was due to
+ * higher weight ('weight') or more reps at the same weight ('reps').
+ */
+export function computeHistoricalPBTypes(
+  exerciseId: string,
+  allSessions: WorkoutSession[]
+): Map<string, "weight" | "reps"> {
+  const pbTypes = new Map<string, "weight" | "reps">();
+  let record: PBRecord = { maxWeight: 0, maxRepsAtMaxWeight: 0, maxRepsBodyweight: 0 };
+  const sets = collectSets(exerciseId, allSessions);
+
+  for (const set of sets) {
+    if (set.weight > record.maxWeight) {
+      pbTypes.set(set.completedAt, "weight");
+      record = advanceRecord(record, set.reps, set.weight);
+    } else if (set.weight === record.maxWeight && set.reps > record.maxRepsAtMaxWeight) {
+      pbTypes.set(set.completedAt, "reps");
+      record = advanceRecord(record, set.reps, set.weight);
+    }
+  }
+
+  return pbTypes;
+}
