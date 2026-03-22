@@ -86,7 +86,7 @@ export function CategoryList() {
 
   return (
     <div className="flex flex-col gap-10 items-center">
-      <div className="mb-10">
+      <div className="mb-6">
         <ForFutureYou />
       </div>
 
