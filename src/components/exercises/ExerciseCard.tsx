@@ -193,13 +193,19 @@ export function ExerciseCard({
         />
       </div>
 
-      {/* PB + Bodyweight row */}
+      {/* PB / Completed sets + Bodyweight row */}
       <div className="flex items-center justify-between">
-        {/* PB display — hidden when sets are logged */}
+        {/* Left: PB or completed sets */}
         <div className="flex-1 min-w-0">
-          {!hasCompletedSets && hasPB && (
-            <span className="text-[11px] opacity-40 truncate block">{pbLabel}</span>
-          )}
+          {hasCompletedSets ? (
+            <ExerciseSetDisplay
+              sets={exerciseLog!.sets}
+              isBodyweight={exercise.isBodyweight}
+              pbSetNumbers={pbSetNumbers}
+            />
+          ) : hasPB ? (
+            <span className="text-[11px] opacity-60 truncate block">{pbLabel}</span>
+          ) : null}
         </div>
 
         {/* Bodyweight toggle */}
@@ -207,7 +213,7 @@ export function ExerciseCard({
           onClick={async () => { await updateExercise(exercise.id, { isBodyweight: !exercise.isBodyweight }); await loadCategories(); }}
           className="flex items-center gap-1.5 shrink-0"
         >
-          <span className="text-[11px] opacity-50">Kroppsvikt</span>
+          <span className="text-[11px] opacity-60">Kroppsvikt</span>
           <div
             className={`w-5 h-5 rounded-[4px] flex items-center justify-center ${
               exercise.isBodyweight
@@ -221,15 +227,6 @@ export function ExerciseCard({
           </div>
         </button>
       </div>
-
-      {/* Completed sets */}
-      {exerciseLog && (
-        <ExerciseSetDisplay
-          sets={exerciseLog.sets}
-          isBodyweight={exercise.isBodyweight}
-          pbSetNumbers={pbSetNumbers}
-        />
-      )}
     </div>
   );
 }
