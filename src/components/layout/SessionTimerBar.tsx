@@ -134,8 +134,8 @@ export function SessionTimerBar() {
               {formatTime(elapsed)}
             </span>
             {restElapsed > 0 && (
-              <span className="text-[12px] uppercase tracking-wider text-black/60 mt-1">
-                VILA {formatTime(restElapsed)}
+              <span className="bg-black text-white text-[12px] uppercase tracking-wider mt-1 px-3 py-1 rounded-full">
+                VILA {String(Math.floor(restElapsed / 60000)).padStart(2, "0")}:{String(Math.floor((restElapsed % 60000) / 1000)).padStart(2, "0")}
               </span>
             )}
           </div>
