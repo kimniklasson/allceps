@@ -128,7 +128,7 @@ export function SessionTimerBar() {
           {/* Timer info */}
           <div className="flex-1 flex flex-col gap-2 items-center">
             <span className="font-bold text-[12px] uppercase tracking-wider text-black">
-              TIMER
+              TOTAL TID
             </span>
             <span className="text-[31px] leading-[18px] text-black font-normal">
               {formatTime(elapsed)}
