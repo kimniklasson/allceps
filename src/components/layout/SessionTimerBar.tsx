@@ -145,7 +145,7 @@ export function SessionTimerBar() {
             onClick={handleFinish}
             className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shrink-0 pointer-events-auto"
           >
-            <IconCheck size={16} />
+            <IconCheck size={20} />
           </button>
         </div>
       </div>
