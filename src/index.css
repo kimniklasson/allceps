@@ -186,6 +186,30 @@ textarea::placeholder {
   font-variation-settings: "wght" 700, "GRAD" 0;
 }
 
+/* Shared "For future you." transition */
+.ffy-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ffy-container[role="button"] {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ffy-text {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top center;
+}
+
 button {
   transition: transform 0.08s ease;
 }

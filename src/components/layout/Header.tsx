@@ -5,14 +5,6 @@ import { IconArrowLeft, IconPlus } from "../ui/icons";
 // Top-level routes that live in the bottom nav — no back arrow here
 const TOP_LEVEL = ["/", "/profile", "/history", "/stats", "/login", "/signup"];
 
-function Logo() {
-  return (
-    <svg width="48" height="16" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 0V16H4V0H6ZM10 0V7H38V0H40V16H38V9H10V16H8V0H10ZM44 0V16H42V0H44ZM2 4V12H0V4H2ZM48 4V12H46V4H48Z" fill="currentColor"/>
-    </svg>
-  );
-}
-
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,10 +32,8 @@ export function Header() {
             </IconButton>
           </div>
 
-          {/* Center logo — tap to go home */}
-          <button onClick={() => navigate("/")} className="!transform-none" aria-label="Hem">
-            <Logo />
-          </button>
+          {/* Center — spacer for SharedForFutureYou */}
+          <div className="w-[120px]" aria-hidden="true" />
 
           {/* Right — "+" button on category pages */}
           <div className="flex-1 flex justify-end">

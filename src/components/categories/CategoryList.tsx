@@ -5,7 +5,6 @@ import { useSessionStore } from "../../stores/useSessionStore";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { CategoryListItem } from "./CategoryListItem";
 import { CreateCategoryInput } from "./CreateCategoryInput";
-import { ForFutureYou } from "../ui/ForFutureYou";
 import { useDragSort } from "../../hooks/useDragSort";
 import { useAuth } from "../../auth/useAuth";
 
@@ -90,9 +89,8 @@ export function CategoryList() {
 
   return (
     <div className="flex flex-col gap-10 items-center">
-      <div className="mb-6">
-        <ForFutureYou />
-      </div>
+      {/* Spacer for the fixed-position SharedForFutureYou hero text */}
+      <div style={{ height: 220 }} />
 
       <div className="w-full flex flex-col gap-2">
         <CreateCategoryInput onCreated={handleCategoryCreated} />
