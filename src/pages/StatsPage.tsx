@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useHistoryStore } from "../stores/useHistoryStore";
 import { useCategoryStore } from "../stores/useCategoryStore";
+import { useSettingsStore } from "../stores/useSettingsStore";
 import { StatsPersonalRecords } from "../components/stats/StatsPersonalRecords";
 import { StatsStreaks } from "../components/stats/StatsStreaks";
 import { StatsSessionOverview } from "../components/stats/StatsSessionOverview";
@@ -10,6 +11,7 @@ import * as stats from "../utils/statistics";
 export function StatsPage() {
   const { sessions, loadSessions } = useHistoryStore();
   const { categories, loadCategories } = useCategoryStore();
+  const { userWeight, userAge, userSex } = useSettingsStore();
 
   useEffect(() => {
     loadSessions();
@@ -18,7 +20,10 @@ export function StatsPage() {
 
   const prs = useMemo(() => stats.computeExercisePRs(sessions), [sessions]);
   const streaks = useMemo(() => stats.computeStreaks(sessions), [sessions]);
-  const sessionStats = useMemo(() => stats.computeSessionStats(sessions), [sessions]);
+  const sessionStats = useMemo(
+    () => stats.computeSessionStats(sessions, userWeight, userAge, userSex),
+    [sessions, userWeight, userAge, userSex]
+  );
 
   const allExercises = useMemo(() => {
     return categories.flatMap((c) => c.exercises.map((e) => ({ id: e.id, name: e.name })));

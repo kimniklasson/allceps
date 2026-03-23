@@ -1,4 +1,5 @@
 import type { SessionStats } from "../../utils/statistics";
+import { useSettingsStore } from "../../stores/useSettingsStore";
 
 interface Props {
   stats: SessionStats;
@@ -18,11 +19,26 @@ function formatTotalTime(ms: number): string {
   return formatMs(ms);
 }
 
+function formatRestTime(ms: number): string {
+  if (ms <= 0) return "–";
+  const mins = Math.floor(ms / 60000);
+  const secs = Math.floor((ms % 60000) / 1000);
+  return `${mins}:${String(secs).padStart(2, "0")}`;
+}
+
 export function StatsSessionOverview({ stats }: Props) {
-  const cards = [
+  const { showCalories } = useSettingsStore();
+
+  const cards: { value: string; label: string }[] = [
     { value: formatMs(stats.avgDurationMs), label: "Snittlängd" },
     { value: formatTotalTime(stats.totalTrainingTimeMs), label: "Total träningstid" },
+    { value: stats.avgIntensityScore > 0 ? `${stats.avgIntensityScore}/100` : "–", label: "Snitt intensitet" },
+    { value: formatRestTime(stats.avgRestTimeMs), label: "Snitt vila" },
   ];
+
+  if (showCalories && stats.avgCalories > 0) {
+    cards.push({ value: `${stats.avgCalories} kcal`, label: "Snitt kalorier" });
+  }
 
   return (
     <div className="flex flex-col gap-4">

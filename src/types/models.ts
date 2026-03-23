@@ -22,7 +22,13 @@ export interface WorkoutSet {
   setNumber: number;
   reps: number;
   weight: number;
+  startedAt?: string;
   completedAt: string;
+}
+
+export interface ActiveSetInfo {
+  exerciseId: string;
+  startedAt: string;
 }
 
 export interface ExerciseLog {

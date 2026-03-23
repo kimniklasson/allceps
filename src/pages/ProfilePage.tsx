@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { IconLogout, IconTrash } from "../components/ui/icons";
 import { useAuth } from "../auth/useAuth";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
-import { useSettingsStore, type Appearance } from "../stores/useSettingsStore";
+import { useSettingsStore, type Appearance, type Sex } from "../stores/useSettingsStore";
+import { IconCheck } from "../components/ui/icons";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
@@ -17,16 +18,20 @@ function getProviderLabel(user: ReturnType<typeof useAuth>["user"]): string {
 export function ProfilePage() {
   const { user, displayName, updateName, signOut, deleteAccount } = useAuth();
   const navigate = useNavigate();
-  const { appearance, setAppearance, userWeight, setUserWeight } = useSettingsStore();
+  const { appearance, setAppearance, userWeight, setUserWeight, userAge, setUserAge, userSex, setUserSex, showCalories, setShowCalories } = useSettingsStore();
 
   const [name, setName] = useState(displayName);
   const [nameError, setNameError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [weightInput, setWeightInput] = useState(userWeight > 0 ? String(userWeight) : "");
   const [savingWeight, setSavingWeight] = useState(false);
+  const [ageInput, setAgeInput] = useState(userAge > 0 ? String(userAge) : "");
+  const [savingAge, setSavingAge] = useState(false);
 
   const weightValue = parseFloat(weightInput) || 0;
   const weightChanged = weightValue !== userWeight;
+  const ageValue = parseInt(ageInput) || 0;
+  const ageChanged = ageValue !== userAge;
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -61,6 +66,13 @@ export function ProfilePage() {
     setTimeout(() => setSavingWeight(false), 300);
   };
 
+  const handleAgeSave = () => {
+    if (!ageChanged) return;
+    setSavingAge(true);
+    setUserAge(ageValue);
+    setTimeout(() => setSavingAge(false), 300);
+  };
+
   const handleConfirmSignOut = async () => {
     setShowLogoutConfirm(false);
     await signOut();
@@ -82,6 +94,11 @@ export function ProfilePage() {
     { value: "ljus", label: "Ljus" },
     { value: "mörkt", label: "Mörkt" },
     { value: "auto", label: "Auto" },
+  ];
+
+  const sexOptions: { value: Sex; label: string }[] = [
+    { value: "man", label: "Man" },
+    { value: "kvinna", label: "Kvinna" },
   ];
 
   return (
@@ -209,6 +226,78 @@ export function ProfilePage() {
               ))}
             </div>
           </div>
+
+          {/* Age field */}
+          <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
+            <div className="flex-1 flex items-center gap-1">
+              <span className="text-[15px] mr-2">Ålder</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={ageInput}
+                onChange={(e) => setAgeInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleAgeSave(); }}
+                placeholder="0"
+                className="w-16 text-[15px] bg-transparent outline-none text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="text-[15px] opacity-50">år</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleAgeSave}
+              disabled={!ageChanged || savingAge}
+              className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center ${
+                ageChanged && !savingAge
+                  ? "bg-black dark:bg-white text-white dark:text-black"
+                  : "bg-black/5 dark:bg-white/10 text-black/30 dark:text-white/30"
+              }`}
+            >
+              {savingAge
+                ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                : "Spara"
+              }
+            </button>
+          </div>
+
+          {/* Sex selector */}
+          <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4">
+            <span className="flex-1 text-[15px]">Kön</span>
+            <div className="flex gap-1">
+              {sexOptions.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setUserSex(userSex === value ? null : value)}
+                  className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors ${
+                    userSex === value
+                      ? "bg-black dark:bg-white text-white dark:text-black"
+                      : "bg-black/5 dark:bg-white/10 text-black/40 dark:text-white/40"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Show calories toggle */}
+          <button
+            onClick={() => setShowCalories(!showCalories)}
+            className="w-full border border-black/10 dark:border-white/20 rounded-card flex items-center px-6 py-4"
+          >
+            <span className="flex-1 text-left text-[15px]">Visa kalorier</span>
+            <div
+              className={`w-5 h-5 rounded-[4px] flex items-center justify-center ${
+                showCalories
+                  ? "bg-black dark:bg-white"
+                  : "border-2 border-black/20 dark:border-white/20"
+              }`}
+            >
+              {showCalories && (
+                <IconCheck size={12} className="text-white dark:text-black" />
+              )}
+            </div>
+          </button>
 
         </div>
       </div>

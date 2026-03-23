@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type {
   WorkoutSession,
   ExerciseAdjustment,
+  ActiveSetInfo,
 } from "../types/models";
 import { getSessionRepository } from "../data/repositories";
 import { useHistoryStore } from "./useHistoryStore";
@@ -12,6 +13,10 @@ interface SessionState {
   activeSession: WorkoutSession | null;
   /** Per-exercise temporary reps/weight adjustments */
   adjustments: ExerciseAdjustment[];
+  /** Which exercise currently has a set in progress (between START and LOG) */
+  activeSet: ActiveSetInfo | null;
+  /** Timestamp of most recently completed set (drives rest timer) */
+  lastCompletedSetAt: string | null;
 
   // Timer state (persisted for refresh survival)
   isRunning: boolean;
@@ -22,6 +27,7 @@ interface SessionState {
 
   // Actions
   startSession: (categoryId: string, categoryName: string) => void;
+  startSet: (exerciseId: string) => void;
   logSet: (
     exerciseId: string,
     exerciseName: string,
@@ -47,6 +53,8 @@ interface SessionState {
 const initialState = {
   activeSession: null,
   adjustments: [],
+  activeSet: null as ActiveSetInfo | null,
+  lastCompletedSetAt: null as string | null,
   isRunning: false,
   isPaused: false,
   startTimestamp: null,
@@ -82,9 +90,45 @@ export const useSessionStore = create<SessionState>()(
         });
       },
 
+      startSet: (exerciseId) => {
+        const { activeSet, activeSession, adjustments } = get();
+
+        // If another exercise has an active set, auto-log it if we have exercise info
+        if (activeSet && activeSet.exerciseId !== exerciseId && activeSession) {
+          const log = activeSession.exerciseLogs.find(
+            (l) => l.exerciseId === activeSet.exerciseId
+          );
+          // Only auto-log if we know the exercise name (i.e., at least one set was already logged)
+          if (log) {
+            const adj = adjustments.find((a) => a.exerciseId === activeSet.exerciseId);
+            if (adj) {
+              get().logSet(
+                activeSet.exerciseId,
+                log.exerciseName,
+                log.isBodyweight,
+                adj.currentReps,
+                adj.currentWeight
+              );
+            }
+          }
+          // Otherwise, just discard the abandoned active set
+        }
+
+        set({
+          activeSet: { exerciseId, startedAt: new Date().toISOString() },
+          lastCompletedSetAt: null,
+        });
+      },
+
       logSet: (exerciseId, exerciseName, isBodyweight, reps, weight) => {
-        const { activeSession } = get();
+        const { activeSession, activeSet } = get();
         if (!activeSession) return;
+
+        const now = new Date().toISOString();
+        const startedAt =
+          activeSet?.exerciseId === exerciseId
+            ? activeSet.startedAt
+            : now;
 
         const existingIdx = activeSession.exerciseLogs.findIndex(
           (l) => l.exerciseId === exerciseId
@@ -97,12 +141,12 @@ export const useSessionStore = create<SessionState>()(
               : 1,
           reps,
           weight,
-          completedAt: new Date().toISOString(),
+          startedAt,
+          completedAt: now,
         };
 
         let updatedLogs;
         if (existingIdx >= 0) {
-          // Clone the log immutably — no mutation of existing state
           updatedLogs = activeSession.exerciseLogs.map((log, i) =>
             i === existingIdx
               ? { ...log, sets: [...log.sets, newSet] }
@@ -117,7 +161,11 @@ export const useSessionStore = create<SessionState>()(
 
         const updatedSession = { ...activeSession, exerciseLogs: updatedLogs };
         getSessionRepository().save(updatedSession);
-        set({ activeSession: updatedSession });
+        set({
+          activeSession: updatedSession,
+          activeSet: null,
+          lastCompletedSetAt: now,
+        });
       },
 
       togglePause: () => {
@@ -152,9 +200,15 @@ export const useSessionStore = create<SessionState>()(
           pausedDuration: totalPaused,
           status: "completed",
         };
-        await getSessionRepository().save(finishedSession);
 
+        // Reset UI state immediately (optimistic) so the timer bar disappears
         set({ ...initialState });
+
+        try {
+          await getSessionRepository().save(finishedSession);
+        } catch (e) {
+          console.error("Failed to save finished session:", e);
+        }
 
         await useHistoryStore.getState().loadSessions();
 

@@ -1,5 +1,6 @@
 import type { WorkoutSession } from "../types/models";
-import { calculateWorkoutTotals } from "./calculations";
+import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "./calculations";
+import type { Sex } from "../stores/useSettingsStore";
 import { computeHistoricalPBs } from "./personalBest";
 
 // ── Types ──────────────────────────────────────────────────
@@ -48,6 +49,9 @@ export interface SessionStats {
   avgPauseDurationMs: number;
   totalTrainingTimeMs: number;
   totalKgAllTime: number;
+  avgIntensityScore: number;
+  avgRestTimeMs: number;
+  avgCalories: number;
 }
 
 export interface ExerciseInsight {
@@ -435,19 +439,40 @@ function mondayOfWeek(weekKey: string): Date {
 
 // ── Session Stats ──────────────────────────────────────────
 
-export function computeSessionStats(sessions: WorkoutSession[]): SessionStats {
+export function computeSessionStats(
+  sessions: WorkoutSession[],
+  userWeight: number = 0,
+  userAge: number = 0,
+  userSex: Sex | null = null
+): SessionStats {
   if (sessions.length === 0) {
-    return { avgDurationMs: 0, avgPauseDurationMs: 0, totalTrainingTimeMs: 0, totalKgAllTime: 0 };
+    return { avgDurationMs: 0, avgPauseDurationMs: 0, totalTrainingTimeMs: 0, totalKgAllTime: 0, avgIntensityScore: 0, avgRestTimeMs: 0, avgCalories: 0 };
   }
 
   let totalDuration = 0;
   let totalPause = 0;
   let totalKg = 0;
+  let totalIntensity = 0;
+  let totalRestMs = 0;
+  let restCount = 0;
+  let totalCalories = 0;
 
   for (const s of sessions) {
     totalDuration += getSessionDurationMs(s);
     totalPause += s.pausedDuration || 0;
-    totalKg += calculateWorkoutTotals(s).totalWeight;
+    totalKg += calculateWorkoutTotals(s, userWeight).totalWeight;
+
+    const intensity = calculateIntensity(s, userWeight);
+    totalIntensity += intensity.score;
+
+    const rest = calculateRestTimes(s);
+    const allRests = [...rest.interSetRests, ...rest.interExerciseRests];
+    if (allRests.length > 0) {
+      totalRestMs += allRests.reduce((a, b) => a + b, 0) / allRests.length;
+      restCount++;
+    }
+
+    totalCalories += calculateCalories(s, userWeight, userAge, userSex, intensity.score);
   }
 
   return {
@@ -455,6 +480,9 @@ export function computeSessionStats(sessions: WorkoutSession[]): SessionStats {
     avgPauseDurationMs: totalPause / sessions.length,
     totalTrainingTimeMs: totalDuration,
     totalKgAllTime: totalKg,
+    avgIntensityScore: Math.round(totalIntensity / sessions.length),
+    avgRestTimeMs: restCount > 0 ? totalRestMs / restCount : 0,
+    avgCalories: Math.round(totalCalories / sessions.length),
   };
 }
 

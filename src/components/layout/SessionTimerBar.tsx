@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { useTimer } from "../../hooks/useTimer";
+import { useRestTimer } from "../../hooks/useRestTimer";
 import { formatTime, formatDuration } from "../../utils/formatTime";
-import { calculateWorkoutTotals } from "../../utils/calculations";
+import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "../../utils/calculations";
+import { useSettingsStore } from "../../stores/useSettingsStore";
 import { buildPBRecord, isSetPB } from "../../utils/personalBest";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { IconClose, IconCheck } from "../ui/icons";
@@ -21,10 +23,12 @@ interface PBSet {
 export function SessionTimerBar() {
   const { activeSession, finishSession, cancelSession } = useSessionStore();
   const elapsed = useTimer();
+  const restElapsed = useRestTimer();
   const navigate = useNavigate();
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [finishedSession, setFinishedSession] = useState<WorkoutSession | null>(null);
   const allSessions = useHistoryStore((s) => s.sessions);
+  const { userWeight, userAge, userSex, showCalories } = useSettingsStore();
 
   // Lock body scroll when summary modal is open
   useEffect(() => {
@@ -89,7 +93,25 @@ export function SessionTimerBar() {
   const summaryDuration = finishedSession?.finishedAt
     ? formatDuration(finishedSession.startedAt, finishedSession.finishedAt, finishedSession.pausedDuration)
     : "–";
-  const totals = finishedSession ? calculateWorkoutTotals(finishedSession) : null;
+  const totals = finishedSession ? calculateWorkoutTotals(finishedSession, userWeight) : null;
+
+  const intensity = finishedSession ? calculateIntensity(finishedSession, userWeight) : null;
+  const restData = finishedSession ? calculateRestTimes(finishedSession) : null;
+  const calories = finishedSession
+    ? calculateCalories(finishedSession, userWeight, userAge, userSex, intensity?.score)
+    : 0;
+
+  const avgRestSec = restData
+    ? Math.round(
+        (restData.avgInterSetRestMs + restData.avgInterExerciseRestMs) /
+          (restData.interSetRests.length + restData.interExerciseRests.length > 0 ? 2000 : 1)
+      )
+    : 0;
+  const avgRestDisplay = restData && (restData.interSetRests.length > 0 || restData.interExerciseRests.length > 0)
+    ? `${Math.floor(restData.avgInterSetRestMs / 60000)}:${String(
+        Math.floor((restData.avgInterSetRestMs % 60000) / 1000)
+      ).padStart(2, "0")}`
+    : "–";
 
   return (
     <>
@@ -117,6 +139,11 @@ export function SessionTimerBar() {
             <span className="text-[31px] leading-[18px] text-black font-normal">
               {formatTime(elapsed)}
             </span>
+            {restElapsed > 0 && (
+              <span className="text-[12px] uppercase tracking-wider text-black/60 mt-1">
+                VILA {formatTime(restElapsed)}
+              </span>
+            )}
           </div>
 
           {/* Finish */}
@@ -167,6 +194,26 @@ export function SessionTimerBar() {
               <span className="text-[13px] opacity-50">Reps</span>
               <span className="font-bold text-[15px]">{totals.totalReps} rep</span>
             </div>
+          </div>
+
+          {/* Intensity + rest + calories row */}
+          <div className="flex justify-around text-center">
+            {intensity && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[13px] opacity-50">Intensitet</span>
+                <span className="font-bold text-[15px]">{intensity.score}/100</span>
+              </div>
+            )}
+            <div className="flex flex-col gap-1">
+              <span className="text-[13px] opacity-50">Snitt vila</span>
+              <span className="font-bold text-[15px]">{avgRestDisplay}</span>
+            </div>
+            {showCalories && calories > 0 && (
+              <div className="flex flex-col gap-1">
+                <span className="text-[13px] opacity-50">Kalorier</span>
+                <span className="font-bold text-[15px]">{calories} kcal</span>
+              </div>
+            )}
           </div>
 
           {/* PB sets */}

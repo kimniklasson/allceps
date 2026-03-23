@@ -46,10 +46,12 @@ export function ExerciseCard({
   const {
     activeSession,
     startSession,
+    startSet,
     logSet,
     getAdjustment,
     setAdjustment,
     getExerciseSetCount,
+    activeSet,
   } = useSessionStore();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -66,6 +68,8 @@ export function ExerciseCard({
   const setCount = getExerciseSetCount(exercise.id);
   const isSessionActive = activeSession !== null;
   const { record, checkIfPB, pbSetNumbers } = usePBTracker(exercise.id);
+
+  const isSetInProgress = activeSet?.exerciseId === exercise.id;
 
   const hasPB = record.maxWeight > 0 || record.maxRepsBodyweight > 0;
   const pbLabel = exercise.isBodyweight
@@ -86,19 +90,26 @@ export function ExerciseCard({
       alert("Du har redan ett aktivt pass. Avsluta det först innan du startar ett nytt.");
       return;
     }
-    const willBePB = checkIfPB(adjustment.currentReps, adjustment.currentWeight);
-    if (!isSessionActive) {
-      startSession(categoryId, categoryName);
-    }
-    logSet(
-      exercise.id,
-      exercise.name,
-      exercise.isBodyweight,
-      adjustment.currentReps,
-      adjustment.currentWeight
-    );
-    if (willBePB) {
-      firePBConfetti();
+
+    if (isSetInProgress) {
+      // TAP 2: Log the set
+      const willBePB = checkIfPB(adjustment.currentReps, adjustment.currentWeight);
+      logSet(
+        exercise.id,
+        exercise.name,
+        exercise.isBodyweight,
+        adjustment.currentReps,
+        adjustment.currentWeight
+      );
+      if (willBePB) {
+        firePBConfetti();
+      }
+    } else {
+      // TAP 1: Start the set
+      if (!isSessionActive) {
+        startSession(categoryId, categoryName);
+      }
+      startSet(exercise.id);
     }
   };
 
@@ -206,9 +217,13 @@ export function ExerciseCard({
           <div className="flex items-center shrink-0">
             <button
               onClick={handleSetPress}
-              className="bg-black dark:bg-white text-white dark:text-black px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider shrink-0"
+              className={`px-3 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider shrink-0 transition-colors ${
+                isSetInProgress
+                  ? "bg-accent text-black"
+                  : "bg-black dark:bg-white text-white dark:text-black"
+              }`}
             >
-              SET {setCount + 1}
+              {isSetInProgress ? "LOGGA" : `SET ${setCount + 1}`}
             </button>
           </div>
         </div>

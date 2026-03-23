@@ -30,6 +30,7 @@ interface DbWorkoutSet {
   reps: number;
   weight: number;
   completed_at: string;
+  started_at: string | null;
 }
 
 function mapSet(db: DbWorkoutSet): WorkoutSet {
@@ -38,6 +39,7 @@ function mapSet(db: DbWorkoutSet): WorkoutSet {
     reps: db.reps,
     weight: db.weight,
     completedAt: db.completed_at,
+    ...(db.started_at ? { startedAt: db.started_at } : {}),
   };
 }
 
@@ -103,7 +105,7 @@ async function deduplicateSession(sessionId: string): Promise<void> {
     const duplicateLogs = group.slice(1);
 
     // Collect all sets across all logs, deduplicate by set_number (keep first)
-    const allSets: Array<{ set_number: number; reps: number; weight: number; completed_at: string }> = [];
+    const allSets: Array<{ set_number: number; reps: number; weight: number; completed_at: string; started_at: string | null }> = [];
     const seenSetNumbers = new Set<number>();
 
     for (const log of group) {
@@ -116,6 +118,7 @@ async function deduplicateSession(sessionId: string): Promise<void> {
             reps: s.reps,
             weight: s.weight,
             completed_at: s.completed_at,
+            started_at: s.started_at ?? null,
           });
         }
       }
@@ -150,6 +153,7 @@ async function deduplicateSession(sessionId: string): Promise<void> {
         reps: s.reps,
         weight: s.weight,
         completed_at: s.completed_at,
+        started_at: s.started_at,
       }));
       await supabase.from("workout_sets").insert(setsToInsert);
     }
@@ -267,6 +271,7 @@ export const supabaseSessionRepository: SessionRepository = {
             reps: s.reps,
             weight: s.weight,
             completed_at: s.completedAt,
+            started_at: s.startedAt ?? null,
           }));
 
           const { error: setsError } = await supabase

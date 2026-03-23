@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { formatShortDate } from "../../utils/formatDate";
 import { formatDuration } from "../../utils/formatTime";
-import { calculateWorkoutTotals } from "../../utils/calculations";
+import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "../../utils/calculations";
 import { computeHistoricalPBTypes } from "../../utils/personalBest";
+import { useSettingsStore } from "../../stores/useSettingsStore";
 import { IconTrash } from "../ui/icons";
 import type { WorkoutSession } from "../../types/models";
 
@@ -111,6 +112,7 @@ export function WorkoutDetailView() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { loadSessions, updateSession } = useHistoryStore();
   const allSessions = useHistoryStore((state) => state.sessions);
+  const { userWeight, userAge, userSex, showCalories } = useSettingsStore();
   const session = allSessions.find((s) => s.id === sessionId);
 
   useEffect(() => {
@@ -135,7 +137,10 @@ export function WorkoutDetailView() {
     ? formatDuration(session.startedAt, session.finishedAt, session.pausedDuration)
     : "–";
 
-  const totals = calculateWorkoutTotals(session);
+  const totals = calculateWorkoutTotals(session, userWeight);
+  const intensity = calculateIntensity(session, userWeight);
+  const restData = calculateRestTimes(session);
+  const calories = calculateCalories(session, userWeight, userAge, userSex, intensity.score);
 
   const save = (updated: WorkoutSession) => updateSession(updated);
 
@@ -225,51 +230,72 @@ export function WorkoutDetailView() {
           <div className="flex flex-col">
             {log.sets.map((set, setIdx) => {
               const pbType = pbMap.get(log.exerciseId)?.get(set.completedAt);
+
+              // Calculate rest time from previous set
+              let restLabel: string | null = null;
+              if (setIdx > 0 && set.startedAt) {
+                const prevSet = log.sets[setIdx - 1];
+                const restMs =
+                  new Date(set.startedAt).getTime() -
+                  new Date(prevSet.completedAt).getTime();
+                if (restMs > 0) {
+                  const mins = Math.floor(restMs / 60000);
+                  const secs = Math.floor((restMs % 60000) / 1000);
+                  restLabel = `${mins}:${String(secs).padStart(2, "0")}`;
+                }
+              }
+
               return (
-              <div
-                key={set.setNumber}
-                className="flex items-center py-3 text-[15px] leading-[18px] border-b border-black/10 dark:border-white/20 last:border-0"
-              >
-                <span className="flex-1 font-bold">S{set.setNumber}</span>
-
-                <span className="flex-1 text-right">
-                  <span className={pbType === "reps" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
-                    <InlineEdit
-                      displayValue={String(set.reps)}
-                      inputValue={String(set.reps)}
-                      onSave={(v) => updateSet(logIdx, setIdx, "reps", v)}
-                      type="number"
-                      inputMode="numeric"
-                      step="1"
-                      inputClassName="w-10 text-right"
-                    />{" rep"}
-                  </span>
-                </span>
-
-                <span className="flex-1 text-right">
-                  <span className={pbType === "weight" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
-                    <InlineEdit
-                      displayValue={
-                        log.isBodyweight && set.weight > 0
-                          ? `+${set.weight}`
-                          : String(set.weight)
-                      }
-                      inputValue={String(set.weight)}
-                      onSave={(v) => updateSet(logIdx, setIdx, "weight", v)}
-                      type="number"
-                      inputMode="decimal"
-                      step="0.5"
-                      inputClassName="w-12 text-right"
-                    />{" kg"}
-                  </span>
-                </span>
-
-                <button
-                  onClick={() => deleteSet(logIdx, setIdx)}
-                  className="w-8 flex items-center justify-end opacity-30 hover:opacity-100 active:opacity-100 transition-opacity"
+              <div key={set.setNumber}>
+                {restLabel && (
+                  <div className="text-center text-[11px] opacity-30 py-0.5">
+                    Vila: {restLabel}
+                  </div>
+                )}
+                <div
+                  className="flex items-center py-3 text-[15px] leading-[18px] border-b border-black/10 dark:border-white/20 last:border-0"
                 >
-                  <IconTrash size={14} />
-                </button>
+                  <span className="flex-1 font-bold">S{set.setNumber}</span>
+
+                  <span className="flex-1 text-right">
+                    <span className={pbType === "reps" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
+                      <InlineEdit
+                        displayValue={String(set.reps)}
+                        inputValue={String(set.reps)}
+                        onSave={(v) => updateSet(logIdx, setIdx, "reps", v)}
+                        type="number"
+                        inputMode="numeric"
+                        step="1"
+                        inputClassName="w-10 text-right"
+                      />{" rep"}
+                    </span>
+                  </span>
+
+                  <span className="flex-1 text-right">
+                    <span className={pbType === "weight" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
+                      <InlineEdit
+                        displayValue={
+                          log.isBodyweight && set.weight > 0
+                            ? `+${set.weight}`
+                            : String(set.weight)
+                        }
+                        inputValue={String(set.weight)}
+                        onSave={(v) => updateSet(logIdx, setIdx, "weight", v)}
+                        type="number"
+                        inputMode="decimal"
+                        step="0.5"
+                        inputClassName="w-12 text-right"
+                      />{" kg"}
+                    </span>
+                  </span>
+
+                  <button
+                    onClick={() => deleteSet(logIdx, setIdx)}
+                    className="w-8 flex items-center justify-end opacity-30 hover:opacity-100 active:opacity-100 transition-opacity"
+                  >
+                    <IconTrash size={14} />
+                  </button>
+                </div>
               </div>
               );
             })}
@@ -283,6 +309,41 @@ export function WorkoutDetailView() {
           <span className="w-[83px] font-bold text-[15px]">{totals.totalSets} set</span>
           <span className="w-[83px] text-[15px]">{totals.totalReps} rep</span>
           <span className="w-[83px] text-[15px]">{totals.totalWeight} kg</span>
+        </div>
+      </div>
+
+      {/* Intensity card */}
+      <div className="bg-card rounded-card p-4 flex flex-col gap-3">
+        <div className="flex items-baseline gap-2 px-2">
+          <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">Intensitet</span>
+          <span className="text-[24px] font-bold">{intensity.score}</span>
+          <span className="text-[15px] opacity-50">/ 100</span>
+        </div>
+        <div className="grid grid-cols-2 gap-2 px-2">
+          <div className="flex flex-col">
+            <span className="text-[11px] uppercase tracking-wider opacity-40">Snitt vila</span>
+            <span className="text-[15px]">
+              {restData.interSetRests.length > 0
+                ? `${Math.floor(restData.avgInterSetRestMs / 60000)}:${String(
+                    Math.floor((restData.avgInterSetRestMs % 60000) / 1000)
+                  ).padStart(2, "0")}`
+                : "–"}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] uppercase tracking-wider opacity-40">Volym/min</span>
+            <span className="text-[15px]">{intensity.volumePerMinute} kg</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] uppercase tracking-wider opacity-40">Set/min</span>
+            <span className="text-[15px]">{intensity.setDensity}</span>
+          </div>
+          {showCalories && calories > 0 && (
+            <div className="flex flex-col">
+              <span className="text-[11px] uppercase tracking-wider opacity-40">Kalorier</span>
+              <span className="text-[15px]">{calories} kcal</span>
+            </div>
+          )}
         </div>
       </div>
 

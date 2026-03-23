@@ -54,7 +54,8 @@ CREATE TABLE workout_sets (
   set_number      INTEGER NOT NULL,
   reps            INTEGER NOT NULL,
   weight          REAL NOT NULL DEFAULT 0,
-  completed_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+  completed_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  started_at      TIMESTAMPTZ
 );
 
 -- ================================================
