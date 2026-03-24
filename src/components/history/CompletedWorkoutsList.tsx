@@ -20,7 +20,7 @@ export function CompletedWorkoutsList() {
       <div className="flex flex-col items-center text-center">
         <span className="text-[20px] font-bold leading-[1.22]">Historik</span>
         <span className="text-[20px] leading-[1.22] opacity-50">
-          Dina genomförda träningspass
+          Genomförda träningspass
         </span>
       </div>
 
@@ -36,7 +36,7 @@ export function CompletedWorkoutsList() {
       {/* Month groups */}
       {groups.map((group) => (
         <div key={group.label} className="flex flex-col gap-2">
-          <span className="font-bold text-[12px] uppercase tracking-wider">
+          <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
             {group.label}
           </span>
           <div className="flex flex-col gap-2">

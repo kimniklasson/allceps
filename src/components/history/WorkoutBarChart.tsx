@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import type { WorkoutSession } from "../../types/models";
 
 const MONTH_LABELS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
-const CHART_HEIGHT = 88; // px
+const CHART_HEIGHT = 112; // px
 
 interface Props {
   sessions: WorkoutSession[];
