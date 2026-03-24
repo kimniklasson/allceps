@@ -90,7 +90,7 @@ export function CategoryList() {
   return (
     <div className="flex flex-col gap-10 items-center">
       {/* Spacer for the fixed-position SharedForFutureYou hero text */}
-      <div style={{ height: 204 }} />
+      <div style={{ height: 188 }} />
 
       <div className="w-full flex flex-col gap-2">
         <CreateCategoryInput onCreated={handleCategoryCreated} />
