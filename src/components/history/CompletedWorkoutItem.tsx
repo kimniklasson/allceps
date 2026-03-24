@@ -25,11 +25,11 @@ export function CompletedWorkoutItem({ session, onDelete }: CompletedWorkoutItem
         className="bg-card rounded-card px-4 py-4 flex items-start gap-2 cursor-pointer animate-in"
         onClick={() => navigate(`/history/${session.id}`)}
       >
-        <div className="flex-1 flex flex-col gap-0.5">
-          <span className="font-bold text-[20px] leading-[24px]">
+        <div className="flex-1 flex flex-col min-w-0">
+          <span className="font-bold text-[15px] leading-[18px]">
             {formatShortDate(session.startedAt)}
           </span>
-          <span className="font-bold text-[15px] leading-[18px]">{session.categoryName}</span>
+          <span className="text-[15px] leading-[18px] opacity-60">{session.categoryName}</span>
         </div>
         <span className="text-[12px] opacity-50 uppercase tracking-wider shrink-0 pt-0.5">{duration}</span>
       </div>

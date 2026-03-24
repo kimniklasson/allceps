@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ExercisePR } from "../../utils/statistics";
-import { IconChevronRight } from "../ui/icons";
 
 interface Props {
   prs: ExercisePR[];
@@ -24,12 +23,12 @@ export function StatsPersonalRecords({ prs }: Props) {
           <button
             key={pr.exerciseId}
             onClick={() => navigate(`/stats/exercise/${pr.exerciseId}`)}
-            className="bg-card rounded-card p-4 flex items-center gap-3 w-full text-left animate-in"
+            className="bg-card rounded-card px-4 py-4 flex items-start gap-2 w-full text-left animate-in"
             style={{ animationDelay: `${(i + 3) * 0.04}s` }}
           >
             <div className="flex-1 min-w-0">
               <div className="font-bold text-[15px] leading-[18px]">{pr.exerciseName}</div>
-              <div className="text-[13px] opacity-50 mt-1">
+              <div className="text-[15px] leading-[18px] opacity-60">
                 {pr.isBodyweight ? (
                   <>
                     {pr.maxRepsBodyweight} reps
@@ -38,12 +37,15 @@ export function StatsPersonalRecords({ prs }: Props) {
                 ) : (
                   <>
                     {pr.maxWeight} kg · {pr.maxRepsAtMaxWeight} reps
-                    {pr.estimated1RM > 0 && ` · 1RM: ${pr.estimated1RM} kg`}
                   </>
                 )}
               </div>
             </div>
-            <IconChevronRight size={16} className="opacity-30 shrink-0" />
+            {!pr.isBodyweight && pr.estimated1RM > 0 && (
+              <span className="text-[12px] opacity-50 uppercase tracking-wider shrink-0 pt-0.5">
+                1RM: {pr.estimated1RM} kg
+              </span>
+            )}
           </button>
         ))}
       </div>

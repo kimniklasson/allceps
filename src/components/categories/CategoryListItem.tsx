@@ -68,20 +68,20 @@ export function CategoryListItem({
         >
           {/* Name + exercise count */}
           <div
-            className="flex-1 flex flex-col gap-0.5 cursor-pointer"
+            className="flex-1 flex flex-col min-w-0 cursor-pointer"
             onClick={() => !isDragging && navigate(`/category/${category.id}`)}
           >
-            <p className="font-bold text-[15px] leading-[16px]">
+            <p className="font-bold text-[15px] leading-[18px]">
               {category.name}
             </p>
-            <span className="text-[12px] opacity-60">
-              ({exerciseCount} {exerciseCount === 1 ? "övning" : "övningar"})
+            <span className="text-[15px] leading-[18px] opacity-60">
+              {exerciseCount} {exerciseCount === 1 ? "övning" : "övningar"}
             </span>
           </div>
 
           {/* Time since last session */}
           {lastSessionLabel && (
-            <span className="text-[12px] opacity-60 shrink-0 pt-0.5">
+            <span className="text-[12px] opacity-50 uppercase tracking-wider shrink-0 pt-0.5">
               {lastSessionLabel}
             </span>
           )}
