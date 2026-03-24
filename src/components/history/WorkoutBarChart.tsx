@@ -3,7 +3,7 @@ import type { WorkoutSession } from "../../types/models";
 
 const MONTH_LABELS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 const CHART_HEIGHT = 112; // px
-const BTN_WIDTH = 62; // px — fixed width so toggle never shifts layout
+const BTN_WIDTH = 66; // px — fixed width so toggle never shifts layout
 
 type View = "months" | "weeks";
 
@@ -132,7 +132,7 @@ export function WorkoutBarChart({ sessions }: Props) {
                   transition: "opacity 0.2s, color 0.2s",
                 }}
               >
-                {v === "months" ? "Månad" : "Vecka"}
+                {v === "months" ? "MÅNAD" : "VECKA"}
               </button>
             ))}
           </div>
