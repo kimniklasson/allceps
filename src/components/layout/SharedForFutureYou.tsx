@@ -92,15 +92,15 @@ export function SharedForFutureYou() {
     transition = "none";
   }
 
-  const isCollapsed = !isHome || scrollProgress >= 1;
+  const isScrolledCollapsed = isHome && scrollProgress >= 1;
 
   return (
     <div
       className="ffy-container"
       style={{ top, transition }}
-      onClick={isCollapsed ? () => navigate("/") : undefined}
-      role={isCollapsed ? "button" : undefined}
-      aria-label={isCollapsed ? "Hem" : undefined}
+      onClick={isScrolledCollapsed ? () => navigate("/") : undefined}
+      role={isScrolledCollapsed ? "button" : undefined}
+      aria-label={isScrolledCollapsed ? "Hem" : undefined}
     >
       <div
         ref={textRef}
