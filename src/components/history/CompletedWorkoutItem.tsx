@@ -22,7 +22,7 @@ export function CompletedWorkoutItem({ session, onDelete }: CompletedWorkoutItem
       confirmMessage="Är du säker på att du vill ta bort detta träningspass?"
     >
       <div
-        className="bg-card rounded-card px-4 py-4 flex items-start gap-2 cursor-pointer animate-in"
+        className="bg-card rounded-card px-6 py-6 flex items-start gap-2 cursor-pointer animate-in"
         onClick={() => navigate(`/history/${session.id}`)}
       >
         <div className="flex-1 flex flex-col min-w-0">

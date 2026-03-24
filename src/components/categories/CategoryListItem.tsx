@@ -60,7 +60,7 @@ export function CategoryListItem({
       >
         <div
           className={[
-            "bg-card rounded-card flex items-start gap-2 px-4 py-4",
+            "bg-card rounded-card flex items-start gap-2 px-6 py-6",
             hasActiveSession ? "border-2 border-accent" : "",
           ]
             .filter(Boolean)
