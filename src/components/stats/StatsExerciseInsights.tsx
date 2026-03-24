@@ -13,7 +13,7 @@ export function StatsExerciseInsights({ insights }: Props) {
   const totalSessions = insights.categoryBalance.reduce((sum, c) => sum + c.sessionCount, 0);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
         Övningsinsikter
       </span>

@@ -37,7 +37,7 @@ export function StatsPage() {
   const isEmpty = sessions.length === 0;
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       {/* Page header */}
       <div className="flex flex-col items-center text-center">
         <span className="text-[20px] font-bold leading-[1.22]">Statistik</span>

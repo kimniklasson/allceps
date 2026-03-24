@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { StreakInfo } from "../../utils/statistics";
 
 interface Props {
@@ -12,27 +13,50 @@ export function StatsStreaks({ streaks }: Props) {
     { value: streaks.favoriteDay, label: "Favoritdag", unit: "" },
   ];
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, scrollLeft: 0 });
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    drag.current = { active: true, startX: e.clientX, scrollLeft: scrollRef.current?.scrollLeft ?? 0 };
+  };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!drag.current.active) return;
+    if (scrollRef.current) scrollRef.current.scrollLeft = drag.current.scrollLeft - (e.clientX - drag.current.startX);
+  };
+  const onMouseUp = () => { drag.current.active = false; };
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
         Streak & kontinuitet
       </span>
 
       <div
-        className="flex overflow-x-auto gap-3 pb-1 scrollbar-none snap-x snap-mandatory"
-        style={{ marginLeft: -32, marginRight: -32 }}
+        ref={scrollRef}
+        className="flex overflow-x-auto gap-2 pb-1 scrollbar-none snap-x snap-mandatory"
+        style={{
+          marginLeft: -32,
+          marginRight: -32,
+          paddingLeft: 32,
+          paddingRight: 32,
+          touchAction: "pan-x",
+          overscrollBehavior: "x contain",
+          cursor: drag.current.active ? "grabbing" : "grab",
+        }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
       >
         {cards.map((card, i) => (
           <div
             key={card.label}
             className="bg-white rounded-card p-4 flex flex-col flex-none animate-in snap-start"
             style={{
-              width: "calc(min(100vw, 600px) / 3 - 8px)",
-              minWidth: "calc(min(100vw, 600px) / 3 - 8px)",
+              width: "calc(min(100vw, 600px) / 3 - 10px)",
+              minWidth: "calc(min(100vw, 600px) / 3 - 10px)",
               border: "1px solid rgba(0,0,0,0.1)",
               animationDelay: `${i * 0.04}s`,
-              marginLeft: i === 0 ? 32 : 0,
-              marginRight: i === cards.length - 1 ? 32 : 0,
             }}
           >
             <span className="text-[20px] font-bold">

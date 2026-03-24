@@ -12,7 +12,7 @@ export function StatsPersonalRecords({ prs }: Props) {
   const displayPrs = showAll ? prs : prs.slice(0, 5);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
         Personliga rekord
       </span>
