@@ -157,10 +157,10 @@ export function WorkoutBarChart({ sessions }: Props) {
                 className="relative flex-1 flex flex-col justify-end h-full cursor-pointer"
                 onPointerDown={(e) => {
                   e.stopPropagation();
-                  setTooltip(isSelected ? null : i);
+                  if (count > 0) setTooltip(isSelected ? null : i);
                 }}
               >
-                {isSelected && (
+                {isSelected && count > 0 && (
                   <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 z-10
                     bg-black dark:bg-white text-white dark:text-black
                     text-[11px] font-semibold px-[7px] py-[3px] rounded-lg whitespace-nowrap
@@ -175,8 +175,8 @@ export function WorkoutBarChart({ sessions }: Props) {
                     className="rounded-t-[3px] w-full transition-opacity duration-150"
                     style={{
                       height: `${heightPct}%`,
-                      background: isCurrent ? "#FFD900" : "rgba(128,128,128,0.55)",
-                      opacity: isSelected ? 0.75 : 1,
+                      background: "#FFD900",
+                      opacity: isSelected ? 0.6 : isCurrent ? 1 : 0.8,
                     }}
                   />
                 ) : (
