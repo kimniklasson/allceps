@@ -18,7 +18,7 @@ export function StatsStreaks({ streaks }: Props) {
         Streak & kontinuitet
       </span>
 
-      <div className="flex overflow-x-auto gap-3 px-4 pb-1 scrollbar-none snap-x snap-mandatory">
+      <div className="flex overflow-x-auto gap-3 pb-1 scrollbar-none snap-x snap-mandatory">
         {cards.map((card, i) => (
           <div
             key={card.label}
@@ -28,16 +28,15 @@ export function StatsStreaks({ streaks }: Props) {
               minWidth: "calc(33.333vw - 20px)",
               border: "1px solid rgba(0,0,0,0.1)",
               animationDelay: `${i * 0.04}s`,
+              marginLeft: i === 0 ? 16 : 0,
+              marginRight: i === cards.length - 1 ? 16 : 0,
             }}
           >
-            <div className="flex items-baseline gap-1">
-              <span className="text-[20px] font-bold">{card.value}</span>
-              {card.unit && (
-                <span className="text-[14px] font-bold"> {card.unit}</span>
-              )}
-            </div>
+            <span className="text-[20px] font-bold">
+              {card.value}{card.unit ? ` ${card.unit}` : ""}
+            </span>
             <div style={{ height: 40 }} />
-            <span className="text-[11px] opacity-50 uppercase tracking-wider">{card.label}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">{card.label}</span>
           </div>
         ))}
       </div>

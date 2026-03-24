@@ -31,7 +31,7 @@ export function StatsSessionOverview({ stats }: Props) {
 
   const cards: { value: string; label: string }[] = [
     { value: formatMs(stats.avgDurationMs), label: "Snittlängd" },
-    { value: formatTotalTime(stats.totalTrainingTimeMs), label: "Total träningstid" },
+    { value: formatTotalTime(stats.totalTrainingTimeMs), label: "Total tid" },
     { value: stats.avgIntensityScore > 0 ? `${stats.avgIntensityScore}/100` : "–", label: "Snitt intensitet" },
     { value: formatRestTime(stats.avgRestTimeMs), label: "Snitt vila" },
   ];
@@ -46,7 +46,7 @@ export function StatsSessionOverview({ stats }: Props) {
         Passöversikt
       </span>
 
-      <div className="flex overflow-x-auto gap-3 px-4 pb-1 scrollbar-none snap-x snap-mandatory">
+      <div className="flex overflow-x-auto gap-3 pb-1 scrollbar-none snap-x snap-mandatory">
         {cards.map((card, i) => (
           <div
             key={card.label}
@@ -56,11 +56,13 @@ export function StatsSessionOverview({ stats }: Props) {
               minWidth: "calc(33.333vw - 20px)",
               border: "1px solid rgba(0,0,0,0.1)",
               animationDelay: `${i * 0.04}s`,
+              marginLeft: i === 0 ? 16 : 0,
+              marginRight: i === cards.length - 1 ? 16 : 0,
             }}
           >
             <span className="text-[20px] font-bold">{card.value}</span>
             <div style={{ height: 40 }} />
-            <span className="text-[11px] opacity-50 uppercase tracking-wider">{card.label}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">{card.label}</span>
           </div>
         ))}
       </div>
