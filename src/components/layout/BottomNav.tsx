@@ -49,7 +49,7 @@ export function BottomNav() {
         )}
 
         {/* Click blocker — covers the full footer area so taps don't fall through */}
-        <div className="absolute inset-0 pointer-events-auto" />
+        {!activeSession && <div className="absolute inset-0 pointer-events-auto" />}
 
         {/* Nav icons — z-10 so they sit above the blur layers, unaffected */}
         <div className="relative z-10 flex items-end justify-around px-6 pb-10 pt-16">

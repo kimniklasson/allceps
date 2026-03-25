@@ -110,7 +110,7 @@ export function WorkoutBarChart({ sessions }: Props) {
     <div ref={containerRef}>
       <div className="rounded-card border border-black/10 dark:border-white/10 px-4 pt-5 overflow-hidden">
         {/* Header */}
-        <div className="relative flex justify-between items-center mb-4">
+        <div className="relative flex justify-between items-center mb-6">
           <span className="text-[13px] font-medium opacity-50">{currentYear}</span>
 
           {/* Segmented pill toggle — absolutely centered */}

@@ -60,17 +60,15 @@ export function CategoryListItem({
       >
         <div
           className={[
-            "bg-card rounded-card flex items-start gap-2 px-6 py-6",
+            "bg-card rounded-card flex items-start gap-2 px-6 py-6 cursor-pointer",
             hasActiveSession ? "border-2 border-accent" : "",
           ]
             .filter(Boolean)
             .join(" ")}
+          onClick={() => !isDragging && navigate(`/category/${category.id}`)}
         >
           {/* Name + exercise count */}
-          <div
-            className="flex-1 flex flex-col min-w-0 cursor-pointer"
-            onClick={() => !isDragging && navigate(`/category/${category.id}`)}
-          >
+          <div className="flex-1 flex flex-col min-w-0">
             <p className="font-bold text-[15px] leading-[18px]">
               {category.name}
             </p>

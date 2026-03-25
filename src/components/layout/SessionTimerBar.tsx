@@ -176,15 +176,15 @@ export function SessionTimerBar() {
           {/* Stats columns */}
           <div className="flex justify-around text-center">
             <div className="flex flex-col gap-1">
-              <span className="text-[13px] opacity-50">Tid</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">Tid</span>
               <span className="font-bold text-[15px]">{summaryDuration}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[13px] opacity-50">Set</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">Set</span>
               <span className="font-bold text-[15px]">{totals.totalSets} set</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[13px] opacity-50">Reps</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">Reps</span>
               <span className="font-bold text-[15px]">{totals.totalReps} rep</span>
             </div>
           </div>
@@ -193,17 +193,17 @@ export function SessionTimerBar() {
           <div className="flex justify-around text-center">
             {intensity && (
               <div className="flex flex-col gap-1">
-                <span className="text-[13px] opacity-50">Intensitet</span>
+                <span className="text-[12px] opacity-50 uppercase tracking-wider">Intensitet</span>
                 <span className="font-bold text-[15px]">{intensity.score}/100</span>
               </div>
             )}
             <div className="flex flex-col gap-1">
-              <span className="text-[13px] opacity-50">Snitt vila</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">Snittvila</span>
               <span className="font-bold text-[15px]">{avgRestDisplay}</span>
             </div>
             {showCalories && calories > 0 && (
               <div className="flex flex-col gap-1">
-                <span className="text-[13px] opacity-50">Kalorier</span>
+                <span className="text-[12px] opacity-50 uppercase tracking-wider">Kalorier</span>
                 <span className="font-bold text-[15px]">{calories} kcal</span>
               </div>
             )}
@@ -231,7 +231,7 @@ export function SessionTimerBar() {
           {/* View session button */}
           <button
             onClick={handleViewSession}
-            className="w-full bg-black dark:bg-white text-white dark:text-black rounded-card px-6 py-5 text-[13px] font-bold uppercase tracking-wider"
+            className="w-full bg-black dark:bg-white text-white dark:text-black rounded-full px-6 py-5 text-[13px] font-bold uppercase tracking-wider"
           >
             Visa pass
           </button>
