@@ -17,7 +17,7 @@ export function ExerciseSetDisplay({ sets, isBodyweight, pbSetNumbers }: Exercis
         return (
           <span
             key={set.setNumber}
-            className={`bg-black dark:bg-white text-white dark:text-black px-2.5 py-0.5 rounded-full ${isPB ? "font-bold" : ""}`}
+            className={`bg-white dark:bg-black text-black dark:text-white px-2.5 py-0.5 rounded-full border border-black/10 dark:border-white/10 ${isPB ? "font-bold" : ""}`}
           >
             <span className="font-bold">S{set.setNumber}:</span>{" "}
             {set.reps}x{weightDisplay}

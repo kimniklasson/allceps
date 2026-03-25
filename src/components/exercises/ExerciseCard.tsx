@@ -10,6 +10,7 @@ import { RepWeightAdjuster } from "./RepWeightAdjuster";
 import { ExerciseSetDisplay } from "./ExerciseSetDisplay";
 import { usePBTracker } from "../../hooks/usePBTracker";
 import { firePBConfetti } from "../../utils/confetti";
+import { useRestTimer } from "../../hooks/useRestTimer";
 
 function SettingsIcon({ className }: { className?: string }) {
   return (
@@ -52,7 +53,10 @@ export function ExerciseCard({
     setAdjustment,
     getExerciseSetCount,
     activeSet,
+    lastCompletedSetAt,
   } = useSessionStore();
+
+  const restElapsed = useRestTimer();
 
   const [showSettings, setShowSettings] = useState(false);
   const [editName, setEditName] = useState(exercise.name);
@@ -84,6 +88,7 @@ export function ExerciseCard({
     (l) => l.exerciseId === exercise.id
   );
   const hasCompletedSets = exerciseLog && exerciseLog.sets.length > 0;
+  const isLastLogged = !!lastCompletedSetAt && exerciseLog?.sets.at(-1)?.completedAt === lastCompletedSetAt;
 
   const handleSetPress = () => {
     if (sessionBlocked) {
@@ -187,9 +192,9 @@ export function ExerciseCard({
       <div
         {...itemProps}
         className={[
-          "bg-card rounded-card p-4 flex flex-col gap-3 select-none",
+          "bg-card rounded-card p-4 flex flex-col select-none",
           isNew ? "animate-new-exercise" : "animate-in",
-          hasCompletedSets ? "ring-2 ring-accent" : "",
+          isSetInProgress ? "ring-2 ring-black/20 dark:ring-white/20" : hasCompletedSets ? "ring-2 ring-black dark:ring-white" : "",
           isDragging ? "shadow-xl scale-[1.01]" : "",
           isDimmed ? "opacity-40" : "opacity-100",
           "transition-opacity transition-shadow duration-150",
@@ -214,13 +219,16 @@ export function ExerciseCard({
             </span>
           </div>
 
-          <div className="flex items-center shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
+            {hasPB && (
+              <span className="text-[12px] opacity-50 whitespace-nowrap">{pbLabel}</span>
+            )}
             <button
               onClick={handleSetPress}
               className={`px-4 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider shrink-0 transition-colors ${
                 isSetInProgress
-                  ? "bg-accent text-black"
-                  : "bg-black dark:bg-white text-white dark:text-black"
+                  ? "bg-black dark:bg-white text-white dark:text-black"
+                  : "border border-black/15 dark:border-white/15 text-black dark:text-white bg-transparent"
               }`}
             >
               {isSetInProgress ? `LOGGA S${setCount + 1}` : `STARTA S${setCount + 1}`}
@@ -229,36 +237,42 @@ export function ExerciseCard({
         </div>
 
         {/* Adjusters */}
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 mt-3">
           <RepWeightAdjuster
             value={adjustment.currentReps}
             label="rep"
+            isActive={isSetInProgress || hasCompletedSets}
             onChange={(val) => setAdjustment(exercise.id, val, adjustment.currentWeight)}
           />
           <RepWeightAdjuster
             value={adjustment.currentWeight}
             label="kg"
             isBodyweight={exercise.isBodyweight}
+            isActive={isSetInProgress || hasCompletedSets}
             step={exercise.isBodyweight ? 5 : 2.5}
             onChange={(val) => setAdjustment(exercise.id, adjustment.currentReps, val)}
           />
         </div>
 
-        {/* Completed sets (left) + PB (right, only when active) */}
-        {hasCompletedSets && (
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <ExerciseSetDisplay
-                sets={exerciseLog!.sets}
-                isBodyweight={exercise.isBodyweight}
-                pbSetNumbers={pbSetNumbers}
-              />
+        {/* Completed sets (left) + PB (right) — animated reveal, always 16px below adjusters */}
+        <div className={`grid transition-all duration-300 ease-in-out ${hasCompletedSets ? "grid-rows-[1fr] mt-4" : "grid-rows-[0fr] mt-0"}`}>
+          <div className="overflow-hidden">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <ExerciseSetDisplay
+                  sets={exerciseLog?.sets ?? []}
+                  isBodyweight={exercise.isBodyweight}
+                  pbSetNumbers={pbSetNumbers}
+                />
+              </div>
+              {isLastLogged && restElapsed > 0 && (
+                <span className="text-[12px] font-bold shrink-0 ml-2 tabular-nums bg-black dark:bg-white text-white dark:text-black px-2.5 py-0.5 rounded-full">
+                  VILA {String(Math.floor(restElapsed / 60000)).padStart(2, "0")}:{String(Math.floor((restElapsed % 60000) / 1000)).padStart(2, "0")}.{String(Math.floor((restElapsed % 1000) / 10)).padStart(2, "0")}
+                </span>
+              )}
             </div>
-            {hasPB && (
-              <span className="text-[11px] opacity-60 shrink-0 ml-2">{pbLabel}</span>
-            )}
           </div>
-        )}
+        </div>
       </div>
 
       {settingsModal}

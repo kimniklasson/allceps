@@ -6,6 +6,7 @@ interface RepWeightAdjusterProps {
   label: string;
   isBodyweight?: boolean;
   step?: number;
+  isActive?: boolean;
   onChange: (newValue: number) => void;
 }
 
@@ -14,6 +15,7 @@ export function RepWeightAdjuster({
   label,
   isBodyweight = false,
   step = 1,
+  isActive = false,
   onChange,
 }: RepWeightAdjusterProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -52,7 +54,7 @@ export function RepWeightAdjuster({
   };
 
   return (
-    <div className="relative bg-white dark:bg-[#2c2c2e] rounded-card flex items-center h-10 w-full">
+    <div className={`relative bg-white dark:bg-[#2c2c2e] rounded-card flex items-center w-full transition-all duration-300 ease-in-out ${isActive ? "h-14" : "h-10"}`}>
       {/* Full-width text layer behind buttons */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {isEditing ? (
@@ -64,11 +66,11 @@ export function RepWeightAdjuster({
             onChange={(e) => setInputValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleKeyDown}
-            className="w-full text-center text-[12px] bg-transparent outline-none pointer-events-auto [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className={`w-full text-center bg-transparent outline-none pointer-events-auto transition-all duration-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${isActive ? "text-[15px] font-bold" : "text-[12px]"}`}
           />
         ) : (
           <span
-            className="text-[12px] text-center whitespace-nowrap cursor-text select-none pointer-events-auto"
+            className={`text-center whitespace-nowrap cursor-text select-none pointer-events-auto transition-all duration-300 ${isActive ? "text-[15px] font-bold" : "text-[12px]"}`}
             onClick={handleDisplayClick}
           >
             {displayValue}
