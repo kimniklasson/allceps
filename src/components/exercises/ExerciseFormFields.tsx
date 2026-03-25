@@ -19,8 +19,8 @@ export function ExerciseFormFields({
   submitLabel,
 }: ExerciseFormFieldsProps) {
   const [name, setName] = useState(initialData?.name ?? "");
-  const [baseReps, setBaseReps] = useState(initialData?.baseReps?.toString() ?? "");
-  const [baseWeight, setBaseWeight] = useState(initialData?.baseWeight?.toString() ?? "");
+  const [baseReps, setBaseReps] = useState(initialData?.baseReps?.toString() ?? "8");
+  const [baseWeight, setBaseWeight] = useState(initialData?.baseWeight?.toString() ?? "50");
   const [isBodyweight, setIsBodyweight] = useState(initialData?.isBodyweight ?? false);
 
   const canSubmit = name.trim().length > 0 && baseReps.length > 0 && baseWeight.length > 0;

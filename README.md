@@ -1,4 +1,4 @@
-# Allceps — Workout Tracking Web App
+# Forfutureyou — Workout Tracking Web App
 
 A mobile-first workout tracking web app where users create workout categories, manage a global exercise library, log sets during sessions with a live timer, and track progress with statistics and personal records.
 

@@ -24,6 +24,7 @@ export function ExerciseListPage() {
   const [duplicateAfterId, setDuplicateAfterId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
+  const [tipVisible, setTipVisible] = useState(true);
 
   const tips = useMemo(() => [
     "Tryck på Set 1 för att starta session",
@@ -34,7 +35,11 @@ export function ExerciseListPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTipIndex((i) => (i + 1) % tips.length);
+      setTipVisible(false);
+      setTimeout(() => {
+        setTipIndex((i) => (i + 1) % tips.length);
+        setTipVisible(true);
+      }, 600);
     }, 10000);
     return () => clearInterval(interval);
   }, [tips]);
@@ -170,15 +175,12 @@ export function ExerciseListPage() {
         {!isEmpty && (
           <div className="text-[20px] leading-[1.22] opacity-50 relative">
             <span className="invisible whitespace-nowrap">{tips[tipIndex]}</span>
-            {tips.map((tip, i) => (
-              <span
-                key={tip}
-                className="absolute inset-0 transition-opacity duration-700 whitespace-nowrap text-center"
-                style={{ opacity: i === tipIndex ? 1 : 0 }}
-              >
-                {tip}
-              </span>
-            ))}
+            <span
+              className="absolute inset-0 transition-opacity duration-500 whitespace-nowrap text-center"
+              style={{ opacity: tipVisible ? 1 : 0 }}
+            >
+              {tips[tipIndex]}
+            </span>
           </div>
         )}
       </div>

@@ -229,7 +229,7 @@ export function ExerciseCard({
         </div>
 
         {/* Adjusters */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-2">
           <RepWeightAdjuster
             value={adjustment.currentReps}
             label="rep"

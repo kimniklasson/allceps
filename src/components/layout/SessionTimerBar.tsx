@@ -113,7 +113,7 @@ export function SessionTimerBar() {
     <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
-          className="flex items-center gap-2 px-6 pt-6 pb-30 rounded-t-modal bg-accent/85 backdrop-blur-[20px] transition-all duration-300 pointer-events-auto"
+          className="flex items-center gap-2 px-6 pt-6 pb-30 rounded-t-modal bg-accent/70 backdrop-blur-[20px] transition-all duration-300 pointer-events-auto"
         >
           {/* Cancel */}
           <button

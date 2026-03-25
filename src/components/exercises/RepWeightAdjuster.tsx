@@ -29,8 +29,8 @@ export function RepWeightAdjuster({
 
   const displayValue = isBodyweight
     ? value === 0
-      ? "Kroppsvikt"
-      : `Kroppsvikt + ${value} ${label}`
+      ? "KV"
+      : `KV + ${value} ${label}`
     : `${value} ${label}`;
 
   const handleDisplayClick = () => {
@@ -52,14 +52,9 @@ export function RepWeightAdjuster({
   };
 
   return (
-    <div className="bg-white dark:bg-[#2c2c2e] rounded-card flex items-center h-10">
-      <button
-        onClick={() => onChange(Math.max(0, value - step))}
-        className="w-16 h-full flex items-center justify-center rounded-card"
-      >
-        <IconMinus size={16} />
-      </button>
-      <div className="flex-1 flex items-center justify-center px-2">
+    <div className="relative bg-white dark:bg-[#2c2c2e] rounded-card flex items-center h-10 w-full">
+      {/* Full-width text layer behind buttons */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {isEditing ? (
           <input
             ref={inputRef}
@@ -69,20 +64,28 @@ export function RepWeightAdjuster({
             onChange={(e) => setInputValue(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={handleKeyDown}
-            className="w-full text-center font-bold text-[15px] bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full text-center text-[12px] bg-transparent outline-none pointer-events-auto [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         ) : (
           <span
-            className="font-bold text-[15px] text-center whitespace-nowrap cursor-text select-none"
+            className="text-[12px] text-center whitespace-nowrap cursor-text select-none pointer-events-auto"
             onClick={handleDisplayClick}
           >
             {displayValue}
           </span>
         )}
       </div>
+      {/* Buttons on top */}
+      <button
+        onClick={() => onChange(Math.max(0, value - step))}
+        className="relative z-10 w-12 h-full flex items-center justify-center rounded-card"
+      >
+        <IconMinus size={16} />
+      </button>
+      <div className="flex-1" />
       <button
         onClick={() => onChange(value + step)}
-        className="w-16 h-full flex items-center justify-center rounded-card"
+        className="relative z-10 w-12 h-full flex items-center justify-center rounded-card"
       >
         <IconPlus size={16} />
       </button>

@@ -164,11 +164,9 @@ function CategoryCard({ insights }: { insights: ExerciseInsight }) {
     >
       <div className="relative" style={{ width: SIZE, height: SIZE }}>
         <svg width={SIZE} height={SIZE}>
-          {!hasData ? (
-            <circle cx={CX} cy={CY} r={R} fill="none" stroke="#f5f5f5" strokeWidth={SW} />
-          ) : (
+          {!hasData ? null : (
             <>
-              <circle cx={CX} cy={CY} r={R} fill="none" stroke="currentColor" strokeWidth={SW_ACTIVE} strokeOpacity={0.1} />
+              <circle cx={CX} cy={CY} r={R} fill="none" stroke="currentColor" strokeWidth={SW} strokeOpacity={0.1} />
               {segments.map((seg, i) => {
                 const isActive = activeIdx === i;
                 const sw = isActive ? SW_ACTIVE : SW;
