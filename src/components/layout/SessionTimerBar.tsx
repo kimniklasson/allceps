@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { useTimer } from "../../hooks/useTimer";
-import { useRestTimer } from "../../hooks/useRestTimer";
+
 import { formatTime, formatDuration } from "../../utils/formatTime";
 import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "../../utils/calculations";
 import { useSettingsStore } from "../../stores/useSettingsStore";
@@ -23,7 +23,7 @@ interface PBSet {
 export function SessionTimerBar() {
   const { activeSession, finishSession, cancelSession } = useSessionStore();
   const elapsed = useTimer();
-  const restElapsed = useRestTimer();
+
   const navigate = useNavigate();
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [finishedSession, setFinishedSession] = useState<WorkoutSession | null>(null);
