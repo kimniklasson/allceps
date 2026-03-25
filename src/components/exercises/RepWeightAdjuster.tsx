@@ -54,7 +54,7 @@ export function RepWeightAdjuster({
   };
 
   return (
-    <div className={`relative bg-white dark:bg-[#2c2c2e] rounded-card flex items-center w-full transition-all duration-300 ease-in-out ${isActive ? "h-14" : "h-10"}`}>
+    <div className={`relative bg-white dark:bg-[#2c2c2e] rounded-[6px] flex items-center w-full transition-all duration-300 ease-in-out ${isActive ? "h-14" : "h-10"}`}>
       {/* Full-width text layer behind buttons */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {isEditing ? (
@@ -80,14 +80,14 @@ export function RepWeightAdjuster({
       {/* Buttons on top */}
       <button
         onClick={() => onChange(Math.max(0, value - step))}
-        className="relative z-10 w-12 h-full flex items-center justify-center rounded-card"
+        className="relative z-10 w-12 h-full flex items-center justify-center rounded-[6px]"
       >
         <IconMinus size={16} />
       </button>
       <div className="flex-1" />
       <button
         onClick={() => onChange(value + step)}
-        className="relative z-10 w-12 h-full flex items-center justify-center rounded-card"
+        className="relative z-10 w-12 h-full flex items-center justify-center rounded-[6px]"
       >
         <IconPlus size={16} />
       </button>

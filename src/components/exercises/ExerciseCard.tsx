@@ -268,7 +268,7 @@ export function ExerciseCard({
               </div>
               {isLastLogged && restElapsed > 0 && (
                 <span className="text-[12px] font-bold shrink-0 ml-2 tabular-nums bg-black dark:bg-white text-white dark:text-black px-2.5 py-0.5 rounded-full">
-                  VILA {String(Math.floor(restElapsed / 60000)).padStart(2, "0")}:{String(Math.floor((restElapsed % 60000) / 1000)).padStart(2, "0")}.{String(Math.floor((restElapsed % 1000) / 10)).padStart(2, "0")}
+                  {String(Math.floor(restElapsed / 60000)).padStart(2, "0")}:{String(Math.floor((restElapsed % 60000) / 1000)).padStart(2, "0")}.{String(Math.floor((restElapsed % 1000) / 10)).padStart(2, "0")}
                 </span>
               )}
             </div>
