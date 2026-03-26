@@ -18,7 +18,7 @@ interface Props {
   formatValue?: (v: number) => string;
 }
 
-const CHART_HEIGHT = 156;
+const CHART_HEIGHT = 94;
 const PADDING_TOP = 10;
 const PADDING_BOTTOM = 6;
 const PADDING_LEFT = 8;
