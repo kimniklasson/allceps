@@ -11,9 +11,6 @@ interface CategoryListItemProps {
   hasActiveSession?: boolean;
   isNew?: boolean;
   isExiting?: boolean;
-  isDragging?: boolean;
-  isDimmed?: boolean;
-  itemProps: Record<string, unknown>;
   lastSessionDate?: string;
 }
 
@@ -34,9 +31,6 @@ export function CategoryListItem({
   hasActiveSession,
   isNew,
   isExiting,
-  isDragging,
-  isDimmed,
-  itemProps,
   lastSessionDate,
 }: CategoryListItemProps) {
   const navigate = useNavigate();
@@ -46,13 +40,9 @@ export function CategoryListItem({
 
   return (
     <div
-      {...itemProps}
       className={[
         "rounded-card select-none",
-        isDragging ? "shadow-xl scale-[1.01]" : "",
-        isDimmed ? "opacity-60" : "opacity-100",
         isExiting ? "animate-out" : isNew ? "animate-new-exercise" : "animate-in",
-        "transition-opacity transition-shadow duration-150",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -69,7 +59,7 @@ export function CategoryListItem({
           ]
             .filter(Boolean)
             .join(" ")}
-          onClick={() => !isDragging && navigate(`/category/${category.id}`)}
+          onClick={() => navigate(`/category/${category.id}`)}
         >
           {/* Color accent border */}
           <div

@@ -195,27 +195,38 @@ export function ExerciseListPage() {
       ) : (
         <div className="flex flex-col gap-2">
           <div {...containerProps} className="flex flex-col gap-2">
-            {displayItems.map((exercise, i) => (
-              <FadeInOnScroll key={exercise.id} delay={i * 60}>
-                <SwipeActions
-                  onDelete={() => handleRemoveFromCategory(exercise.id)}
-                  onDuplicate={() => handleDuplicate(exercise.id)}
-                  confirmMessage={`Är du säker på att du vill ta bort ${exercise.name} från ${category.name}?`}
+            {displayItems.map((exercise, i) => {
+              const isDragging = draggingId === exercise.id;
+              const isDimmed = draggingId !== null && !isDragging;
+              return (
+                <div
+                  key={exercise.id}
+                  {...getItemProps(exercise.id)}
+                  className={[
+                    isDragging ? "scale-[1.04] relative z-50" : "",
+                    isDimmed ? "opacity-50" : "",
+                    "transition-opacity transition-transform duration-200",
+                  ].filter(Boolean).join(" ")}
                 >
-                  <ExerciseCard
-                    exercise={exercise}
-                    categoryId={category.id}
-                    categoryName={category.name}
-                    onRename={handleRename}
-                    sessionBlocked={sessionBlocked}
-                    isNew={exercise.id === newExerciseId}
-                    isDragging={draggingId === exercise.id}
-                    isDimmed={draggingId !== null && draggingId !== exercise.id}
-                    itemProps={getItemProps(exercise.id)}
-                  />
-                </SwipeActions>
-              </FadeInOnScroll>
-            ))}
+                  <FadeInOnScroll delay={i * 60}>
+                    <SwipeActions
+                      onDelete={() => handleRemoveFromCategory(exercise.id)}
+                      onDuplicate={() => handleDuplicate(exercise.id)}
+                      confirmMessage={`Är du säker på att du vill ta bort ${exercise.name} från ${category.name}?`}
+                    >
+                      <ExerciseCard
+                        exercise={exercise}
+                        categoryId={category.id}
+                        categoryName={category.name}
+                        onRename={handleRename}
+                        sessionBlocked={sessionBlocked}
+                        isNew={exercise.id === newExerciseId}
+                      />
+                    </SwipeActions>
+                  </FadeInOnScroll>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

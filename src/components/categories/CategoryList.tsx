@@ -98,23 +98,34 @@ export function CategoryList() {
 
         {!isEmpty && (
           <div {...containerProps} className="flex flex-col gap-2">
-            {displayItems.map((category, i) => (
-              <FadeInOnScroll key={category.id} delay={i * 60}>
-                <CategoryListItem
-                  category={category}
-                  colorIndex={i}
-                  onDelete={handleDelete}
-                  onDuplicate={handleDuplicate}
-                  hasActiveSession={activeSession?.categoryId === category.id}
-                  isNew={category.id === newCategoryId}
-                  isExiting={exitingId === category.id}
-                  isDragging={draggingId === category.id}
-                  isDimmed={draggingId !== null && draggingId !== category.id}
-                  itemProps={getItemProps(category.id)}
-                  lastSessionDate={lastSessionByCategory.get(category.id)}
-                />
-              </FadeInOnScroll>
-            ))}
+            {displayItems.map((category, i) => {
+              const isDragging = draggingId === category.id;
+              const isDimmed = draggingId !== null && !isDragging;
+              return (
+                <div
+                  key={category.id}
+                  {...getItemProps(category.id)}
+                  className={[
+                    isDragging ? "scale-[1.04] relative z-50" : "",
+                    isDimmed ? "opacity-50" : "",
+                    "transition-opacity transition-transform duration-200",
+                  ].filter(Boolean).join(" ")}
+                >
+                  <FadeInOnScroll delay={i * 60}>
+                    <CategoryListItem
+                      category={category}
+                      colorIndex={i}
+                      onDelete={handleDelete}
+                      onDuplicate={handleDuplicate}
+                      hasActiveSession={activeSession?.categoryId === category.id}
+                      isNew={category.id === newCategoryId}
+                      isExiting={exitingId === category.id}
+                      lastSessionDate={lastSessionByCategory.get(category.id)}
+                    />
+                  </FadeInOnScroll>
+                </div>
+              );
+            })}
           </div>
         )}
 

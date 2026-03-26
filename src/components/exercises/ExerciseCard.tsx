@@ -28,9 +28,6 @@ interface ExerciseCardProps {
   onRename: (id: string, name: string) => Promise<void>;
   sessionBlocked: boolean;
   isNew?: boolean;
-  isDragging?: boolean;
-  isDimmed?: boolean;
-  itemProps: Record<string, unknown>;
 }
 
 export function ExerciseCard({
@@ -40,9 +37,6 @@ export function ExerciseCard({
   onRename,
   sessionBlocked,
   isNew,
-  isDragging,
-  isDimmed,
-  itemProps,
 }: ExerciseCardProps) {
   const {
     activeSession,
@@ -190,16 +184,12 @@ export function ExerciseCard({
   return (
     <>
       <div
-        {...itemProps}
         onClick={handleSetPress}
         className={[
           "bg-card rounded-card p-4 flex flex-col select-none cursor-pointer",
           isNew ? "animate-new-exercise" : "animate-in",
           "ring-2",
           isSetInProgress ? "ring-black dark:ring-white" : hasCompletedSets ? "ring-accent" : "ring-transparent",
-          isDragging ? "shadow-xl scale-[1.01]" : "",
-          isDimmed ? "opacity-40" : "opacity-100",
-          "transition-opacity transition-shadow duration-150",
         ]
           .filter(Boolean)
           .join(" ")}

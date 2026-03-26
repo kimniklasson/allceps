@@ -11,7 +11,7 @@ interface ActiveDrag {
  * Zero-dependency drag-to-reorder hook using native Pointer Events.
  * - Long press (longPressDelay ms) anywhere on the item activates drag
  * - Touch-friendly: uses touchmove listener to detect scroll vs hold
- * - Live reorder preview as the pointer moves
+ * - CSS transform-based reorder preview (no DOM reordering during drag)
  * - Commits new order on pointerup
  */
 export function useDragSort<T extends { id: string }>(
@@ -21,6 +21,7 @@ export function useDragSort<T extends { id: string }>(
 ) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,6 +29,13 @@ export function useDragSort<T extends { id: string }>(
   const preventScrollRef = useRef<((e: TouchEvent) => void) | null>(null);
   const cancelTouchRef = useRef<((e: TouchEvent) => void) | null>(null);
   const startYRef = useRef(0);
+
+  /** Y coordinate when drag activated — used to calculate drag offset. */
+  const dragStartYRef = useRef(0);
+  /** Original item centers captured when drag starts — used for stable hit-testing. */
+  const originalCentersRef = useRef<number[]>([]);
+  /** Height of dragged item + gap — the shift amount for displaced items. */
+  const shiftAmountRef = useRef(0);
 
   // Clean up listeners on unmount
   useEffect(() => {
@@ -48,14 +56,13 @@ export function useDragSort<T extends { id: string }>(
     }
   }
 
+  /** Find target index using original (pre-drag) item center positions. */
   function findOverIndex(clientY: number): number {
-    if (!containerRef.current || !activeRef.current) return 0;
-    const nodes = containerRef.current.querySelectorAll<HTMLElement>("[data-sort-id]");
+    const centers = originalCentersRef.current;
+    if (centers.length === 0 || !activeRef.current) return 0;
     let best = activeRef.current.overIndex;
     let minDist = Infinity;
-    nodes.forEach((el, i) => {
-      const rect = el.getBoundingClientRect();
-      const center = rect.top + rect.height / 2;
+    centers.forEach((center, i) => {
       const dist = Math.abs(clientY - center);
       if (dist < minDist) {
         minDist = dist;
@@ -73,6 +80,17 @@ export function useDragSort<T extends { id: string }>(
     cleanupTouchListeners();
   }
 
+  /** Measure and store original item positions + shift amount. */
+  function captureOriginalLayout(fromIndex: number) {
+    if (!containerRef.current) return;
+    const nodes = containerRef.current.querySelectorAll<HTMLElement>("[data-sort-id]");
+    const rects = Array.from(nodes).map((el) => el.getBoundingClientRect());
+    originalCentersRef.current = rects.map((r) => r.top + r.height / 2);
+    const draggedHeight = rects[fromIndex]?.height ?? 0;
+    const gap = rects.length >= 2 ? rects[1].top - rects[0].bottom : 0;
+    shiftAmountRef.current = draggedHeight + gap;
+  }
+
   // Called from each item's onPointerDown
   const onItemPointerDown = useCallback((e: React.PointerEvent, id: string) => {
     if (activeRef.current) return;
@@ -85,7 +103,6 @@ export function useDragSort<T extends { id: string }>(
     startYRef.current = e.clientY;
 
     // On touch devices, listen for touchmove to cancel if user scrolls.
-    // Pointer events may stop firing once the browser takes over for scroll.
     const cancelOnScroll = (te: TouchEvent) => {
       const dy = Math.abs(te.touches[0].clientY - startYRef.current);
       if (dy > 8) {
@@ -97,21 +114,27 @@ export function useDragSort<T extends { id: string }>(
 
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
-      // Remove the cancel-on-scroll listener
       if (cancelTouchRef.current) {
         window.removeEventListener("touchmove", cancelTouchRef.current);
         cancelTouchRef.current = null;
       }
 
+      // Capture layout before any visual changes
+      captureOriginalLayout(fromIndex);
+
       const drag: ActiveDrag = { id, pointerId, fromIndex, overIndex: fromIndex };
       activeRef.current = drag;
+
+      dragStartYRef.current = startYRef.current;
+      setDragOffset(0);
 
       // Prevent scroll for the rest of this touch gesture
       const preventScroll = (te: TouchEvent) => {
         te.preventDefault();
-        // Also update drag position from touch
         if (activeRef.current) {
-          const newIndex = findOverIndex(te.touches[0].clientY);
+          const clientY = te.touches[0].clientY;
+          setDragOffset(clientY - dragStartYRef.current);
+          const newIndex = findOverIndex(clientY);
           if (newIndex !== activeRef.current.overIndex) {
             activeRef.current.overIndex = newIndex;
             setOverIndex(newIndex);
@@ -133,6 +156,7 @@ export function useDragSort<T extends { id: string }>(
 
   function onContainerPointerMove(e: React.PointerEvent) {
     if (!activeRef.current) return;
+    setDragOffset(e.clientY - dragStartYRef.current);
     const newIndex = findOverIndex(e.clientY);
     if (newIndex !== activeRef.current.overIndex) {
       activeRef.current.overIndex = newIndex;
@@ -146,8 +170,6 @@ export function useDragSort<T extends { id: string }>(
 
     const { fromIndex, overIndex: toIndex } = activeRef.current;
     activeRef.current = null;
-    setDraggingId(null);
-    setOverIndex(null);
 
     if (toIndex !== fromIndex) {
       const reordered = [...items];
@@ -155,18 +177,33 @@ export function useDragSort<T extends { id: string }>(
       reordered.splice(toIndex, 0, removed);
       onReorder(reordered.map((i) => i.id));
     }
+
+    setDraggingId(null);
+    setOverIndex(null);
+    setDragOffset(0);
   }
 
-  const displayItems: T[] =
-    draggingId !== null && overIndex !== null
-      ? (() => {
-          const fromIndex = items.findIndex((i) => i.id === draggingId);
-          const reordered = [...items];
-          const [removed] = reordered.splice(fromIndex, 1);
-          reordered.splice(overIndex, 0, removed);
-          return reordered;
-        })()
-      : items;
+  // No DOM reordering — items stay in original order. Visual reorder via transforms.
+  const displayItems = items;
+
+  /** Calculate translateY offset for a given item during drag. */
+  function getTransformOffset(id: string): number {
+    if (!draggingId || overIndex === null) return 0;
+    if (id === draggingId) return dragOffset;
+
+    const fromIndex = items.findIndex((i) => i.id === draggingId);
+    const itemIndex = items.findIndex((i) => i.id === id);
+    const shift = shiftAmountRef.current;
+
+    if (fromIndex < overIndex) {
+      // Dragging down: items in (fromIndex, overIndex] shift up
+      if (itemIndex > fromIndex && itemIndex <= overIndex) return -shift;
+    } else if (fromIndex > overIndex) {
+      // Dragging up: items in [overIndex, fromIndex) shift down
+      if (itemIndex >= overIndex && itemIndex < fromIndex) return shift;
+    }
+    return 0;
+  }
 
   const containerProps = {
     ref: containerRef,
@@ -175,11 +212,22 @@ export function useDragSort<T extends { id: string }>(
     onPointerCancel: onContainerPointerUp,
   };
 
-  const getItemProps = (id: string) => ({
-    "data-sort-id": id,
-    onPointerDown: (e: React.PointerEvent) => onItemPointerDown(e, id),
-    style: { touchAction: "auto" } as React.CSSProperties,
-  });
+  const getItemProps = (id: string) => {
+    const offset = getTransformOffset(id);
+    const isDraggedItem = id === draggingId;
+    return {
+      "data-sort-id": id,
+      onPointerDown: (e: React.PointerEvent) => onItemPointerDown(e, id),
+      style: {
+        touchAction: "auto",
+        ...(draggingId ? {
+          transform: `translateY(${offset}px)`,
+          // Dragged item follows pointer instantly; other items animate smoothly
+          transition: isDraggedItem ? "none" : "transform 200ms ease-out",
+        } : {}),
+      } as React.CSSProperties,
+    };
+  };
 
   return { draggingId, displayItems, containerProps, getItemProps };
 }
