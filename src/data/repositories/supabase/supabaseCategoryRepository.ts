@@ -42,6 +42,7 @@ function mapCategory(db: DbCategory): Category {
     exercises,
     createdAt: db.created_at,
     sortOrder: db.sort_order,
+    colorIndex: 0, // Placeholder — store tilldelar korrekt värde via colorIndices-kartan
   };
 }
 
