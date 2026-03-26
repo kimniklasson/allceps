@@ -41,7 +41,7 @@ export function StatsExerciseInsights({ insights }: Props) {
             className="bg-card rounded-card p-4 flex flex-col gap-3 animate-in"
             style={{ animationDelay: `${3 * 0.04}s` }}
           >
-            <span className="text-[13px] opacity-50">Kategoribalans</span>
+            <span className="text-[12px] opacity-50">Kategoribalans</span>
 
             {/* Stacked bar */}
             <div className="h-3 rounded-full overflow-hidden flex">
@@ -64,7 +64,7 @@ export function StatsExerciseInsights({ insights }: Props) {
                     className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: getCategoryColor(i) }}
                   />
-                  <span className="text-[11px] opacity-70">
+                  <span className="text-[12px] opacity-70">
                     {cat.categoryName} ({cat.sessionCount})
                   </span>
                 </div>
@@ -85,7 +85,7 @@ function InsightCard({ label, value, detail, delay }: {
       className="bg-card rounded-card p-4 animate-in"
       style={{ animationDelay: `${delay * 0.04}s` }}
     >
-      <span className="text-[11px] opacity-50 uppercase tracking-wider">{label}</span>
+      <span className="text-[12px] opacity-50 uppercase tracking-wider">{label}</span>
       <div className="font-bold text-[15px] leading-[18px] mt-1">{value}</div>
       <div className="text-[12px] opacity-50 mt-0.5">{detail}</div>
     </div>

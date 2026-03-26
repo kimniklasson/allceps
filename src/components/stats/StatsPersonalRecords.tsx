@@ -54,7 +54,7 @@ export function StatsPersonalRecords({ prs }: Props) {
       {prs.length > 5 && !showAll && (
         <button
           onClick={() => setShowAll(true)}
-          className="text-[13px] font-bold opacity-50 py-2"
+          className="text-[12px] font-bold opacity-50 py-2"
         >
           Visa alla ({prs.length})
         </button>

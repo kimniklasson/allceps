@@ -75,7 +75,7 @@ export function SignUpPage() {
       {/* Centered form area */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-16">
         {error && (
-          <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[13px] text-red-700 text-center">
+          <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[12px] text-red-700 text-center">
             {error}
           </div>
         )}
@@ -133,7 +133,7 @@ export function SignUpPage() {
           Fortsätt med Google
         </button>}
 
-        <p className="mt-8 text-[13px] text-black/50 dark:text-white/50">
+        <p className="mt-8 text-[12px] text-black/50 dark:text-white/50">
           Redan har ett konto?{" "}
           <Link to="/login" className="text-black dark:text-white font-bold underline">
             Logga in

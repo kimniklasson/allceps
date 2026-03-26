@@ -67,7 +67,7 @@ export function StatsStreaks({ streaks }: Props) {
               {card.value}{card.unit ? ` ${card.unit}` : ""}
             </span>
             <div style={{ height: 40 }} />
-            <span className="text-[11px] uppercase tracking-wider">{card.label}</span>
+            <span className="text-[12px] uppercase tracking-wider">{card.label}</span>
           </div>
         ))}
         <div style={{ minWidth: 24, flexShrink: 0 }} />

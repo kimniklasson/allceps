@@ -316,7 +316,7 @@ export function ProfilePage() {
         <button
           type="button"
           onClick={() => setShowLogoutConfirm(true)}
-          className="w-full flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 rounded-full px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-white transition-colors"
+          className="w-full flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 rounded-full px-6 py-5 text-[12px] font-bold uppercase tracking-wider text-white transition-colors"
         >
           Logga ut
           <IconLogout size={18} />
@@ -327,7 +327,7 @@ export function ProfilePage() {
           type="button"
           onClick={() => setShowDeleteConfirm(true)}
           disabled={deleting}
-          className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-red-500 opacity-70 hover:opacity-100 transition-opacity mx-auto"
+          className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-red-500 opacity-70 hover:opacity-100 transition-opacity mx-auto"
         >
           {deleting ? "Tar bort..." : "Ta bort konto"}
           <IconTrash size={16} />

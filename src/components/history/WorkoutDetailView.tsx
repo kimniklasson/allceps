@@ -8,6 +8,7 @@ import { computeHistoricalPBTypes } from "../../utils/personalBest";
 import { useSettingsStore } from "../../stores/useSettingsStore";
 import { IconTrash } from "../ui/icons";
 import type { WorkoutSession } from "../../types/models";
+import { IntensityCard } from "../stats/StatsOverviewCards";
 
 // ─── Date / time helpers ────────────────────────────────────────────────────
 
@@ -142,6 +143,34 @@ export function WorkoutDetailView() {
   const restData = calculateRestTimes(session);
   const calories = calculateCalories(session, userWeight, userAge, userSex, intensity.score);
 
+  // Previous session of same category for trend comparison
+  const prevSession = useMemo(() => {
+    return allSessions
+      .filter((s) => s.categoryId === session.categoryId && s.id !== session.id && s.startedAt < session.startedAt)
+      .sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null;
+  }, [allSessions, session]);
+
+  const prevTotals  = prevSession ? calculateWorkoutTotals(prevSession, userWeight)   : null;
+  const prevIntens  = prevSession ? calculateIntensity(prevSession, userWeight)        : null;
+  const prevRest    = prevSession ? calculateRestTimes(prevSession)                    : null;
+  const prevCalories = prevSession ? calculateCalories(prevSession, userWeight, userAge, userSex, prevIntens!.score) : null;
+
+  function trend(current: number, previous: number | null, lowerIsBetter = false): "better" | "same" | "worse" | null {
+    if (previous === null || previous === 0) return null;
+    const delta = current - previous;
+    if (Math.abs(delta / previous) < 0.01) return "same";
+    const improving = lowerIsBetter ? delta < 0 : delta > 0;
+    return improving ? "better" : "worse";
+  }
+
+  const ARROW_STYLE: React.CSSProperties = { fontFamily: '"Google Sans", sans-serif', fontSize: 14, fontFeatureSettings: '"ss05"' };
+  function TrendIcon({ t }: { t: "better" | "same" | "worse" | null }) {
+    if (!t) return null;
+    if (t === "better") return <span style={ARROW_STYLE} className="text-black dark:text-white">&#x2197;</span>;
+    if (t === "same")   return <span style={ARROW_STYLE} className="text-black/50 dark:text-white/50">&#x2192;</span>;
+    return                     <span style={ARROW_STYLE} className="text-red-500">&#x2198;</span>;
+  }
+
   const save = (updated: WorkoutSession) => updateSession(updated);
 
   const updateStartedAt = (iso: string) =>
@@ -223,10 +252,62 @@ export function WorkoutDetailView() {
         </div>
       </div>
 
-      {/* Exercise logs */}
-      {session.exerciseLogs.map((log, logIdx) => (
-        <div key={log.exerciseId} className="flex flex-col gap-2">
-          <span className="font-bold text-[15px] leading-[18px]">{log.exerciseName}</span>
+      {/* Summary row */}
+      <div className="flex gap-3">
+        <IntensityCard score={intensity.score} label="Intensitet" />
+
+        <div className="flex-1 rounded-card border border-black/10 dark:border-white/10 p-6 flex flex-col justify-between">
+          {(() => {
+            const avgRestMs = restData.interSetRests.length > 0 ? restData.avgInterSetRestMs : 0;
+            const prevAvgRestMs = prevRest && prevRest.interSetRests.length > 0 ? prevRest.avgInterSetRestMs : null;
+            const rows = [
+              { label: "Set",       value: `${totals.totalSets}`,            t: trend(totals.totalSets, prevTotals?.totalSets ?? null) },
+              { label: "Reps",      value: `${totals.totalReps}`,            t: trend(totals.totalReps, prevTotals?.totalReps ?? null) },
+              { label: "Kg",        value: `${totals.totalWeight}`,          t: trend(totals.totalWeight, prevTotals?.totalWeight ?? null) },
+              { label: "Snittvila", value: avgRestMs > 0
+                  ? `${Math.floor(avgRestMs / 60000)}:${String(Math.floor((avgRestMs % 60000) / 1000)).padStart(2, "0")}`
+                  : "–",                                                      t: trend(avgRestMs, prevAvgRestMs, true) },
+              ...(showCalories && calories > 0 ? [{ label: "Kalorier", value: `${calories} kcal`, t: trend(calories, prevCalories) }] : []),
+            ];
+            return rows.map(({ label, value, t }, i) => (
+              <div key={label} className={`flex items-center justify-between gap-2 ${i > 0 ? "pt-2" : ""} ${i < rows.length - 1 ? "pb-2 border-b border-black/10 dark:border-white/10" : ""}`}>
+                <span className="text-[12px] font-medium uppercase tracking-wider opacity-40 shrink-0">{label}</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-[15px] leading-none">{value}</span>
+                  <TrendIcon t={t} />
+                </span>
+              </div>
+            ));
+          })()}
+        </div>
+      </div>
+
+      {/* Exercise logs — sorted by time of first set */}
+      {[...session.exerciseLogs]
+        .sort((a, b) => {
+          const aTime = a.sets[0]?.startedAt ?? a.sets[0]?.completedAt ?? "";
+          const bTime = b.sets[0]?.startedAt ?? b.sets[0]?.completedAt ?? "";
+          return aTime.localeCompare(bTime);
+        })
+        .map((log, logIdx, sortedLogs) => {
+          // Inter-exercise rest: from last set of this exercise to first set of the next one
+          let interExerciseLabel: string | null = null;
+          const nextLog = sortedLogs[logIdx + 1];
+          if (nextLog) {
+            const lastSet = log.sets[log.sets.length - 1];
+            const nextFirstSet = nextLog.sets[0];
+            if (lastSet?.completedAt && nextFirstSet?.startedAt) {
+              const restMs = new Date(nextFirstSet.startedAt).getTime() - new Date(lastSet.completedAt).getTime();
+              if (restMs > 0) {
+                const mins = Math.floor(restMs / 60000);
+                const secs = Math.floor((restMs % 60000) / 1000);
+                interExerciseLabel = `${mins}:${String(secs).padStart(2, "0")}`;
+              }
+            }
+          }
+          return (
+        <div key={log.exerciseId} className="flex flex-col">
+          <span className="font-bold text-[15px] leading-[18px] mb-2">{log.exerciseName}</span>
           <div className="flex flex-col">
             {log.sets.map((set, setIdx) => {
               const pbType = pbMap.get(log.exerciseId)?.get(set.completedAt);
@@ -248,16 +329,22 @@ export function WorkoutDetailView() {
               return (
               <div key={set.setNumber}>
                 {restLabel && (
-                  <div className="text-center text-[11px] opacity-30 py-0.5">
+                  <div
+                    className="text-center text-[12px] uppercase tracking-wider text-black py-[6px] px-2"
+                    style={{
+                      backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.1) 1px, transparent 1px)",
+                      backgroundSize: "4px 4px",
+                    }}
+                  >
                     Vila: {restLabel}
                   </div>
                 )}
                 <div
-                  className="flex items-center py-3 text-[15px] leading-[18px] border-b border-black/10 dark:border-white/20 last:border-0"
+                  className={`flex items-center text-[15px] leading-[18px] py-[14px] ${setIdx === 0 ? "border-t border-black/10 dark:border-white/20" : ""}`}
                 >
                   <span className="flex-1 font-bold">S{set.setNumber}</span>
 
-                  <span className="flex-1 text-right">
+                  <span className="flex items-center gap-1 text-right">
                     <span className={pbType === "reps" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
                       <InlineEdit
                         displayValue={String(set.reps)}
@@ -267,11 +354,9 @@ export function WorkoutDetailView() {
                         inputMode="numeric"
                         step="1"
                         inputClassName="w-10 text-right"
-                      />{" rep"}
+                      />
                     </span>
-                  </span>
-
-                  <span className="flex-1 text-right">
+                    <span className="opacity-40">×</span>
                     <span className={pbType === "weight" ? "bg-accent text-black rounded-full px-2 py-0.5" : ""}>
                       <InlineEdit
                         displayValue={
@@ -300,52 +385,21 @@ export function WorkoutDetailView() {
               );
             })}
           </div>
-        </div>
-      ))}
-
-      {/* Totals */}
-      <div className="bg-card rounded-card p-4">
-        <div className="flex px-6 py-3">
-          <span className="w-[83px] font-bold text-[15px]">{totals.totalSets} set</span>
-          <span className="w-[83px] text-[15px]">{totals.totalReps} rep</span>
-          <span className="w-[83px] text-[15px]">{totals.totalWeight} kg</span>
-        </div>
-      </div>
-
-      {/* Intensity card */}
-      <div className="bg-card rounded-card p-4 flex flex-col gap-3">
-        <div className="flex items-baseline gap-2 px-2">
-          <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">Intensitet</span>
-          <span className="text-[24px] font-bold">{intensity.score}</span>
-          <span className="text-[15px] opacity-50">/ 100</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2 px-2">
-          <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider opacity-40">Snitt vila</span>
-            <span className="text-[15px]">
-              {restData.interSetRests.length > 0
-                ? `${Math.floor(restData.avgInterSetRestMs / 60000)}:${String(
-                    Math.floor((restData.avgInterSetRestMs % 60000) / 1000)
-                  ).padStart(2, "0")}`
-                : "–"}
-            </span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider opacity-40">Volym/min</span>
-            <span className="text-[15px]">{intensity.volumePerMinute} kg</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider opacity-40">Set/min</span>
-            <span className="text-[15px]">{intensity.setDensity}</span>
-          </div>
-          {showCalories && calories > 0 && (
-            <div className="flex flex-col">
-              <span className="text-[11px] uppercase tracking-wider opacity-40">Kalorier</span>
-              <span className="text-[15px]">{calories} kcal</span>
+          {interExerciseLabel && (
+            <div
+              className="text-center text-[12px] uppercase tracking-wider text-black py-6 px-2"
+              style={{
+                backgroundImage: "radial-gradient(circle, rgba(218,165,32,0.35) 1px, transparent 1px)",
+                backgroundSize: "4px 4px",
+              }}
+            >
+              Övningsvila: {interExerciseLabel}
             </div>
           )}
         </div>
-      </div>
+          );
+        })}
+
 
     </div>
   );

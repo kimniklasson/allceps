@@ -23,7 +23,7 @@ export function StatsFunMotivational({ funStats }: Props) {
                 : "bg-black/5 dark:bg-white/10 opacity-30"
             }`}
           >
-            <span className={`text-[13px] font-bold ${badge.achieved ? "text-black" : ""}`}>
+            <span className={`text-[12px] font-bold ${badge.achieved ? "text-black" : ""}`}>
               {badge.label}
             </span>
           </div>
@@ -34,7 +34,7 @@ export function StatsFunMotivational({ funStats }: Props) {
       <div className="flex flex-col gap-2">
         {/* Fun equivalents */}
         <div className="bg-card rounded-card p-4 animate-in">
-          <span className="text-[11px] opacity-50 uppercase tracking-wider">Totalt lyft</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">Totalt lyft</span>
           <div className="text-[15px] font-bold mt-1">
             {funStats.totalKgInCars >= 1
               ? `${formatDecimal(funStats.totalKgInCars)} bilar`
@@ -51,7 +51,7 @@ export function StatsFunMotivational({ funStats }: Props) {
 
         {/* Days since first */}
         <div className="bg-card rounded-card p-4 animate-in" style={{ animationDelay: "0.04s" }}>
-          <span className="text-[11px] opacity-50 uppercase tracking-wider">Träningsålder</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">Träningsålder</span>
           <div className="text-[15px] font-bold mt-1">
             {funStats.daysSinceFirstWorkout} dagar
           </div>
@@ -60,7 +60,7 @@ export function StatsFunMotivational({ funStats }: Props) {
 
         {/* PB comparison */}
         <div className="bg-card rounded-card p-4 animate-in" style={{ animationDelay: "0.08s" }}>
-          <span className="text-[11px] opacity-50 uppercase tracking-wider">Personliga rekord</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">Personliga rekord</span>
           <div className="text-[15px] font-bold mt-1">
             {funStats.pbCountThisMonth} nya PBs denna månad
           </div>

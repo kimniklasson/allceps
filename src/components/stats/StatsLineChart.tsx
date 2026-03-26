@@ -54,7 +54,7 @@ export function StatsLineChart({ data, unit = "kg", title }: Props) {
   if (data.length === 0) {
     return (
       <div className="rounded-card border border-black/10 dark:border-white/10 p-4">
-        <p className="text-[13px] opacity-50 text-center">Ingen data ännu</p>
+        <p className="text-[12px] opacity-50 text-center">Ingen data ännu</p>
       </div>
     );
   }
@@ -242,7 +242,7 @@ export function StatsLineChart({ data, unit = "kg", title }: Props) {
 
       {/* Unit label */}
       <div className="flex justify-end mt-1">
-        <span className="text-[11px] opacity-40">{unit}</span>
+        <span className="text-[12px] opacity-40">{unit}</span>
       </div>
     </div>
   );

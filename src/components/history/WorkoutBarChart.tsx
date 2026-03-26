@@ -111,7 +111,7 @@ export function WorkoutBarChart({ sessions }: Props) {
       <div className="rounded-card border border-black/10 dark:border-white/10 px-4 pt-5 overflow-hidden">
         {/* Header */}
         <div className="relative flex justify-between items-center mb-6">
-          <span className="text-[13px] font-medium opacity-50">{currentYear}</span>
+          <span className="text-[12px] font-medium opacity-50">{currentYear}</span>
 
           {/* Segmented pill toggle — absolutely centered */}
           <div
@@ -139,7 +139,7 @@ export function WorkoutBarChart({ sessions }: Props) {
             ))}
           </div>
 
-          <span className="text-[13px] font-bold tracking-wide">TOTALT {total}</span>
+          <span className="text-[12px] font-bold tracking-wide">TOTALT {total}</span>
         </div>
 
         {/* Bars */}
@@ -165,7 +165,7 @@ export function WorkoutBarChart({ sessions }: Props) {
                 {isSelected && count > 0 && (
                   <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 z-10
                     bg-black dark:bg-white text-white dark:text-black
-                    text-[11px] font-semibold px-[7px] py-[3px] rounded-lg whitespace-nowrap
+                    text-[12px] font-semibold px-[7px] py-[3px] rounded-lg whitespace-nowrap
                     shadow-sm pointer-events-none">
                     {count} pass
                     <div className="absolute top-full left-1/2 -translate-x-1/2

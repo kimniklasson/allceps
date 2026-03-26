@@ -226,7 +226,7 @@ export function SessionTimerBar() {
           {/* View session button */}
           <button
             onClick={handleViewSession}
-            className="w-full bg-black dark:bg-white text-white dark:text-black rounded-full px-6 py-5 text-[13px] font-bold uppercase tracking-wider"
+            className="w-full bg-black dark:bg-white text-white dark:text-black rounded-full px-6 py-5 text-[12px] font-bold uppercase tracking-wider"
           >
             Visa pass
           </button>

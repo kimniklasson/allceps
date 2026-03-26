@@ -37,7 +37,7 @@ const CARD_CLS = "flex-1 rounded-card p-4 flex flex-col items-center gap-3 borde
 
 // ── Intensity Ring ───────────────────────────────────────────
 
-function IntensityCard({ score }: { score: number }) {
+export function IntensityCard({ score, label = "Snittintensitet" }: { score: number; label?: string }) {
   const [animated, setAnimated] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setAnimated(true), 80);
@@ -70,8 +70,8 @@ function IntensityCard({ score }: { score: number }) {
           <span className="text-[20px] font-bold tabular-nums">{intensity}</span>
         </div>
       </div>
-      <span className="text-[11px] font-medium uppercase tracking-wider opacity-50">
-        Snittintensitet
+      <span className="text-[12px] font-medium uppercase tracking-wider opacity-50">
+        {label}
       </span>
     </div>
   );
@@ -196,7 +196,7 @@ function CategoryCard({ insights, categoryNameToIndex }: { insights: ExerciseIns
       </div>
 
       {/* Label — always same size/style, text swaps on selection */}
-      <span className="text-[11px] font-medium uppercase tracking-wider opacity-50">
+      <span className="text-[12px] font-medium uppercase tracking-wider opacity-50">
         {activeSegment ? activeSegment.categoryName : "Passfördelning"}
       </span>
     </div>

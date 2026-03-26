@@ -73,7 +73,7 @@ export function SetNamePage() {
       </p>
 
       {error && (
-        <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[13px] text-red-700 text-center">
+        <div className="w-full max-w-[345px] mb-4 p-3 bg-red-50 border border-red-200 rounded-button text-[12px] text-red-700 text-center">
           {error}
         </div>
       )}

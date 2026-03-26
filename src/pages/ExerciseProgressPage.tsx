@@ -134,7 +134,7 @@ export function ExerciseProgressPage() {
           <button
             key={mode}
             onClick={() => handleViewMode(mode)}
-            className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-[12px] font-medium transition-colors ${
               viewMode === mode
                 ? "bg-black dark:bg-white text-white dark:text-black"
                 : "bg-black/5 dark:bg-white/10 opacity-60"
@@ -167,7 +167,7 @@ export function ExerciseProgressPage() {
         <StatsLineChart key={`best-${viewMode}-${offset}`} data={chartData} unit={unit} title="Tyngsta lyft" />
       ) : (
         <div className="rounded-card border border-black/10 dark:border-white/10 p-4">
-          <p className="text-[13px] opacity-50 text-center">Inga pass under denna period</p>
+          <p className="text-[12px] opacity-50 text-center">Inga pass under denna period</p>
         </div>
       )}
 
