@@ -5,7 +5,7 @@ import { useAuth } from "../auth/useAuth";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Modal } from "../components/ui/Modal";
 import { useSettingsStore, type Appearance, type Sex } from "../stores/useSettingsStore";
-import { IconCheck, IconShow, IconHide } from "../components/ui/icons";
+import { IconShow, IconHide } from "../components/ui/icons";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
@@ -83,9 +83,6 @@ export function ProfilePage() {
     if (error) setNameError(error);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleNameSave();
-  };
 
   const handleWeightSave = () => {
     if (!weightChanged) return;
