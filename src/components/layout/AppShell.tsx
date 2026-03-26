@@ -13,7 +13,7 @@ export function AppShell() {
     <div className="mx-auto max-w-[600px] min-h-full bg-white dark:bg-[#111111] relative">
       <Header />
       <SharedForFutureYou />
-      <main className={`pt-32 px-8 ${hasSession ? "pb-48" : "pb-32"}`}>
+      <main className={`pt-32 px-8 ${hasSession ? "pb-64" : "pb-48"}`}>
         <div key={location.pathname} className="page-transition">
           <Outlet />
         </div>

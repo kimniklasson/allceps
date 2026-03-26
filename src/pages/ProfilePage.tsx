@@ -311,7 +311,7 @@ export function ProfilePage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         {/* Logout */}
         <button
           type="button"
@@ -327,10 +327,10 @@ export function ProfilePage() {
           type="button"
           onClick={() => setShowDeleteConfirm(true)}
           disabled={deleting}
-          className="w-full flex items-center justify-center gap-3 bg-black/5 dark:bg-white/10 rounded-full px-6 py-5 text-[13px] font-bold uppercase tracking-wider text-red-500 hover:bg-black/10 dark:hover:bg-white/15 transition-colors"
+          className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-red-500 opacity-70 hover:opacity-100 transition-opacity mx-auto"
         >
           {deleting ? "Tar bort..." : "Ta bort konto"}
-          <IconTrash size={18} />
+          <IconTrash size={16} />
         </button>
       </div>
 
