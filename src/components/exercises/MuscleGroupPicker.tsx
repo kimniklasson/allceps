@@ -237,7 +237,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
                     e.stopPropagation();
                     handleRemoveFromExercise(assignment.muscleGroupId);
                   }}
-                  className="absolute right-[-8px] top-[29px] -translate-y-1/2 w-4 h-4 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center z-10 transition-transform active:scale-90"
+                  className="absolute left-[-8px] top-[29px] -translate-y-1/2 w-4 h-4 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center z-10 transition-transform active:scale-90"
                 >
                   <MinusIcon />
                 </button>
