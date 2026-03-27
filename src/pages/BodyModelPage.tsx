@@ -167,8 +167,8 @@ export function BodyModelPage() {
     const loader = new OBJLoader()
     loader.load(
       '/malefemale.obj',
-      (obj) => {
-        obj.traverse((child) => {
+      (obj: THREE.Group) => {
+        obj.traverse((child: THREE.Object3D) => {
           if (!(child as THREE.Mesh).isMesh) return
           const mesh = child as THREE.Mesh
 
@@ -192,7 +192,7 @@ export function BodyModelPage() {
         setLoading(false)
       },
       undefined,
-      (err) => console.error('OBJ load error:', err)
+      (_err: unknown) => console.error('OBJ load error')
     )
 
     function loop() {
@@ -215,8 +215,8 @@ export function BodyModelPage() {
       }
 
       // Project 3D body dots to 2D screen
-      const cw = container.clientWidth
-      const ch = container.clientHeight
+      const cw = container?.clientWidth ?? 0
+      const ch = container?.clientHeight ?? 0
       DOTS[genderRef.current].forEach((dot, i) => {
         const el = dotRefs.current[i]
         if (!el) return

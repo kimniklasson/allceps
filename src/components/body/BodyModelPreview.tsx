@@ -67,8 +67,8 @@ export function BodyModelPreview({ sex }: { sex: Sex }) {
     const mat = new THREE.MeshLambertMaterial({ color: 0xffffff })
 
     const loader = new OBJLoader()
-    loader.load('/malefemale.obj', (obj) => {
-      obj.traverse((child) => {
+    loader.load('/malefemale.obj', (obj: THREE.Group) => {
+      obj.traverse((child: THREE.Object3D) => {
         if (!(child as THREE.Mesh).isMesh) return
         const mesh = child as THREE.Mesh
         const [maleGeo, femaleGeo] = splitGeometryByX(mesh.geometry, 0)
