@@ -115,8 +115,8 @@ function InlineEdit({
 export function WorkoutDetailView() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { loadSessions, updateSession } = useHistoryStore();
-  const [pendingDelete, setPendingDelete] = useState<{ logIdx: number; setIdx: number } | null>(null);
-  const [deletingSet, setDeletingSet] = useState<string | null>(null); // "logIdx-setIdx"
+  const [pendingDelete, setPendingDelete] = useState<{ exerciseId: string; setIdx: number } | null>(null);
+  const [deletingSet, setDeletingSet] = useState<string | null>(null); // "exerciseId-setIdx"
   const allSessions = useHistoryStore((state) => state.sessions);
   const { categories } = useCategoryStore();
   const { userWeight, userAge, userSex, showCalories } = useSettingsStore();
@@ -189,6 +189,17 @@ export function WorkoutDetailView() {
     return                     <span style={ARROW_STYLE} className="text-red-500">&#x2198;</span>;
   }
 
+  // Map exerciseId → current name from categories (handles renames)
+  const currentExerciseNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const cat of categories) {
+      for (const ex of cat.exercises) {
+        map.set(ex.id, ex.name);
+      }
+    }
+    return map;
+  }, [categories]);
+
   const save = (updated: WorkoutSession) => updateSession(updated);
 
   const updateStartedAt = (iso: string) =>
@@ -198,15 +209,15 @@ export function WorkoutDetailView() {
     save({ ...session, finishedAt: iso });
 
   const updateSet = (
-    logIdx: number,
+    exerciseId: string,
     setIdx: number,
     field: "reps" | "weight",
     rawVal: string
   ) => {
     const val = parseFloat(rawVal);
     if (isNaN(val) || val < 0) return;
-    const newLogs = session.exerciseLogs.map((log, li) => {
-      if (li !== logIdx) return log;
+    const newLogs = session.exerciseLogs.map((log) => {
+      if (log.exerciseId !== exerciseId) return log;
       const newSets = log.sets.map((s, si) =>
         si === setIdx
           ? { ...s, [field]: field === "reps" ? Math.round(val) : val }
@@ -217,13 +228,13 @@ export function WorkoutDetailView() {
     save({ ...session, exerciseLogs: newLogs });
   };
 
-  const confirmDeleteSet = async (logIdx: number, setIdx: number) => {
+  const confirmDeleteSet = async (exerciseId: string, setIdx: number) => {
     setPendingDelete(null);
-    const key = `${logIdx}-${setIdx}`;
+    const key = `${exerciseId}-${setIdx}`;
     setDeletingSet(key);
     const newLogs = session.exerciseLogs
-      .map((log, li) => {
-        if (li !== logIdx) return log;
+      .map((log) => {
+        if (log.exerciseId !== exerciseId) return log;
         const newSets = log.sets
           .filter((_, si) => si !== setIdx)
           .map((s, i) => ({ ...s, setNumber: i + 1 }));
@@ -312,10 +323,10 @@ export function WorkoutDetailView() {
           const bTime = b.sets[0]?.startedAt ?? b.sets[0]?.completedAt ?? "";
           return aTime.localeCompare(bTime);
         })
-        .map((log, logIdx, sortedLogs) => {
+        .map((log, displayIdx, sortedLogs) => {
           // Inter-exercise rest: from last set of this exercise to first set of the next one
           let interExerciseLabel: string | null = null;
-          const nextLog = sortedLogs[logIdx + 1];
+          const nextLog = sortedLogs[displayIdx + 1];
           if (nextLog) {
             const lastSet = log.sets[log.sets.length - 1];
             const nextFirstSet = nextLog.sets[0];
@@ -330,7 +341,7 @@ export function WorkoutDetailView() {
           }
           return (
         <div key={log.exerciseId} className="flex flex-col">
-          <span className="font-bold text-[20px] leading-[25px] mb-4">{log.exerciseName}</span>
+          <span className="font-bold text-[20px] leading-[25px] mb-4">{currentExerciseNames.get(log.exerciseId) ?? log.exerciseName}</span>
           <div className="flex flex-col">
             {log.sets.map((set, setIdx) => {
               const pbType = pbMap.get(log.exerciseId)?.get(set.completedAt);
@@ -366,7 +377,7 @@ export function WorkoutDetailView() {
                       <InlineEdit
                         displayValue={String(set.reps)}
                         inputValue={String(set.reps)}
-                        onSave={(v) => updateSet(logIdx, setIdx, "reps", v)}
+                        onSave={(v) => updateSet(log.exerciseId, setIdx, "reps", v)}
                         type="number"
                         inputMode="numeric"
                         step="1"
@@ -382,7 +393,7 @@ export function WorkoutDetailView() {
                             : String(set.weight)
                         }
                         inputValue={String(set.weight)}
-                        onSave={(v) => updateSet(logIdx, setIdx, "weight", v)}
+                        onSave={(v) => updateSet(log.exerciseId, setIdx, "weight", v)}
                         type="number"
                         inputMode="decimal"
                         step="0.5"
@@ -392,11 +403,11 @@ export function WorkoutDetailView() {
                   </span>
 
                   <button
-                    onClick={() => setPendingDelete({ logIdx, setIdx })}
-                    disabled={deletingSet === `${logIdx}-${setIdx}`}
+                    onClick={() => setPendingDelete({ exerciseId: log.exerciseId, setIdx })}
+                    disabled={deletingSet === `${log.exerciseId}-${setIdx}`}
                     className="w-8 flex items-center justify-end opacity-40 hover:opacity-100 active:opacity-100 transition-opacity"
                   >
-                    {deletingSet === `${logIdx}-${setIdx}` ? (
+                    {deletingSet === `${log.exerciseId}-${setIdx}` ? (
                       <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <IconTrash size={14} />
@@ -424,7 +435,7 @@ export function WorkoutDetailView() {
     <ConfirmDialog
       isOpen={pendingDelete !== null}
       message="Är du säker på att du vill ta bort setet permanent?"
-      onConfirm={() => pendingDelete && confirmDeleteSet(pendingDelete.logIdx, pendingDelete.setIdx)}
+      onConfirm={() => pendingDelete && confirmDeleteSet(pendingDelete.exerciseId, pendingDelete.setIdx)}
       onCancel={() => setPendingDelete(null)}
     />
     </>
