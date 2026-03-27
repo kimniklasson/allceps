@@ -58,14 +58,12 @@ export function ExerciseCard({
   const [saving, setSaving] = useState(false);
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroupAssignment[]>(exercise.muscleGroups);
 
-  // Sync from store only when modal opens — avoids race conditions on save
   useEffect(() => {
     if (showSettings) {
       setEditName(exercise.name);
       setMuscleGroups(exercise.muscleGroups);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showSettings]);
+  }, [showSettings, exercise.name, exercise.muscleGroups]);
 
   const { updateExercise } = useExerciseStore();
   const { loadCategories } = useCategoryStore();
@@ -133,8 +131,7 @@ export function ExerciseCard({
       nameHasChanged ? onRename(exercise.id, pendingName) : Promise.resolve(),
       muscleGroupsChanged ? updateExercise(exercise.id, { muscleGroups: pendingMuscleGroups }) : Promise.resolve(),
     ]);
-    // Keep local state correct in case modal reopens before React prop update arrives
-    setMuscleGroups(pendingMuscleGroups);
+    await loadCategories(); // Synkar categoryStore så exercise-propen uppdateras i föräldern
     setSaving(false);
   };
 
