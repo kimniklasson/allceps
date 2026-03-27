@@ -731,6 +731,100 @@ export function computeCategoryStrengthIndex(sessions: WorkoutSession[]): Streng
   return { series };
 }
 
+// ── Muscle Group Volume Distribution ──────────────────────
+
+export interface MuscleGroupVolume {
+  muscleGroupName: string;
+  totalReps: number;       // weighted reps (reps × percentage / 100)
+  percentage: number;      // 0-100 of total
+}
+
+export interface MuscleGroupVolumeResult {
+  groups: MuscleGroupVolume[];
+  totalReps: number;
+  hasData: boolean;
+}
+
+export function computeMuscleGroupVolume(
+  sessions: WorkoutSession[],
+  _userWeight: number,
+  periodDays: number | null
+): MuscleGroupVolumeResult {
+  const now = Date.now();
+  const cutoff = periodDays != null ? now - periodDays * 86400000 : 0;
+
+  const repsMap = new Map<string, number>();
+
+  for (const session of sessions) {
+    if (periodDays != null && new Date(session.startedAt).getTime() < cutoff) continue;
+
+    for (const log of session.exerciseLogs) {
+      if (!log.muscleGroups || log.muscleGroups.length === 0) continue;
+
+      for (const set of log.sets) {
+        for (const mg of log.muscleGroups) {
+          const contribution = set.reps * (mg.percentage / 100);
+          repsMap.set(mg.name, (repsMap.get(mg.name) || 0) + contribution);
+        }
+      }
+    }
+  }
+
+  const totalReps = Array.from(repsMap.values()).reduce((a, b) => a + b, 0);
+
+  const groups: MuscleGroupVolume[] = Array.from(repsMap)
+    .map(([muscleGroupName, totalRepsForGroup]) => ({
+      muscleGroupName,
+      totalReps: Math.round(totalRepsForGroup),
+      percentage: totalReps > 0 ? Math.round((totalRepsForGroup / totalReps) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.totalReps - a.totalReps);
+
+  return { groups, totalReps: Math.round(totalReps), hasData: groups.length > 0 };
+}
+
+// ── Muscle Group Balance Analysis ─────────────────────────
+
+export interface MuscleBalanceResult {
+  score: number;           // 0-100, 100 = perfectly balanced
+  mostTrained: { name: string; percentage: number } | null;
+  leastTrained: { name: string; percentage: number } | null;
+  hasData: boolean;
+}
+
+export function computeMuscleBalance(
+  sessions: WorkoutSession[],
+  periodDays: number | null
+): MuscleBalanceResult {
+  const volume = computeMuscleGroupVolume(sessions, 0, periodDays);
+
+  if (!volume.hasData || volume.groups.length < 2) {
+    return { score: 0, mostTrained: null, leastTrained: null, hasData: false };
+  }
+
+  // Balance score based on normalized entropy
+  // Perfect balance = all groups equal = score 100
+  // All volume in one group = score 0
+  const n = volume.groups.length;
+  const maxEntropy = Math.log(n);
+  let entropy = 0;
+  for (const g of volume.groups) {
+    const p = g.percentage / 100;
+    if (p > 0) entropy -= p * Math.log(p);
+  }
+  const score = maxEntropy > 0 ? Math.round((entropy / maxEntropy) * 100) : 0;
+
+  const mostTrained = volume.groups[0];
+  const leastTrained = volume.groups[volume.groups.length - 1];
+
+  return {
+    score,
+    mostTrained: { name: mostTrained.muscleGroupName, percentage: mostTrained.percentage },
+    leastTrained: { name: leastTrained.muscleGroupName, percentage: leastTrained.percentage },
+    hasData: true,
+  };
+}
+
 // ── Fun / Motivational ─────────────────────────────────────
 
 const BADGE_MILESTONES = [10, 25, 50, 100, 250, 500, 1000];

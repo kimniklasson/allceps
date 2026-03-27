@@ -7,6 +7,7 @@ import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calcula
 import { computeHistoricalPBTypes } from "../../utils/personalBest";
 import { useSettingsStore } from "../../stores/useSettingsStore";
 import { IconTrash } from "../ui/icons";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import type { WorkoutSession } from "../../types/models";
 import { IntensityCard } from "../stats/StatsOverviewCards";
 import { getCategoryColor } from "../../utils/categoryColors";
@@ -114,6 +115,8 @@ function InlineEdit({
 export function WorkoutDetailView() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { loadSessions, updateSession } = useHistoryStore();
+  const [pendingDelete, setPendingDelete] = useState<{ logIdx: number; setIdx: number } | null>(null);
+  const [deletingSet, setDeletingSet] = useState<string | null>(null); // "logIdx-setIdx"
   const allSessions = useHistoryStore((state) => state.sessions);
   const { categories } = useCategoryStore();
   const { userWeight, userAge, userSex, showCalories } = useSettingsStore();
@@ -214,7 +217,10 @@ export function WorkoutDetailView() {
     save({ ...session, exerciseLogs: newLogs });
   };
 
-  const deleteSet = (logIdx: number, setIdx: number) => {
+  const confirmDeleteSet = async (logIdx: number, setIdx: number) => {
+    setPendingDelete(null);
+    const key = `${logIdx}-${setIdx}`;
+    setDeletingSet(key);
     const newLogs = session.exerciseLogs
       .map((log, li) => {
         if (li !== logIdx) return log;
@@ -224,10 +230,12 @@ export function WorkoutDetailView() {
         return { ...log, sets: newSets };
       })
       .filter((log) => log.sets.length > 0);
-    save({ ...session, exerciseLogs: newLogs });
+    await save({ ...session, exerciseLogs: newLogs });
+    setDeletingSet(null);
   };
 
   return (
+    <>
     <div className="flex flex-col gap-8 px-2">
 
       {/* Session header */}
@@ -384,10 +392,15 @@ export function WorkoutDetailView() {
                   </span>
 
                   <button
-                    onClick={() => deleteSet(logIdx, setIdx)}
+                    onClick={() => setPendingDelete({ logIdx, setIdx })}
+                    disabled={deletingSet === `${logIdx}-${setIdx}`}
                     className="w-8 flex items-center justify-end opacity-40 hover:opacity-100 active:opacity-100 transition-opacity"
                   >
-                    <IconTrash size={14} />
+                    {deletingSet === `${logIdx}-${setIdx}` ? (
+                      <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <IconTrash size={14} />
+                    )}
                   </button>
                 </div>
               </div>
@@ -407,5 +420,13 @@ export function WorkoutDetailView() {
 
 
     </div>
+
+    <ConfirmDialog
+      isOpen={pendingDelete !== null}
+      message="Är du säker på att du vill ta bort setet permanent?"
+      onConfirm={() => pendingDelete && confirmDeleteSet(pendingDelete.logIdx, pendingDelete.setIdx)}
+      onCancel={() => setPendingDelete(null)}
+    />
+    </>
   );
 }

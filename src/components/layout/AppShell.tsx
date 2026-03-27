@@ -4,10 +4,12 @@ import { SharedForFutureYou } from "./SharedForFutureYou";
 import { BottomNav } from "./BottomNav";
 import { SessionTimerBar } from "./SessionTimerBar";
 import { useSessionStore } from "../../stores/useSessionStore";
+import { useBackfillMuscleGroups } from "../../hooks/useBackfillMuscleGroups";
 
 export function AppShell() {
   const hasSession = useSessionStore((s) => s.activeSession !== null);
   const location = useLocation();
+  useBackfillMuscleGroups();
 
   return (
     <div className="mx-auto max-w-[600px] min-h-full bg-white dark:bg-[#111111] relative">

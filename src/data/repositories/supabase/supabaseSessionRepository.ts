@@ -236,6 +236,12 @@ export const supabaseSessionRepository: SessionRepository = {
         if (existingLogs && existingLogs.length > 0) {
           logId = existingLogs[0].id;
 
+          // Update mutable fields on existing log
+          await supabase
+            .from("exercise_logs")
+            .update({ muscle_groups: log.muscleGroups ?? [] })
+            .eq("id", logId);
+
           // Clean up any duplicate logs from past race conditions
           if (existingLogs.length > 1) {
             const duplicateIds = existingLogs.slice(1).map((l) => l.id);

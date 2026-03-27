@@ -8,6 +8,7 @@ import { StatsSessionOverview } from "../components/stats/StatsSessionOverview";
 import { StatsOverviewCards } from "../components/stats/StatsOverviewCards";
 import { StatsStrengthTrend } from "../components/stats/StatsStrengthTrend";
 import { StatsVolumeTrend } from "../components/stats/StatsVolumeTrend";
+import { StatsMuscleGroupVolume } from "../components/stats/StatsMuscleGroupVolume";
 import { FadeInOnScroll } from "../components/ui/FadeInOnScroll";
 import * as stats from "../utils/statistics";
 
@@ -67,6 +68,9 @@ export function StatsPage() {
           </FadeInOnScroll>
           <FadeInOnScroll>
             <StatsPersonalRecords prs={prs} />
+          </FadeInOnScroll>
+          <FadeInOnScroll>
+            <StatsMuscleGroupVolume sessions={sessions} userWeight={userWeight} />
           </FadeInOnScroll>
           <FadeInOnScroll>
             <div className="flex flex-col gap-8">
