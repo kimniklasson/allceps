@@ -27,9 +27,9 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteIdState] = useState<string | null>(null);
   // Keep a ref in sync so the mousedown handler always sees the latest value
-  const syncConfirmDeleteId = (id: string | null) => { confirmDeleteIdRef.current = id; syncConfirmDeleteId(id); };
+  const syncConfirmDeleteId = (id: string | null) => { confirmDeleteIdRef.current = id; setConfirmDeleteIdState(id); };
 
   const createInputRef = useRef<HTMLInputElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
