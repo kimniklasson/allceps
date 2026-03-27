@@ -28,10 +28,13 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  // Keep a ref in sync so the mousedown handler always sees the latest value
+  const syncConfirmDeleteId = (id: string | null) => { confirmDeleteIdRef.current = id; syncConfirmDeleteId(id); };
 
   const createInputRef = useRef<HTMLInputElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
   const addContainerRef = useRef<HTMLDivElement>(null);
+  const confirmDeleteIdRef = useRef<string | null>(null);
 
   useEffect(() => { loadMuscleGroups(); }, [loadMuscleGroups]);
 
@@ -50,7 +53,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   useEffect(() => {
     if (!showAdd) return;
     function handleClick(e: MouseEvent) {
-      if (addContainerRef.current && !addContainerRef.current.contains(e.target as Node)) {
+      if (addContainerRef.current && !addContainerRef.current.contains(e.target as Node) && confirmDeleteIdRef.current === null) {
         setShowAdd(false);
         setNewName("");
       }
@@ -150,7 +153,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
     const remaining = value.filter((v) => v.muscleGroupId !== confirmDeleteId);
     onChange(remaining.length === 0 ? [] : redistributeWith(remaining, 100));
     setEditingId(null);
-    setConfirmDeleteId(null);
+    syncConfirmDeleteId(null);
   }
 
   const multiMode = value.length >= 2;
@@ -314,7 +317,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
                       {g.name}
                     </button>
                     <button
-                      onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); setConfirmDeleteId(g.id); }}
+                      onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); syncConfirmDeleteId(g.id); }}
                       className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shrink-0 transition-transform active:scale-90"
                     >
                       <IconTrash size={11} className="text-white" />
@@ -333,7 +336,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
         confirmLabel="Ta bort"
         cancelLabel="Avbryt"
         onConfirm={handleDeleteGlobally}
-        onCancel={() => { setConfirmDeleteId(null); setEditingId(null); }}
+        onCancel={() => { syncConfirmDeleteId(null); setEditingId(null); }}
       />
     </div>
   );
