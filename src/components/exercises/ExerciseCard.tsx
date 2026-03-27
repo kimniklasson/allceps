@@ -55,7 +55,7 @@ export function ExerciseCard({
 
   const [showSettings, setShowSettings] = useState(false);
   const [editName, setEditName] = useState(exercise.name);
-  const [savingName, setSavingName] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroupAssignment[]>(exercise.muscleGroups);
 
   useEffect(() => {
@@ -120,12 +120,13 @@ export function ExerciseCard({
 
   const nameHasChanged = editName.trim() !== exercise.name && editName.trim().length > 0;
 
-  const handleNameSave = async () => {
-    const trimmed = editName.trim();
-    if (!trimmed || !nameHasChanged) return;
-    setSavingName(true);
-    await onRename(exercise.id, trimmed);
-    setSavingName(false);
+  const handleSave = async () => {
+    setShowSettings(false);
+    setSaving(true);
+    if (nameHasChanged) {
+      await onRename(exercise.id, editName.trim());
+    }
+    setSaving(false);
   };
 
   const handleBodyweightToggle = async () => {
@@ -147,26 +148,10 @@ export function ExerciseCard({
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); }}
             maxLength={60}
             placeholder="Namn"
             className="flex-1 min-w-0 text-[15px] bg-transparent outline-none"
           />
-          <button
-            type="button"
-            onClick={handleNameSave}
-            disabled={!nameHasChanged || savingName}
-            className={`px-4 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center ${
-              nameHasChanged && !savingName
-                ? "bg-black dark:bg-white text-white dark:text-black"
-                : "bg-black/5 dark:bg-white/10 text-black/30 dark:text-white/30"
-            }`}
-          >
-            {savingName
-              ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              : "Spara"
-            }
-          </button>
         </div>
 
         {/* Bodyweight toggle */}
@@ -192,6 +177,14 @@ export function ExerciseCard({
         <div className="mt-4">
           <MuscleGroupPicker value={muscleGroups} onChange={handleMuscleGroupsChange} />
         </div>
+
+        {/* Save button */}
+        <button
+          onClick={handleSave}
+          className="mt-4 w-full py-4 px-6 rounded-button text-[12px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black transition-transform active:scale-[0.97]"
+        >
+          Spara
+        </button>
       </div>
     </Modal>,
     document.body
@@ -214,10 +207,13 @@ export function ExerciseCard({
         <div className="flex items-center">
           {/* Settings icon */}
           <button
-            onClick={(e) => { e.stopPropagation(); setShowSettings(true); }}
+            onClick={(e) => { e.stopPropagation(); if (!saving) setShowSettings(true); }}
             className="shrink-0 opacity-40 active:opacity-70 w-8 h-8 flex items-center justify-center"
           >
-            <SettingsIcon />
+            {saving
+              ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              : <SettingsIcon />
+            }
           </button>
 
           {/* Name — read only */}
