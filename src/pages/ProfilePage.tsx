@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BodyModelPreview } from "../components/body/BodyModelPreview";
-import { IconLogout, IconTrash, IconChevronRight } from "../components/ui/icons";
+import { IconLogout, IconTrash, IconArrowLeft } from "../components/ui/icons";
 import { useAuth } from "../auth/useAuth";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Modal } from "../components/ui/Modal";
@@ -234,9 +234,9 @@ export function ProfilePage() {
             <p className="text-[15px] font-medium leading-snug opacity-80">
               Lägg till och följ<br />dina mått
             </p>
-            <IconChevronRight size={20} className="opacity-50" />
+            <IconArrowLeft size={20} className="opacity-50 rotate-180" />
           </div>
-          <div className="flex-shrink-0" style={{ width: 160, height: 210 }}>
+          <div className="flex-shrink-0 self-center" style={{ width: 160, height: 210 }}>
             <BodyModelPreview sex={userSex} />
           </div>
         </button>
