@@ -4,7 +4,6 @@ import type {
   WorkoutSession,
   ExerciseAdjustment,
   ActiveSetInfo,
-  MuscleGroupAssignment,
 } from "../types/models";
 import { getSessionRepository } from "../data/repositories";
 import { useHistoryStore } from "./useHistoryStore";

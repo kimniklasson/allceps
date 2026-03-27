@@ -101,6 +101,7 @@ export function ImportExercisesModal({
       baseReps: 8,
       baseWeight: 50,
       isBodyweight: false,
+      muscleGroups: [],
     });
     // Auto-check for current category
     setPendingChanges((prev) => {

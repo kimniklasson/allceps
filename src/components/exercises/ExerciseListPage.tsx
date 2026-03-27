@@ -118,6 +118,7 @@ export function ExerciseListPage() {
       baseReps: exercise.baseReps,
       baseWeight: exercise.baseWeight,
       isBodyweight: exercise.isBodyweight,
+      muscleGroups: exercise.muscleGroups,
     });
     await addExerciseToCategory(category.id, newExercise.id);
 
