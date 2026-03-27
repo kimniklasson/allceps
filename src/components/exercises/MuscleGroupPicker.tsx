@@ -276,7 +276,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
       {showAdd && (
         <div ref={addContainerRef} className="flex flex-col gap-2">
           {/* Create new input with existing group pills inside */}
-          <div className="border border-black/10 dark:border-white/20 rounded-card px-6 pt-4 pb-6 flex flex-col gap-6">
+          <div className="border border-black/10 dark:border-white/20 rounded-card p-4 flex flex-col gap-6">
             <div className="flex items-center">
               <input
                 ref={createInputRef}
@@ -288,7 +288,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
                   if (e.key === "Enter" && canCreate) handleCreate();
                   if (e.key === "Escape") { setShowAdd(false); setNewName(""); }
                 }}
-                className="flex-1 text-[15px] bg-transparent outline-none"
+                className="flex-1 text-[15px] bg-transparent outline-none ml-2"
               />
               {canCreate && (
                 <button
