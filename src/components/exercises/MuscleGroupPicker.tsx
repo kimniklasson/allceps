@@ -72,8 +72,29 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   );
   const canCreate = newName.trim().length > 0 && !hasExactMatch;
 
+  function redistributeWith(assignments: MuscleGroupAssignment[], targetTotal: number): MuscleGroupAssignment[] {
+    const total = assignments.reduce((acc, v) => acc + v.percentage, 0);
+    if (total === 0) {
+      const each = Math.floor(targetTotal / assignments.length);
+      return assignments.map((v, i) => ({
+        ...v,
+        percentage: i === 0 ? targetTotal - each * (assignments.length - 1) : each,
+      }));
+    }
+    const scaled = assignments.map((v) => ({ ...v, percentage: Math.round((v.percentage / total) * targetTotal) }));
+    const sum = scaled.reduce((acc, v) => acc + v.percentage, 0);
+    if (sum !== targetTotal) scaled[0] = { ...scaled[0], percentage: scaled[0].percentage + (targetTotal - sum) };
+    return scaled;
+  }
+
   function handleAddGroup(id: string, name: string) {
-    onChange([...value, { muscleGroupId: id, muscleGroupName: name, percentage: 100 }]);
+    if (value.length === 0) {
+      onChange([{ muscleGroupId: id, muscleGroupName: name, percentage: 100 }]);
+    } else {
+      const newPct = 20;
+      const rescaled = redistributeWith(value, 100 - newPct);
+      onChange([...rescaled, { muscleGroupId: id, muscleGroupName: name, percentage: newPct }]);
+    }
     setShowAdd(false);
     setNewName("");
   }
@@ -91,17 +112,22 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   }
 
   function handleRemoveFromExercise(id: string) {
-    onChange(value.filter((v) => v.muscleGroupId !== id));
+    const remaining = value.filter((v) => v.muscleGroupId !== id);
+    if (remaining.length === 0) { onChange([]); return; }
+    onChange(redistributeWith(remaining, 100));
   }
 
   function handleStep(id: string, delta: number) {
-    onChange(
-      value.map((v) =>
-        v.muscleGroupId === id
-          ? { ...v, percentage: Math.max(0, Math.min(100, v.percentage + delta)) }
-          : v
-      )
-    );
+    const current = value.find((v) => v.muscleGroupId === id);
+    if (!current) return;
+    const newVal = Math.max(0, Math.min(100, current.percentage + delta));
+    const others = value.filter((v) => v.muscleGroupId !== id);
+    const rescaledOthers = redistributeWith(others, 100 - newVal);
+    onChange(value.map((v) =>
+      v.muscleGroupId === id
+        ? { ...v, percentage: newVal }
+        : rescaledOthers.find((o) => o.muscleGroupId === v.muscleGroupId) || v
+    ));
   }
 
   function startEdit(id: string, name: string) {
@@ -123,7 +149,8 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   async function handleDeleteGlobally() {
     if (!confirmDeleteId) return;
     await deleteMuscleGroup(confirmDeleteId);
-    onChange(value.filter((v) => v.muscleGroupId !== confirmDeleteId));
+    const remaining = value.filter((v) => v.muscleGroupId !== confirmDeleteId);
+    onChange(remaining.length === 0 ? [] : redistributeWith(remaining, 100));
     setEditingId(null);
     setConfirmDeleteId(null);
   }
