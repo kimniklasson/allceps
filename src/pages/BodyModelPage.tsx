@@ -48,18 +48,26 @@ function makeDot(id: string, label: string, wx: number, wy: number, wz: number):
 
 const DOTS: Record<Gender, BodyDot[]> = {
   male: [
-    makeDot('chest', 'Bröst', -1.7, 6.1, 0.5),
-    makeDot('left-arm', 'Vänster arm', -0.45, 5.8, 0.3),
-    makeDot('right-arm', 'Höger arm', -2.95, 5.8, 0.3),
-    makeDot('left-leg', 'Vänster ben', -1.1, 1.8, 0.2),
-    makeDot('right-leg', 'Höger ben', -2.4, 1.8, 0.2),
+    makeDot('neck',         'Nacke',           -1.7,  7.42, 0.5),
+    makeDot('chest',        'Bröst',           -1.7,  6.1,  0.5),
+    makeDot('waist',        'Midja',           -1.7,  4.78, 0.5),
+    makeDot('left-arm',     'Vänster överarm', -0.54, 5.93, 0.3),
+    makeDot('right-arm',    'Höger överarm',   -2.86, 5.93, 0.3),
+    makeDot('left-thigh',   'Vänster lår',     -1.1,  3.56, 0.2),
+    makeDot('right-thigh',  'Höger lår',       -2.4,  3.56, 0.2),
+    makeDot('left-leg',     'Vänster vad',     -1.1,  1.8,  0.2),
+    makeDot('right-leg',    'Höger vad',       -2.4,  1.8,  0.2),
   ],
   female: [
-    makeDot('chest', 'Bröst', 1.7, 6.1, 0.5),
-    makeDot('left-arm', 'Vänster arm', 2.55, 5.8, 0.3),
-    makeDot('right-arm', 'Höger arm', 0.45, 5.8, 0.3),
-    makeDot('left-leg', 'Vänster ben', 1.5, 1.8, 0.2),
-    makeDot('right-leg', 'Höger ben', 0.6, 1.8, 0.2),
+    makeDot('neck',         'Nacke',           1.7,  7.42, 0.5),
+    makeDot('chest',        'Bröst',           1.7,  6.1,  0.5),
+    makeDot('waist',        'Midja',           1.7,  4.78, 0.5),
+    makeDot('left-arm',     'Vänster överarm', 2.46, 5.93, 0.3),
+    makeDot('right-arm',    'Höger överarm',   0.54, 5.93, 0.3),
+    makeDot('left-thigh',   'Vänster lår',     1.5,  3.56, 0.2),
+    makeDot('right-thigh',  'Höger lår',       0.6,  3.56, 0.2),
+    makeDot('left-leg',     'Vänster vad',     1.5,  1.8,  0.2),
+    makeDot('right-leg',    'Höger vad',       0.6,  1.8,  0.2),
   ],
 }
 
@@ -323,7 +331,7 @@ export function BodyModelPage() {
             <span
               style={{
                 color: '#000',
-                fontSize: 15,
+                fontSize: 12,
                 fontWeight: 500,
                 fontFamily: 'var(--font-sans)',
                 whiteSpace: 'nowrap',
