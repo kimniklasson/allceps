@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCategoryStore } from "../../stores/useCategoryStore";
+import { CATEGORIES, COMMON } from "../../constants/ui-strings";
 
 interface CreateCategoryInputProps {
   onCreated?: (id: string) => void;
@@ -34,7 +35,7 @@ export function CreateCategoryInput({ onCreated }: CreateCategoryInputProps) {
     <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
       <input
         type="text"
-        placeholder="Skapa ett pass"
+        placeholder={CATEGORIES.CREATE_PLACEHOLDER}
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -51,7 +52,7 @@ export function CreateCategoryInput({ onCreated }: CreateCategoryInputProps) {
       >
         {saving
           ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          : "Skapa"
+          : COMMON.CREATE
         }
       </button>
     </div>

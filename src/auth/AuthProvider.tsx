@@ -7,6 +7,7 @@ import { useExerciseStore } from "../stores/useExerciseStore";
 import { useSessionStore } from "../stores/useSessionStore";
 import { useHistoryStore } from "../stores/useHistoryStore";
 import { useSettingsStore } from "../stores/useSettingsStore";
+import { AUTH } from "../constants/ui-strings";
 
 export interface AuthContextType {
   user: User | null;
@@ -111,13 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updatePassword = async (currentPassword: string, newPassword: string) => {
-    if (!user?.email) return { error: "Ingen användare inloggad." };
+    if (!user?.email) return { error: AUTH.NO_USER_LOGGED_IN };
     // Verify current password by re-authenticating
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: currentPassword,
     });
-    if (signInError) return { error: "Fel nuvarande lösenord." };
+    if (signInError) return { error: AUTH.WRONG_CURRENT_PASSWORD };
     // Update to new password
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     return { error: error?.message ?? null };
@@ -125,26 +126,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const deleteAccount = async () => {
     const userId = user?.id;
-    if (!userId) return { error: "Ingen användare inloggad." };
+    if (!userId) return { error: AUTH.NO_USER_LOGGED_IN };
 
     try {
       // Delete all user data from tables (order matters for foreign keys)
       await supabase.from("workout_sets").delete().eq("user_id", userId);
       await supabase.from("exercise_logs").delete().eq("user_id", userId);
       await supabase.from("workout_sessions").delete().eq("user_id", userId);
-      await supabase.from("exercises").delete().eq("user_id", userId);
+      await supabase.from("exercise_muscle_groups").delete().match({});
+      await supabase.from("category_exercises").delete().match({});
+      await supabase.from("global_exercises").delete().eq("user_id", userId);
+      await supabase.from("muscle_groups").delete().eq("user_id", userId);
       await supabase.from("categories").delete().eq("user_id", userId);
 
       // Try to delete the auth account via database function
-      await supabase.rpc("delete_user_account");
-    } catch {
-      // If the RPC doesn't exist, data is still deleted — sign out gracefully
+      try {
+        await supabase.rpc("delete_user_account");
+      } catch {
+        // RPC may not exist — data is already deleted above
+      }
+    } catch (e) {
+      console.error("Failed to delete account data:", e);
+      return { error: AUTH.COULD_NOT_DELETE_ACCOUNT };
     }
 
-    // Clear local storage
+    // Only clear local storage AFTER successful DB deletion
     localStorage.removeItem("workout-app:category-store");
+    localStorage.removeItem("workout-app:exercise-store");
     localStorage.removeItem("workout-app:session-store");
     localStorage.removeItem("workout-app:settings-store");
+    localStorage.removeItem("workout-app:muscle-group-store");
     localStorage.removeItem("migration-done");
 
     await supabase.auth.signOut();

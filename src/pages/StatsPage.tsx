@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { STATS } from "../constants/ui-strings";
 import { useHistoryStore } from "../stores/useHistoryStore";
 import { useCategoryStore } from "../stores/useCategoryStore";
 import { useSettingsStore } from "../stores/useSettingsStore";
@@ -45,15 +46,15 @@ export function StatsPage() {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col items-center text-center">
-        <span className="text-[20px] font-bold leading-[1.22]">Statistik</span>
+        <span className="text-[20px] font-bold leading-[1.22]">{STATS.TITLE}</span>
         <span className="text-[20px] leading-[1.22] opacity-50">
-          Framsteg och rekord
+          {STATS.SUBTITLE}
         </span>
       </div>
 
       {isEmpty ? (
         <p className="text-[15px] opacity-50 text-center pt-4">
-          Inga träningspass ännu.
+          {STATS.EMPTY_STATE}
         </p>
       ) : (
         <>

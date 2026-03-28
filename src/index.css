@@ -29,6 +29,12 @@
   --header-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 30%, rgba(255, 255, 255, 0));
   --footer-bg: linear-gradient(to top, rgba(255, 255, 255, 0.97) 25%, rgba(255, 255, 255, 0) 100%);
   --nav-solid: white;
+  --swipe-delete-r: 239;
+  --swipe-delete-g: 68;
+  --swipe-delete-b: 68;
+  --swipe-duplicate-r: 234;
+  --swipe-duplicate-g: 179;
+  --swipe-duplicate-b: 8;
 }
 
 [data-theme=dark] {

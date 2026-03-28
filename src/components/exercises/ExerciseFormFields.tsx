@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { MuscleGroupAssignment } from "../../types/models";
+import { EXERCISES } from "../../constants/ui-strings";
 import { MuscleGroupPicker } from "./MuscleGroupPicker";
 
 export interface ExerciseFormData {
@@ -47,12 +48,12 @@ export function ExerciseFormFields({
       {/* Name field */}
       <div className="flex flex-col gap-2">
         <label className="font-bold text-[12px] uppercase tracking-wider opacity-50">
-          Namn på övning
+          {EXERCISES.NAME_LABEL}
         </label>
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4">
           <input
             type="text"
-            placeholder="Fyll i t.ex. Hantelpress"
+            placeholder={EXERCISES.NAME_PLACEHOLDER}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="flex-1 text-[15px] bg-transparent outline-none"
@@ -63,12 +64,12 @@ export function ExerciseFormFields({
       {/* Base reps */}
       <div className="flex flex-col gap-2">
         <label className="font-bold text-[12px] uppercase tracking-wider opacity-50">
-          Välj antal basrepetitioner
+          {EXERCISES.REPS_LABEL}
         </label>
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-6 pl-6 pr-4 py-4">
           <input
             type="number"
-            placeholder="Fyll i t.ex. 8"
+            placeholder={EXERCISES.REPS_PLACEHOLDER}
             value={baseReps}
             onChange={(e) => setBaseReps(e.target.value)}
             className="flex-1 text-[15px] bg-transparent outline-none"
@@ -80,12 +81,12 @@ export function ExerciseFormFields({
       {/* Base weight + bodyweight checkbox */}
       <div className="flex flex-col gap-2">
         <label className="font-bold text-[12px] uppercase tracking-wider opacity-50">
-          Välj en basvikt
+          {EXERCISES.WEIGHT_LABEL}
         </label>
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-6 pl-6 pr-4 py-4">
           <input
             type="number"
-            placeholder="Fyll i t.ex. 30"
+            placeholder={EXERCISES.WEIGHT_PLACEHOLDER}
             value={baseWeight}
             onChange={(e) => setBaseWeight(e.target.value)}
             className="flex-1 text-[15px] bg-transparent outline-none"
@@ -99,7 +100,7 @@ export function ExerciseFormFields({
           className="bg-card flex items-center gap-2 p-3"
         >
           <span className="flex-1 font-bold text-[12px] uppercase tracking-wider opacity-50 text-left">
-            Kroppsvikt?
+            {EXERCISES.BODYWEIGHT_QUESTION}
           </span>
           <div
             className={`w-5 h-5 rounded-button border flex items-center justify-center ${

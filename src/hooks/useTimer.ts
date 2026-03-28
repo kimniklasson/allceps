@@ -1,43 +1,43 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSessionStore } from "../stores/useSessionStore";
 
 /**
  * requestAnimationFrame-based timer hook.
- * Computes elapsed time from persisted timestamps — survives page refresh.
+ * Reads timer state directly from the store to avoid recreating the RAF callback.
  */
 export function useTimer() {
-  const { isRunning, isPaused, startTimestamp, pausedDuration, pauseStartedAt } =
-    useSessionStore();
+  const { isRunning, isPaused } = useSessionStore();
 
   const [elapsed, setElapsed] = useState(0);
   const rafRef = useRef<number>(0);
 
-  const tick = useCallback(() => {
-    if (!startTimestamp) {
-      setElapsed(0);
-      return;
-    }
-
-    let currentPaused = pausedDuration;
-    if (isPaused && pauseStartedAt) {
-      currentPaused += Date.now() - pauseStartedAt;
-    }
-
-    setElapsed(Date.now() - startTimestamp - currentPaused);
-    rafRef.current = requestAnimationFrame(tick);
-  }, [startTimestamp, pausedDuration, isPaused, pauseStartedAt]);
-
   useEffect(() => {
     if (isRunning && !isPaused) {
+      const tick = () => {
+        const state = useSessionStore.getState();
+        if (!state.startTimestamp) {
+          setElapsed(0);
+          return;
+        }
+
+        let currentPaused = state.pausedDuration;
+        if (state.isPaused && state.pauseStartedAt) {
+          currentPaused += Date.now() - state.pauseStartedAt;
+        }
+
+        setElapsed(Date.now() - state.startTimestamp - currentPaused);
+        rafRef.current = requestAnimationFrame(tick);
+      };
       rafRef.current = requestAnimationFrame(tick);
     } else if (isRunning && isPaused) {
-      // When paused, compute one last time and stop
-      if (startTimestamp) {
-        let currentPaused = pausedDuration;
-        if (pauseStartedAt) {
-          currentPaused += Date.now() - pauseStartedAt;
+      // When paused, compute one last value and stop
+      const state = useSessionStore.getState();
+      if (state.startTimestamp) {
+        let currentPaused = state.pausedDuration;
+        if (state.pauseStartedAt) {
+          currentPaused += Date.now() - state.pauseStartedAt;
         }
-        setElapsed(Date.now() - startTimestamp - currentPaused);
+        setElapsed(Date.now() - state.startTimestamp - currentPaused);
       }
     } else {
       setElapsed(0);
@@ -48,7 +48,7 @@ export function useTimer() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [isRunning, isPaused, tick, startTimestamp, pausedDuration, pauseStartedAt]);
+  }, [isRunning, isPaused]);
 
   return elapsed;
 }

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { IconCheck } from "../ui/icons";
 import { Modal } from "../ui/Modal";
 import type { Exercise, MuscleGroupAssignment } from "../../types/models";
+import { EXERCISES, COMMON } from "../../constants/ui-strings";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useExerciseStore } from "../../stores/useExerciseStore";
 import { useCategoryStore } from "../../stores/useCategoryStore";
@@ -91,7 +92,7 @@ export function ExerciseCard({
 
   const handleSetPress = () => {
     if (sessionBlocked) {
-      alert("Du har redan ett aktivt pass. Avsluta det först innan du startar ett nytt.");
+      alert(EXERCISES.ALREADY_ACTIVE_SESSION);
       return;
     }
 
@@ -145,7 +146,7 @@ export function ExerciseCard({
   };
 
   const settingsModal = createPortal(
-    <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Inställningar">
+    <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title={EXERCISES.SETTINGS}>
       <div className="flex flex-col gap-2">
         {/* Name field */}
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center gap-2 pl-6 pr-4 py-4">
@@ -154,7 +155,7 @@ export function ExerciseCard({
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             maxLength={60}
-            placeholder="Namn"
+            placeholder={COMMON.NAME}
             className="flex-1 min-w-0 text-[15px] bg-transparent outline-none"
           />
         </div>
@@ -164,7 +165,7 @@ export function ExerciseCard({
           onClick={handleBodyweightToggle}
           className="w-full border border-black/10 dark:border-white/20 rounded-card flex items-center px-6 py-4"
         >
-          <span className="flex-1 text-left text-[15px]">Kroppsvikt</span>
+          <span className="flex-1 text-left text-[15px]">{EXERCISES.BODYWEIGHT}</span>
           <div
             className={`w-5 h-5 rounded-[4px] flex items-center justify-center ${
               exercise.isBodyweight
@@ -189,7 +190,7 @@ export function ExerciseCard({
             onClick={handleSave}
             className="mt-4 w-full py-4 px-6 rounded-button text-[12px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black transition-transform active:scale-[0.97]"
           >
-            Spara
+            {COMMON.SAVE}
           </button>
         )}
       </div>

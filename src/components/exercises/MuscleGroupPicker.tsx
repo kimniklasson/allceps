@@ -3,6 +3,7 @@ import type { MuscleGroupAssignment } from "../../types/models";
 import { useMuscleGroupStore } from "../../stores/useMuscleGroupStore";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { IconTrash } from "../ui/icons";
+import { MUSCLE_GROUPS, COMMON } from "../../constants/ui-strings";
 
 interface MuscleGroupPickerProps {
   value: MuscleGroupAssignment[];
@@ -28,6 +29,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [confirmDeleteId, setConfirmDeleteIdState] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   // Keep a ref in sync so the mousedown handler always sees the latest value
   const syncConfirmDeleteId = (id: string | null) => { confirmDeleteIdRef.current = id; setConfirmDeleteIdState(id); };
 
@@ -97,13 +99,16 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
 
   async function handleCreate() {
     const name = newName.trim();
-    if (!name || hasExactMatch) return;
+    if (!name || hasExactMatch || isCreating) return;
+    setIsCreating(true);
     try {
       const newGroup = await createMuscleGroup(name);
       handleAddGroup(newGroup.id, newGroup.name);
     } catch {
       const existing = muscleGroups.find((g) => g.name.toLowerCase() === name.toLowerCase());
       if (existing) handleAddGroup(existing.id, existing.name);
+    } finally {
+      setIsCreating(false);
     }
   }
 
@@ -156,7 +161,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
   return (
     <div className="flex flex-col gap-2">
       <label className="font-bold text-[12px] uppercase tracking-wider opacity-50">
-        Muskelgrupper
+        {MUSCLE_GROUPS.LABEL}
       </label>
 
       {/* Assigned groups */}
@@ -251,9 +256,10 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
       {value.length === 0 && !showAdd && (
         <button
           onClick={() => setShowAdd(true)}
+          aria-label={MUSCLE_GROUPS.ADD}
           className="border border-dashed border-black/20 dark:border-white/20 rounded-card px-6 py-4 w-full flex items-center gap-3 text-black/40 dark:text-white/40 transition-transform active:scale-[0.93]"
         >
-          <span className="text-[15px]">Lägg till muskelgrupp</span>
+          <span className="text-[15px]">{MUSCLE_GROUPS.ADD}</span>
         </button>
       )}
 
@@ -266,7 +272,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          Lägg till muskelgrupp
+          {MUSCLE_GROUPS.ADD}
         </button>
       )}
 
@@ -280,7 +286,7 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
                 ref={createInputRef}
                 type="text"
                 autoFocus
-                placeholder="Skapa ny muskelgrupp..."
+                placeholder={MUSCLE_GROUPS.CREATE_PLACEHOLDER}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => {
@@ -292,9 +298,10 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
               {canCreate && (
                 <button
                   onMouseDown={(e) => { e.preventDefault(); handleCreate(); }}
-                  className="text-[12px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-button bg-black dark:bg-white text-white dark:text-black transition-transform active:scale-[0.93] shrink-0"
+                  disabled={isCreating}
+                  className="text-[12px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-button bg-black dark:bg-white text-white dark:text-black transition-transform active:scale-[0.93] shrink-0 disabled:opacity-50"
                 >
-                  Skapa
+                  {isCreating ? MUSCLE_GROUPS.CREATING : COMMON.CREATE}
                 </button>
               )}
             </div>
@@ -328,9 +335,9 @@ export function MuscleGroupPicker({ value, onChange }: MuscleGroupPickerProps) {
 
       <ConfirmDialog
         isOpen={confirmDeleteId !== null}
-        message="Ta bort muskelgruppen permanent? Den tas bort från alla övningar."
-        confirmLabel="Ta bort"
-        cancelLabel="Avbryt"
+        message={MUSCLE_GROUPS.CONFIRM_DELETE}
+        confirmLabel={COMMON.DELETE}
+        cancelLabel={COMMON.CANCEL}
         onConfirm={handleDeleteGlobally}
         onCancel={() => { syncConfirmDeleteId(null); setEditingId(null); }}
       />

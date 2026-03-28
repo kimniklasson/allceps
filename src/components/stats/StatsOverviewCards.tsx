@@ -10,6 +10,7 @@ interface Props {
 import { getCategoryColor } from "../../utils/categoryColors";
 import { IconInfo } from "../ui/icons";
 import { InfoModal } from "../ui/InfoModal";
+import { STATS_OVERVIEW } from "../../constants/ui-strings";
 
 // ── SVG helpers ──────────────────────────────────────────────
 const SIZE = 156;
@@ -88,7 +89,7 @@ export function IntensityCard({ score, label = "Snittintensitet", infoTitle, inf
         isOpen={infoOpen}
         onClose={() => setInfoOpen(false)}
         title={infoTitle ?? "Snittintensitet"}
-        description={infoDescription ?? "Visar hur tungt du i snitt lyfter jämfört med din maxstyrka, över alla pass. 100 = maximal ansträngning, de flesta landar på 60–80."}
+        description={infoDescription ?? STATS_OVERVIEW.INTENSITY_DESCRIPTION}
       />
     </div>
   );
@@ -224,14 +225,14 @@ function CategoryCard({ insights, categoryNameToIndex }: { insights: ExerciseIns
           </button>
         )}
         <span className="text-[12px] font-medium uppercase tracking-wider opacity-50">
-          {activeSegment ? activeSegment.categoryName : "Passfördelning"}
+          {activeSegment ? activeSegment.categoryName : STATS_OVERVIEW.SESSION_DISTRIBUTION}
         </span>
       </div>
       <InfoModal
         isOpen={infoOpen}
         onClose={() => setInfoOpen(false)}
-        title="Passfördelning"
-        description="Visar hur dina träningspass fördelar sig mellan olika kategorier. Tryck på ett segment för att se exakt andel."
+        title={STATS_OVERVIEW.SESSION_DISTRIBUTION}
+        description={STATS_OVERVIEW.SESSION_DISTRIBUTION_DESCRIPTION}
       />
     </div>
   );

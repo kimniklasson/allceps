@@ -1,12 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconHome, IconProfile, IconSessions, IconStats } from "../ui/icons";
 import { useSessionStore } from "../../stores/useSessionStore";
+import { NAV } from "../../constants/ui-strings";
 
 const NAV_ITEMS = [
-  { path: "/", Icon: IconHome, label: "Hem", subPaths: [] as string[] },
-  { path: "/history", Icon: IconSessions, label: "Historik", subPaths: [] as string[] },
-  { path: "/stats", Icon: IconStats, label: "Statistik", subPaths: [] as string[] },
-  { path: "/profile", Icon: IconProfile, label: "Profil", subPaths: ["/body"] },
+  { path: "/", Icon: IconHome, label: NAV.HOME, subPaths: [] as string[] },
+  { path: "/history", Icon: IconSessions, label: NAV.HISTORY, subPaths: [] as string[] },
+  { path: "/stats", Icon: IconStats, label: NAV.STATISTICS, subPaths: [] as string[] },
+  { path: "/profile", Icon: IconProfile, label: NAV.PROFILE, subPaths: ["/body"] },
 ];
 
 const BLUR_LAYERS = [

@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { cn } from "../../utils/cn";
+import { Z } from "../../utils/zIndex";
 import { useParams } from "react-router-dom";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { useExerciseStore } from "../../stores/useExerciseStore";
@@ -9,6 +11,7 @@ import { ImportExercisesModal } from "./ImportExercisesModal";
 import { FadeInOnScroll } from "../ui/FadeInOnScroll";
 import { useDragSort } from "../../hooks/useDragSort";
 import { IconEdit } from "../ui/icons";
+import { EXERCISES } from "../../constants/ui-strings";
 
 export function ExerciseListPage() {
   const { id: categoryId } = useParams<{ id: string }>();
@@ -80,7 +83,7 @@ export function ExerciseListPage() {
     useDragSort(exercisesForSort, (newIds) => reorderExercises(categoryId!, newIds));
 
   if (!category) {
-    return <p className="text-center opacity-50 pt-10">Kategori hittades inte.</p>;
+    return <p className="text-center opacity-50 pt-10">{EXERCISES.CATEGORY_NOT_FOUND}</p>;
   }
 
   const handleStartEditName = () => {
@@ -189,7 +192,7 @@ export function ExerciseListPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center gap-4 pt-8">
           <p className="text-[15px] opacity-50 text-center leading-relaxed">
-            Inga övningar ännu.<br />
+            {EXERCISES.NO_EXERCISES_YET}<br />
             Tryck på <span className="font-bold">+</span> uppe till höger för att lägga till.
           </p>
         </div>
@@ -203,17 +206,18 @@ export function ExerciseListPage() {
                 <div
                   key={exercise.id}
                   {...getItemProps(exercise.id)}
-                  className={[
-                    isDragging ? "scale-[1.04] relative z-50" : "",
-                    isDimmed ? "opacity-50" : "",
+                  className={cn(
+                    isDragging && "scale-[1.04] relative",
+                    isDimmed && "opacity-50",
                     "transition-opacity transition-transform duration-200",
-                  ].filter(Boolean).join(" ")}
+                  )}
+                  style={isDragging ? { zIndex: Z.DRAG_ITEM } : undefined}
                 >
                   <FadeInOnScroll delay={i * 60}>
                     <SwipeActions
                       onDelete={() => handleRemoveFromCategory(exercise.id)}
                       onDuplicate={() => handleDuplicate(exercise.id)}
-                      confirmMessage={`Är du säker på att du vill ta bort ${exercise.name} från ${category.name}?`}
+                      confirmMessage={EXERCISES.CONFIRM_REMOVE_FROM_CATEGORY(exercise.name, category.name)}
                     >
                       <ExerciseCard
                         exercise={exercise}

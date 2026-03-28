@@ -1,6 +1,7 @@
 import type { Exercise } from "../../types/models";
 import { Modal } from "../ui/Modal";
 import { ExerciseFormFields, type ExerciseFormData } from "./ExerciseFormFields";
+import { EXERCISES, COMMON } from "../../constants/ui-strings";
 
 interface EditExerciseModalProps {
   isOpen: boolean;
@@ -26,8 +27,8 @@ export function EditExerciseModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Ändra en övning"
-      subtitle="Tryck för att ändra"
+      title={EXERCISES.EDIT_EXERCISE}
+      subtitle={EXERCISES.EDIT_EXERCISE_SUBTITLE}
     >
       <ExerciseFormFields
         initialData={{
@@ -38,7 +39,7 @@ export function EditExerciseModal({
           muscleGroups: exercise.muscleGroups,
         }}
         onSubmit={handleSubmit}
-        submitLabel="Spara"
+        submitLabel={COMMON.SAVE}
       />
     </Modal>
   );

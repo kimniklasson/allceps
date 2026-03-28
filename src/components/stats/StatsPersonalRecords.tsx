@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ExercisePR } from "../../utils/statistics";
+import { STATS_PERSONAL_RECORDS } from "../../constants/ui-strings";
 import { FadeInOnScroll } from "../ui/FadeInOnScroll";
 
 interface Props {
@@ -15,7 +16,7 @@ export function StatsPersonalRecords({ prs }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-        Personliga rekord
+        {STATS_PERSONAL_RECORDS.TITLE}
       </span>
 
       {/* Exercise PR list */}
@@ -56,7 +57,7 @@ export function StatsPersonalRecords({ prs }: Props) {
           onClick={() => setShowAll(true)}
           className="text-[12px] font-bold opacity-50 py-2"
         >
-          Visa alla ({prs.length})
+          {STATS_PERSONAL_RECORDS.SHOW_ALL(prs.length)}
         </button>
       )}
     </div>

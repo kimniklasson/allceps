@@ -1,5 +1,6 @@
 import { Modal } from "../ui/Modal";
 import { ExerciseFormFields, type ExerciseFormData } from "./ExerciseFormFields";
+import { EXERCISES } from "../../constants/ui-strings";
 
 interface AddExerciseModalProps {
   isOpen: boolean;
@@ -17,10 +18,10 @@ export function AddExerciseModal({ isOpen, onClose, onAdd }: AddExerciseModalPro
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Lägg till en övning"
-      subtitle="Fyll i allt för att lägga till"
+      title={EXERCISES.ADD_EXERCISE}
+      subtitle={EXERCISES.ADD_EXERCISE_SUBTITLE}
     >
-      <ExerciseFormFields onSubmit={handleSubmit} submitLabel="Lägg till" />
+      <ExerciseFormFields onSubmit={handleSubmit} submitLabel={EXERCISES.ADD} />
     </Modal>
   );
 }

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { StreakInfo } from "../../utils/statistics";
+import { STATS_STREAKS } from "../../constants/ui-strings";
 
 interface Props {
   streaks: StreakInfo;
@@ -7,10 +8,10 @@ interface Props {
 
 export function StatsStreaks({ streaks }: Props) {
   const cards = [
-    { value: `${streaks.mostWorkoutsInWeek}`, label: "Bästa vecka", unit: "pass" },
-    { value: `${streaks.mostWorkoutsInMonth}`, label: "Bästa månad", unit: "pass" },
-    { value: `${streaks.avgWorkoutsPerWeek4w}`, label: "Snitt/vecka (4v)", unit: "pass" },
-    { value: streaks.favoriteDay, label: "Favoritdag", unit: "" },
+    { value: `${streaks.mostWorkoutsInWeek}`, label: STATS_STREAKS.BEST_WEEK, unit: STATS_STREAKS.SESSIONS },
+    { value: `${streaks.mostWorkoutsInMonth}`, label: STATS_STREAKS.BEST_MONTH, unit: STATS_STREAKS.SESSIONS },
+    { value: `${streaks.avgWorkoutsPerWeek4w}`, label: STATS_STREAKS.AVG_PER_WEEK, unit: STATS_STREAKS.SESSIONS },
+    { value: streaks.favoriteDay, label: STATS_STREAKS.FAVORITE_DAY, unit: "" },
   ];
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -34,7 +35,7 @@ export function StatsStreaks({ streaks }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-        Streak & kontinuitet
+        {STATS_STREAKS.TITLE}
       </span>
 
       <div

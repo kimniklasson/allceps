@@ -1,5 +1,6 @@
 import type { ExerciseInsight } from "../../utils/statistics";
 import { getCategoryColor } from "../../utils/categoryColors";
+import { STATS_EXERCISE_INSIGHTS } from "../../constants/ui-strings";
 
 interface Props {
   insights: ExerciseInsight;
@@ -11,16 +12,16 @@ export function StatsExerciseInsights({ insights }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-        Övningsinsikter
+        {STATS_EXERCISE_INSIGHTS.TITLE}
       </span>
 
       <div className="flex flex-col gap-2">
         {/* Most trained */}
         {insights.mostTrainedExercise && (
           <InsightCard
-            label="Mest tränad"
+            label={STATS_EXERCISE_INSIGHTS.MOST_TRAINED}
             value={insights.mostTrainedExercise.name}
-            detail={`${insights.mostTrainedExercise.totalSets} set totalt`}
+            detail={`${insights.mostTrainedExercise.totalSets} ${STATS_EXERCISE_INSIGHTS.SETS_TOTAL}`}
             delay={0}
           />
         )}
@@ -28,9 +29,9 @@ export function StatsExerciseInsights({ insights }: Props) {
         {/* Most neglected */}
         {insights.mostNeglectedExercise && insights.mostNeglectedExercise.daysSinceLastLogged < Infinity && (
           <InsightCard
-            label="Mest försummad"
+            label={STATS_EXERCISE_INSIGHTS.MOST_NEGLECTED}
             value={insights.mostNeglectedExercise.name}
-            detail={`${insights.mostNeglectedExercise.daysSinceLastLogged} dagar sedan`}
+            detail={`${insights.mostNeglectedExercise.daysSinceLastLogged} ${STATS_EXERCISE_INSIGHTS.DAYS_AGO}`}
             delay={1}
           />
         )}
@@ -41,7 +42,7 @@ export function StatsExerciseInsights({ insights }: Props) {
             className="bg-card rounded-card p-4 flex flex-col gap-3 animate-in"
             style={{ animationDelay: `${3 * 0.04}s` }}
           >
-            <span className="text-[12px] opacity-50">Kategoribalans</span>
+            <span className="text-[12px] opacity-50">{STATS_EXERCISE_INSIGHTS.CATEGORY_BALANCE}</span>
 
             {/* Stacked bar */}
             <div className="h-3 rounded-full overflow-hidden flex">

@@ -135,6 +135,9 @@ export function BodyModelPreview({ sex }: { sex: Sex }) {
 
     return () => {
       cancelAnimationFrame(rafId)
+      maleMeshRef.current?.geometry.dispose()
+      femaleMeshRef.current?.geometry.dispose()
+      matRef.current?.dispose()
       renderer.dispose()
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement)
     }

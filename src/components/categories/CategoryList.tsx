@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
+import { cn } from "../../utils/cn";
+import { Z } from "../../utils/zIndex";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { useExerciseStore } from "../../stores/useExerciseStore";
 import { useSessionStore } from "../../stores/useSessionStore";
@@ -8,6 +10,7 @@ import { CreateCategoryInput } from "./CreateCategoryInput";
 import { FadeInOnScroll } from "../ui/FadeInOnScroll";
 import { useDragSort } from "../../hooks/useDragSort";
 import { useAuth } from "../../auth/useAuth";
+import { CATEGORIES, TIME } from "../../constants/ui-strings";
 
 function formatTimeSince(isoDate: string): string {
   const diff = Date.now() - new Date(isoDate).getTime();
@@ -18,22 +21,22 @@ function formatTimeSince(isoDate: string): string {
   if (weeks >= 1) {
     const remainingDays = days - weeks * 7;
     return remainingDays > 0
-      ? `${weeks} ${weeks === 1 ? "vecka" : "veckor"} och ${remainingDays} ${remainingDays === 1 ? "dag" : "dagar"}`
-      : `${weeks} ${weeks === 1 ? "vecka" : "veckor"}`;
+      ? `${weeks} ${weeks === 1 ? TIME.WEEK : TIME.WEEKS} och ${remainingDays} ${remainingDays === 1 ? TIME.DAY : TIME.DAYS}`
+      : `${weeks} ${weeks === 1 ? TIME.WEEK : TIME.WEEKS}`;
   }
 
   if (days >= 1) {
     const remainingHours = hours - days * 24;
     return remainingHours > 0
-      ? `${days} ${days === 1 ? "dag" : "dagar"} och ${remainingHours} ${remainingHours === 1 ? "timme" : "timmar"}`
-      : `${days} ${days === 1 ? "dag" : "dagar"}`;
+      ? `${days} ${days === 1 ? TIME.DAY : TIME.DAYS} och ${remainingHours} ${remainingHours === 1 ? TIME.HOUR : TIME.HOURS}`
+      : `${days} ${days === 1 ? TIME.DAY : TIME.DAYS}`;
   }
 
   if (hours >= 1) {
-    return `${hours} ${hours === 1 ? "timme" : "timmar"}`;
+    return `${hours} ${hours === 1 ? TIME.HOUR : TIME.HOURS}`;
   }
 
-  return "mindre än en timme";
+  return TIME.LESS_THAN_AN_HOUR;
 }
 
 export function CategoryList() {
@@ -105,11 +108,12 @@ export function CategoryList() {
                 <div
                   key={category.id}
                   {...getItemProps(category.id)}
-                  className={[
-                    isDragging ? "scale-[1.04] relative z-50" : "",
-                    isDimmed ? "opacity-50" : "",
+                  className={cn(
+                    isDragging && "scale-[1.04] relative",
+                    isDimmed && "opacity-50",
                     "transition-opacity transition-transform duration-200",
-                  ].filter(Boolean).join(" ")}
+                  )}
+                  style={isDragging ? { zIndex: Z.DRAG_ITEM } : undefined}
                 >
                   <FadeInOnScroll delay={i * 60}>
                     <CategoryListItem
@@ -131,8 +135,7 @@ export function CategoryList() {
 
         {isEmpty && (
           <p className="text-[15px] leading-[18px] opacity-50">
-            Börja med att skapa en kategori, t.ex. &ldquo;Bröst och triceps&rdquo; och
-            tryck på Skapa. Du kan skapa hur många kategorier du vill.
+            {CATEGORIES.EMPTY_STATE}
           </p>
         )}
       </div>
@@ -140,18 +143,19 @@ export function CategoryList() {
       {lastTrainedDate && (() => {
         const daysSince = (Date.now() - new Date(lastTrainedDate).getTime()) / 86_400_000;
         const firstName = displayName?.split(" ")[0] ?? "";
+        const nameArg = firstName ? ` ${firstName}` : "";
         const motivation =
           daysSince < 4
-            ? `Starkt jobbat${firstName ? ` ${firstName}` : ""}!`
+            ? CATEGORIES.MOTIVATION_STRONG(nameArg)
             : daysSince < 14
-            ? `Kom igen nu${firstName ? ` ${firstName}` : ""}!`
-            : `Dags att ta tag i det${firstName ? ` ${firstName}` : ""}!`;
+            ? CATEGORIES.MOTIVATION_COME_ON(nameArg)
+            : CATEGORIES.MOTIVATION_TIME_TO_GO(nameArg);
         return (
           <FadeInOnScroll>
             <div className="flex flex-col gap-0 text-center">
               <p className="text-[15px] font-bold">{motivation}</p>
               <p className="text-[15px]">
-                Senaste träningen var {formatTimeSince(lastTrainedDate)} sedan
+                {CATEGORIES.LAST_TRAINED(formatTimeSince(lastTrainedDate))}
               </p>
             </div>
           </FadeInOnScroll>

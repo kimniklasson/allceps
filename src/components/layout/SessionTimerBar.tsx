@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSessionStore } from "../../stores/useSessionStore";
+import { Z } from "../../utils/zIndex";
 import { useHistoryStore } from "../../stores/useHistoryStore";
 import { useTimer } from "../../hooks/useTimer";
 
@@ -8,8 +9,10 @@ import { formatTime, formatDuration } from "../../utils/formatTime";
 import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "../../utils/calculations";
 import { useSettingsStore } from "../../stores/useSettingsStore";
 import { buildPBRecord, isSetPB } from "../../utils/personalBest";
+import { acquireScrollLock, releaseScrollLock } from "../../utils/scrollLock";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { IconClose, IconCheck } from "../ui/icons";
+import { SESSION, COMMON } from "../../constants/ui-strings";
 import type { WorkoutSession } from "../../types/models";
 
 interface PBSet {
@@ -33,11 +36,9 @@ export function SessionTimerBar() {
   // Lock body scroll when summary modal is open
   useEffect(() => {
     if (finishedSession) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      acquireScrollLock();
+      return () => releaseScrollLock();
     }
-    return () => { document.body.style.overflow = ""; };
   }, [finishedSession]);
 
   // Collect PB sets for the finished session
@@ -110,7 +111,7 @@ export function SessionTimerBar() {
   return (
     <>
     {activeSession && (
-    <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+    <div className="fixed bottom-0 left-0 right-0 pointer-events-none" style={{ zIndex: Z.STICKY_BAR }}>
       <div className="mx-auto max-w-[600px] pointer-events-auto">
         <div
           className="flex items-center gap-2 px-6 pt-6 pb-30 rounded-t-modal bg-accent/70 backdrop-blur-[20px] transition-all duration-300 pointer-events-auto"
@@ -127,7 +128,7 @@ export function SessionTimerBar() {
           {/* Timer info */}
           <div className="flex-1 flex flex-col gap-2 items-center">
             <span className="font-bold text-[12px] uppercase tracking-wider text-black">
-              TOTAL TID
+              {SESSION.TOTAL_TIME}
             </span>
             <span className="text-[31px] leading-[18px] text-black font-normal">
               {formatTime(elapsed)}
@@ -148,38 +149,38 @@ export function SessionTimerBar() {
 
     <ConfirmDialog
       isOpen={confirmCancel}
-      message="Avbryta pågående pass? Dina loggade set sparas inte."
-      cancelLabel="Nej"
-      confirmLabel="Ja"
+      message={SESSION.CONFIRM_CANCEL}
+      cancelLabel={COMMON.NO}
+      confirmLabel={COMMON.YES}
       onConfirm={() => { cancelSession(); setConfirmCancel(false); }}
       onCancel={() => setConfirmCancel(false)}
     />
 
     {/* Session summary modal */}
     {finishedSession && totals && (
-      <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-backdrop" onClick={() => setFinishedSession(null)}>
+      <div className="modal-backdrop fixed inset-0 flex items-center justify-center bg-backdrop" style={{ zIndex: Z.OVERLAY }} onClick={() => setFinishedSession(null)}>
         <div
           className="modal-content bg-white dark:bg-card rounded-modal w-[345px] max-h-[90vh] overflow-y-auto flex flex-col gap-8 py-10 px-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Title */}
           <div className="text-center flex flex-col gap-1">
-            <p className="font-bold text-[20px] leading-[1.22]">Bra jobbat!</p>
-            <p className="text-[20px] leading-[1.22] opacity-50">Här är en summering av passet.</p>
+            <p className="font-bold text-[20px] leading-[1.22]">{SESSION.GREAT_JOB}</p>
+            <p className="text-[20px] leading-[1.22] opacity-50">{SESSION.SUMMARY_TEXT}</p>
           </div>
 
           {/* Stats columns */}
           <div className="flex justify-around text-center">
             <div className="flex flex-col gap-1">
-              <span className="text-[12px] opacity-50 uppercase tracking-wider">Tid</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.TIME}</span>
               <span className="font-bold text-[15px]">{summaryDuration}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[12px] opacity-50 uppercase tracking-wider">Set</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.SETS}</span>
               <span className="font-bold text-[15px]">{totals.totalSets} set</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[12px] opacity-50 uppercase tracking-wider">Reps</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.REPS}</span>
               <span className="font-bold text-[15px]">{totals.totalReps} rep</span>
             </div>
           </div>
@@ -188,17 +189,17 @@ export function SessionTimerBar() {
           <div className="flex justify-around text-center">
             {intensity && (
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] opacity-50 uppercase tracking-wider">Intensitet</span>
+                <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.INTENSITY}</span>
                 <span className="font-bold text-[15px]">{intensity.score}/100</span>
               </div>
             )}
             <div className="flex flex-col gap-1">
-              <span className="text-[12px] opacity-50 uppercase tracking-wider">Snittvila</span>
+              <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.AVG_REST}</span>
               <span className="font-bold text-[15px]">{avgRestDisplay}</span>
             </div>
             {showCalories && calories > 0 && (
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] opacity-50 uppercase tracking-wider">Kalorier</span>
+                <span className="text-[12px] opacity-50 uppercase tracking-wider">{SESSION.CALORIES}</span>
                 <span className="font-bold text-[15px]">{calories} kcal</span>
               </div>
             )}
@@ -228,7 +229,7 @@ export function SessionTimerBar() {
             onClick={handleViewSession}
             className="w-full bg-black dark:bg-white text-white dark:text-black rounded-full px-6 py-5 text-[12px] font-bold uppercase tracking-wider"
           >
-            Visa pass
+            {SESSION.VIEW_WORKOUT}
           </button>
         </div>
       </div>

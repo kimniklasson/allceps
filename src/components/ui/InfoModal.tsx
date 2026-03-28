@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IconClose } from "./icons";
+import { Z } from "../../utils/zIndex";
 
 interface Props {
   isOpen: boolean;
@@ -27,7 +28,8 @@ export function InfoModal({ isOpen, onClose, title, description }: Props) {
 
   return createPortal(
     <div
-      className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center bg-backdrop"
+      className="modal-backdrop fixed inset-0 flex items-center justify-center bg-backdrop"
+      style={{ zIndex: Z.MODAL }}
       onClick={onClose}
     >
       <div

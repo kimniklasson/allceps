@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import type { SessionStats } from "../../utils/statistics";
 import { useSettingsStore } from "../../stores/useSettingsStore";
+import { STATS_SESSION_OVERVIEW } from "../../constants/ui-strings";
 
 interface Props {
   stats: SessionStats;
@@ -31,13 +32,13 @@ export function StatsSessionOverview({ stats }: Props) {
   const { showCalories } = useSettingsStore();
 
   const cards: { value: string; label: string }[] = [
-    { value: formatMs(stats.avgDurationMs), label: "Snittlängd" },
-    { value: formatTotalTime(stats.totalTrainingTimeMs), label: "Total tid" },
-    { value: formatRestTime(stats.avgRestTimeMs), label: "Snittvila" },
+    { value: formatMs(stats.avgDurationMs), label: STATS_SESSION_OVERVIEW.AVG_LENGTH },
+    { value: formatTotalTime(stats.totalTrainingTimeMs), label: STATS_SESSION_OVERVIEW.TOTAL_TIME },
+    { value: formatRestTime(stats.avgRestTimeMs), label: STATS_SESSION_OVERVIEW.AVG_REST },
   ];
 
   if (showCalories && stats.avgCalories > 0) {
-    cards.push({ value: `${stats.avgCalories} kcal`, label: "Snittkalorier" });
+    cards.push({ value: `${stats.avgCalories} kcal`, label: STATS_SESSION_OVERVIEW.AVG_CALORIES });
   }
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -61,7 +62,7 @@ export function StatsSessionOverview({ stats }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-        Passöversikt
+        {STATS_SESSION_OVERVIEW.TITLE}
       </span>
 
       <div

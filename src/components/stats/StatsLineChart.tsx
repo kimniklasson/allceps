@@ -116,6 +116,8 @@ export function StatsLineChart({ data, unit = "kg", title }: Props) {
           width={width}
           height={CHART_HEIGHT}
           className="block overflow-visible"
+          role="img"
+          aria-label={`${title ?? "Chart"}: ${data.length} data points, range ${minVal} to ${maxVal} ${unit}`}
           onPointerDown={() => setSelectedDot(null)}
         >
           {/* Grid lines */}

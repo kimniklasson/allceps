@@ -4,6 +4,7 @@ import { useExerciseStore } from "../../stores/useExerciseStore";
 import { useCategoryStore } from "../../stores/useCategoryStore";
 import { IconClose, IconTrash } from "../ui/icons";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { IMPORT_EXERCISES, COMMON } from "../../constants/ui-strings";
 
 interface ImportExercisesModalProps {
   isOpen: boolean;
@@ -160,7 +161,7 @@ export function ImportExercisesModal({
         {/* Header */}
         <div className="flex items-center justify-between px-10 pt-6 pb-4 shrink-0">
           <span className="font-bold text-[15px] leading-[1.22]">
-            Välj övningar till {categoryName}
+            {IMPORT_EXERCISES.HEADER(categoryName)}
           </span>
           <button
             onClick={handleClose}
@@ -181,7 +182,7 @@ export function ImportExercisesModal({
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); }}
-                placeholder="Lägg till övning"
+                placeholder={IMPORT_EXERCISES.PLACEHOLDER}
                 className="flex-1 text-[15px] bg-transparent outline-none"
               />
               <button
@@ -196,7 +197,7 @@ export function ImportExercisesModal({
                 {creating ? (
                   <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  "Skapa"
+                  COMMON.CREATE
                 )}
               </button>
             </div>
@@ -205,7 +206,7 @@ export function ImportExercisesModal({
           <div className="flex flex-col gap-2">
             {sortedExercises.length === 0 ? (
               <p className="text-center opacity-50 py-8 text-[15px]">
-                Inga övningar skapade ännu
+                {IMPORT_EXERCISES.NO_EXERCISES}
               </p>
             ) : (
               sortedExercises.map((ex) => {
@@ -261,7 +262,7 @@ export function ImportExercisesModal({
               {saving ? (
                 <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" />
               ) : (
-                "SPARA"
+                IMPORT_EXERCISES.SAVE
               )}
             </button>
           </div>
@@ -271,9 +272,9 @@ export function ImportExercisesModal({
       {/* Permanent delete confirmation */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        message={`Vill du permanent radera ${deleteTarget?.name ?? ""}? Övningen tas bort från alla kategorier.`}
-        cancelLabel="Avbryt"
-        confirmLabel="Radera"
+        message={IMPORT_EXERCISES.CONFIRM_DELETE(deleteTarget?.name ?? "")}
+        cancelLabel={COMMON.CANCEL}
+        confirmLabel={COMMON.DELETE_PERMANENT}
         onConfirm={handlePermanentDelete}
         onCancel={() => setDeleteTarget(null)}
       />

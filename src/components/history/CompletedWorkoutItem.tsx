@@ -6,6 +6,7 @@ import { formatDuration } from "../../utils/formatTime";
 import { SwipeActions } from "../ui/SwipeToDelete";
 import { calculateIntensity } from "../../utils/calculations";
 import { useSettingsStore } from "../../stores/useSettingsStore";
+import { HISTORY } from "../../constants/ui-strings";
 
 const R = 14;
 const SW = 4;
@@ -64,7 +65,7 @@ export function CompletedWorkoutItem({ session, onDelete, categoryColor }: Compl
   return (
     <SwipeActions
       onDelete={() => onDelete(session.id)}
-      confirmMessage="Är du säker på att du vill ta bort detta träningspass?"
+      confirmMessage={HISTORY.CONFIRM_DELETE_WORKOUT}
     >
       <div
         className="bg-card rounded-card px-6 py-6 flex items-start gap-4 cursor-pointer"

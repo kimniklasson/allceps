@@ -5,6 +5,7 @@ import { getCategoryColor } from "../../utils/categoryColors";
 import { StatsMultiLineChart, type ChartSeries } from "./StatsMultiLineChart";
 import { IconInfo } from "../ui/icons";
 import { InfoModal } from "../ui/InfoModal";
+import { STATS_VOLUME_TREND } from "../../constants/ui-strings";
 
 interface Props {
   sessions: WorkoutSession[];
@@ -47,14 +48,14 @@ export function StatsVolumeTrend({ sessions, categoryNameToIndex }: Props) {
           <IconInfo size={13} />
         </button>
         <span className="text-[12px] font-medium uppercase tracking-wider opacity-50">
-          Träningsvolym
+          {STATS_VOLUME_TREND.TITLE}
         </span>
       </div>
       <InfoModal
         isOpen={infoOpen}
         onClose={() => setInfoOpen(false)}
-        title="Träningsvolym"
-        description="Visar din totala träningsvolym (set × reps × vikt) per kategori och vecka. Hjälper dig följa om du ökar din totala träningsbelastning över tid."
+        title={STATS_VOLUME_TREND.TITLE}
+        description={STATS_VOLUME_TREND.DESCRIPTION}
       />
     </div>
   );

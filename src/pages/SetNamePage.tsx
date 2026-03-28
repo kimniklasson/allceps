@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import { SET_NAME, COMMON } from "../constants/ui-strings";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
@@ -67,9 +68,9 @@ export function SetNamePage() {
         />
       </svg>
 
-      <h1 className="text-[20px] font-bold mb-2">Vad heter du?</h1>
+      <h1 className="text-[20px] font-bold mb-2">{SET_NAME.TITLE}</h1>
       <p className="text-[15px] text-black/50 mb-8 text-center">
-        Ange ditt namn för att komma igång.
+        {SET_NAME.SUBTITLE}
       </p>
 
       {error && (
@@ -82,7 +83,7 @@ export function SetNamePage() {
         <div className={`border rounded-card flex items-center gap-2 pl-6 pr-4 py-4 transition-colors ${focused ? "border-black" : "border-black/10"}`}>
           <input
             type="text"
-            placeholder="Fyll i ditt namn"
+            placeholder={SET_NAME.PLACEHOLDER}
             value={name}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
@@ -102,7 +103,7 @@ export function SetNamePage() {
                 : "bg-black/5 text-black/30"
             }`}
           >
-            {submitting ? "..." : "Fortsätt"}
+            {submitting ? "..." : COMMON.CONTINUE}
           </button>
         </div>
       </div>

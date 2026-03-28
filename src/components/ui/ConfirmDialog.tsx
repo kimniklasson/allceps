@@ -1,3 +1,6 @@
+import { Z } from "../../utils/zIndex";
+import { COMMON } from "../../constants/ui-strings";
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   message: string;
@@ -7,12 +10,13 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
-export function ConfirmDialog({ isOpen, message, confirmLabel = "Ta bort", cancelLabel = "Avbryt", onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ isOpen, message, confirmLabel = COMMON.DELETE, cancelLabel = COMMON.CANCEL, onConfirm, onCancel }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-backdrop"
+      className="fixed inset-0 flex items-center justify-center bg-backdrop"
+      style={{ zIndex: Z.OVERLAY }}
       onClick={onCancel}
     >
       <div

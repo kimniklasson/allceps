@@ -14,6 +14,8 @@ Mapped to Tailwind CSS custom theme in `src/index.css`.
 | Backdrop | `rgba(0,0,0,0.15)` | — | `bg-backdrop` | Modal overlay |
 | Modal BG | `#FFFFFF` | `#1C1C1E` | — | Bottom sheet modals |
 | Nested input | `#FFFFFF` | `#2C2C2E` | `dark:bg-[#2c2c2e]` | Interactive elements nested inside cards (adjusters, form inputs) |
+| 3D BG | `#F5F5F5` | `#111111` | — | Three.js canvas background |
+| 3D Model | `#FFFFFF` | `#3A3A3C` | — | Three.js body model material |
 
 ## Typography
 
@@ -26,6 +28,7 @@ Mapped to Tailwind CSS custom theme in `src/index.css`.
 | Exercise name | Google Sans | 700 | 15px | `font-bold text-[15px]` |
 | Timer | Google Sans | 400 | 31px | `text-[31px]` |
 | Rep/Weight value | Google Sans | 700 | 15px | `font-bold text-[15px]` |
+| Stats number | Google Sans | 700 | varies | `font-bold tabular-nums` |
 
 ## Border Radius
 
@@ -57,6 +60,7 @@ Mapped to Tailwind CSS custom theme in `src/index.css`.
 | Section gap | 40px | Between header and content |
 | Inner card gap | 12px | Inside exercise cards |
 | Category list gap | 8px | Between category items |
+| Stats section gap | 24px | Between stats components |
 
 ## Gradients & Effects
 
@@ -67,3 +71,30 @@ Mapped to Tailwind CSS custom theme in `src/index.css`.
 | Modal header fade | `linear-gradient(to bottom, white 50%, transparent)` | `linear-gradient(to bottom, #1c1c1e 50%, transparent)` |
 | Modal footer fade | `linear-gradient(to top, white 50%, transparent)` | `linear-gradient(to top, #1c1c1e 50%, transparent)` |
 | Timer bar blur | `backdrop-filter: blur(20px)` | Same |
+
+## Charts & Visualizations
+
+| Element | Light | Dark | Notes |
+|---------|-------|------|-------|
+| Chart line | Category color | Same | Per-category color from palette |
+| Chart fill | Gradient to transparent | Same | Opacity ~0.2 |
+| Chart grid | `rgba(0,0,0,0.1)` | `rgba(255,255,255,0.1)` | Horizontal guides |
+| Chart tooltip | Card background | Card background | With shadow |
+| Bar chart | Category color | Same | Stacked per category |
+| Progress ring | Green/Yellow/Red | Same | Based on score thresholds |
+| 3D measurement dot | Colored markers | Same | Interactive click targets |
+| Swipe delete | `--swipe-delete-r/g/b` | Same | Swipe-left background (CSS vars) |
+| Swipe duplicate | `--swipe-duplicate-r/g/b` | Same | Swipe-right background (CSS vars) |
+
+## Z-Index Scale
+
+Centralized in `src/utils/zIndex.ts`:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `Z.DRAG_ITEM` | 10 | Dragged item above siblings |
+| `Z.STICKY_BAR` | 40 | Session timer bar |
+| `Z.FFY_TEXT` | 45 | "For future you." floating text (CSS) |
+| `Z.OVERLAY` | 50 | Confirm dialogs, overlays |
+| `Z.MODAL` | 70 | Modal dialogs |
+| `Z.CRITICAL_CONFIRM` | 200 | Swipe-to-delete confirm |

@@ -1,6 +1,8 @@
 import { useRef, useState, useCallback, useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { IconTrash, IconDuplicate } from "./icons";
+import { Z } from "../../utils/zIndex";
+import { COMMON } from "../../constants/ui-strings";
 
 interface SwipeActionsProps {
   children: ReactNode;
@@ -139,13 +141,13 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
 
   return (
     <>
-      <div ref={containerRef} className="relative overflow-hidden rounded-card" style={{ margin: "-2px", padding: "2px" }}>
+      <div ref={containerRef} className="relative overflow-hidden rounded-card" role="group" aria-label="Swipeable item" style={{ margin: "-2px", padding: "2px" }}>
         {/* Red background for delete (swipe left) */}
         {(swipingLeft || showConfirm) && (
           <div
             className="absolute inset-0 flex items-center justify-end rounded-card"
             style={{
-              backgroundColor: `rgba(239, 68, 68, ${bgOpacity})`,
+              backgroundColor: `rgba(var(--swipe-delete-r), var(--swipe-delete-g), var(--swipe-delete-b), ${bgOpacity})`,
               paddingRight: Math.max(16, Math.abs(offsetX) / 2 - 8),
             }}
           >
@@ -158,7 +160,7 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
           <div
             className="absolute inset-0 flex items-center justify-start rounded-card"
             style={{
-              backgroundColor: `rgba(234, 179, 8, ${bgOpacity})`,
+              backgroundColor: `rgba(var(--swipe-duplicate-r), var(--swipe-duplicate-g), var(--swipe-duplicate-b), ${bgOpacity})`,
               paddingLeft: Math.max(16, Math.abs(offsetX) / 2 - 8),
             }}
           >
@@ -186,7 +188,8 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
       {/* Delete confirm dialog — rendered in a portal so it always appears above all other UI */}
       {showConfirm && createPortal(
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-backdrop"
+          className="fixed inset-0 flex items-center justify-center bg-backdrop"
+          style={{ zIndex: Z.CRITICAL_CONFIRM }}
           onClick={handleCancel}
         >
           <div
@@ -199,13 +202,13 @@ export function SwipeActions({ children, onDelete, onDuplicate, confirmMessage }
                 onClick={handleCancel}
                 className="flex-1 py-3 px-4 rounded-button bg-card text-[12px] font-bold uppercase tracking-wider"
               >
-                Avbryt
+                {COMMON.CANCEL}
               </button>
               <button
                 onClick={handleConfirm}
                 className="flex-1 py-3 px-4 rounded-button bg-red-500 text-white text-[12px] font-bold uppercase tracking-wider"
               >
-                Ta bort
+                {COMMON.DELETE}
               </button>
             </div>
           </div>

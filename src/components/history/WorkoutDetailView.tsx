@@ -12,6 +12,7 @@ import type { WorkoutSession } from "../../types/models";
 import { IntensityCard } from "../stats/StatsOverviewCards";
 import { getCategoryColor } from "../../utils/categoryColors";
 import { useCategoryStore } from "../../stores/useCategoryStore";
+import { HISTORY, SESSION } from "../../constants/ui-strings";
 
 // ─── Date / time helpers ────────────────────────────────────────────────────
 
@@ -160,7 +161,7 @@ export function WorkoutDetailView() {
   }, [allSessions, session]);
 
   if (!session) {
-    return <p className="text-center opacity-50 pt-10">Träningspass hittades inte.</p>;
+    return <p className="text-center opacity-50 pt-10">{HISTORY.WORKOUT_NOT_FOUND}</p>;
   }
 
   const duration = session.finishedAt
@@ -286,7 +287,7 @@ export function WorkoutDetailView() {
 
       {/* Summary row */}
       <div className="flex gap-3">
-        <IntensityCard score={intensity.score} label="Intensitet" infoTitle="Intensitet" infoDescription="Visar hur tungt du lyfte i förhållande till din maxstyrka. 100 betyder att du lyfte på max hela passet – de flesta tränar runt 60–80." color={categoryColor} />
+        <IntensityCard score={intensity.score} label={SESSION.INTENSITY} infoTitle={SESSION.INTENSITY} infoDescription={HISTORY.INTENSITY_DESCRIPTION} color={categoryColor} />
 
         <div className="flex-1 rounded-card border border-black/10 dark:border-white/10 p-6 flex flex-col justify-between">
           {(() => {
@@ -294,9 +295,9 @@ export function WorkoutDetailView() {
             const prevAvgRestMs = prevRest && prevRest.interSetRests.length > 0 ? prevRest.avgInterSetRestMs : null;
             const rows = [
               { label: "Set",       value: `${totals.totalSets}`,            t: trend(totals.totalSets, prevTotals?.totalSets ?? null) },
-              { label: "Reps",      value: `${totals.totalReps}`,            t: trend(totals.totalReps, prevTotals?.totalReps ?? null) },
+              { label: SESSION.REPS, value: `${totals.totalReps}`,            t: trend(totals.totalReps, prevTotals?.totalReps ?? null) },
               { label: "Kg",        value: `${totals.totalWeight}`,          t: trend(totals.totalWeight, prevTotals?.totalWeight ?? null) },
-              { label: "Snittvila", value: avgRestMs > 0
+              { label: SESSION.AVG_REST, value: avgRestMs > 0
                   ? `${Math.floor(avgRestMs / 60000)}:${String(Math.floor((avgRestMs % 60000) / 1000)).padStart(2, "0")}`
                   : "–",                                                      t: trend(avgRestMs, prevAvgRestMs, true) },
               ...(showCalories && calories > 0 ? [{ label: "KCAL", value: `${calories}`, t: trend(calories, prevCalories) }] : []),
@@ -362,7 +363,7 @@ export function WorkoutDetailView() {
               <div key={set.setNumber}>
                 {restLabel && (
                   <div className="set-rest-dots text-center text-[12px] uppercase tracking-wider text-black dark:text-white py-[6px] px-2">
-                    Vila: {restLabel}
+                    {HISTORY.REST_PREFIX} {restLabel}
                   </div>
                 )}
                 <div
@@ -420,7 +421,7 @@ export function WorkoutDetailView() {
             <div
               className="exercise-rest-dots text-center text-[12px] uppercase tracking-wider text-black dark:text-white py-6 px-2"
             >
-              Övningsvila: {interExerciseLabel}
+              {HISTORY.EXERCISE_REST_PREFIX} {interExerciseLabel}
             </div>
           )}
         </div>
@@ -432,7 +433,7 @@ export function WorkoutDetailView() {
 
     <ConfirmDialog
       isOpen={pendingDelete !== null}
-      message="Är du säker på att du vill ta bort setet permanent?"
+      message={HISTORY.CONFIRM_DELETE_SET}
       onConfirm={() => pendingDelete && confirmDeleteSet(pendingDelete.exerciseId, pendingDelete.setIdx)}
       onCancel={() => setPendingDelete(null)}
     />

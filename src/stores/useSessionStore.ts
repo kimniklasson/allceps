@@ -79,7 +79,6 @@ export const useSessionStore = create<SessionState>()(
           exerciseLogs: [],
           status: "active",
         };
-        getSessionRepository().save(session);
         set({
           activeSession: session,
           adjustments: [],
@@ -88,6 +87,9 @@ export const useSessionStore = create<SessionState>()(
           startTimestamp: Date.now(),
           pausedDuration: 0,
           pauseStartedAt: null,
+        });
+        getSessionRepository().save(session).catch((e) => {
+          console.error("Failed to persist new session:", e);
         });
       },
 
@@ -162,11 +164,13 @@ export const useSessionStore = create<SessionState>()(
         }
 
         const updatedSession = { ...activeSession, exerciseLogs: updatedLogs };
-        getSessionRepository().save(updatedSession);
         set({
           activeSession: updatedSession,
           activeSet: null,
           lastCompletedSetAt: now,
+        });
+        getSessionRepository().save(updatedSession).catch((e) => {
+          console.error("Failed to persist set:", e);
         });
       },
 
@@ -219,10 +223,12 @@ export const useSessionStore = create<SessionState>()(
 
       cancelSession: () => {
         const { activeSession } = get();
-        if (activeSession) {
-          getSessionRepository().delete(activeSession.id);
-        }
         set({ ...initialState });
+        if (activeSession) {
+          getSessionRepository().delete(activeSession.id).catch((e) => {
+            console.error("Failed to delete cancelled session:", e);
+          });
+        }
       },
 
       getAdjustment: (exerciseId, baseReps, baseWeight) => {

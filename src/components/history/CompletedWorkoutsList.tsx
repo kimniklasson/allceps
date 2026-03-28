@@ -5,6 +5,7 @@ import { CompletedWorkoutItem } from "./CompletedWorkoutItem";
 import { WorkoutBarChart } from "./WorkoutBarChart";
 import { FadeInOnScroll } from "../ui/FadeInOnScroll";
 import { getCategoryColor } from "../../utils/categoryColors";
+import { HISTORY } from "../../constants/ui-strings";
 
 export function CompletedWorkoutsList() {
   const { loadSessions, getGroupedByMonth, deleteSession } = useHistoryStore();
@@ -37,9 +38,9 @@ export function CompletedWorkoutsList() {
     <div className="flex flex-col gap-10">
       {/* Header text */}
       <div className="flex flex-col items-center text-center">
-        <span className="text-[20px] font-bold leading-[1.22]">Historik</span>
+        <span className="text-[20px] font-bold leading-[1.22]">{HISTORY.TITLE}</span>
         <span className="text-[20px] leading-[1.22] opacity-50">
-          Genomförda träningspass
+          {HISTORY.SUBTITLE}
         </span>
       </div>
 
@@ -48,7 +49,7 @@ export function CompletedWorkoutsList() {
 
       {isEmpty && (
         <p className="text-[15px] opacity-50 text-center pt-4">
-          Inga träningspass ännu.
+          {HISTORY.EMPTY_STATE}
         </p>
       )}
 

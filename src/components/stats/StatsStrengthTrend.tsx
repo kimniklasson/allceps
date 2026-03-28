@@ -5,6 +5,7 @@ import { getCategoryColor } from "../../utils/categoryColors";
 import { StatsMultiLineChart, type ChartSeries } from "./StatsMultiLineChart";
 import { IconInfo } from "../ui/icons";
 import { InfoModal } from "../ui/InfoModal";
+import { STATS_STRENGTH_TREND } from "../../constants/ui-strings";
 
 interface Props {
   sessions: WorkoutSession[];
@@ -48,14 +49,14 @@ export function StatsStrengthTrend({ sessions, categoryNameToIndex }: Props) {
           <IconInfo size={13} />
         </button>
         <span className="text-[12px] font-medium uppercase tracking-wider opacity-50">
-          Styrketrend
+          {STATS_STRENGTH_TREND.TITLE}
         </span>
       </div>
       <InfoModal
         isOpen={infoOpen}
         onClose={() => setInfoOpen(false)}
-        title="Styrketrend"
-        description="Visar din relativa styrkeutveckling per kategori över tid. 100% är din utgångsnivå – kurvan visar hur din beräknade maxstyrka (e1RM) förändrats sedan start."
+        title={STATS_STRENGTH_TREND.TITLE}
+        description={STATS_STRENGTH_TREND.DESCRIPTION}
       />
     </div>
   );

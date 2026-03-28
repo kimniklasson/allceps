@@ -93,11 +93,19 @@ export const useCategoryStore = create<CategoryState>()(
       },
 
       renameCategory: async (id: string, name: string) => {
-        const repo = getCategoryRepository();
-        await repo.update(id, { name });
-        const fetched = await repo.getAll();
-        const colorIndices = migrateColorIndices(fetched, get().colorIndices);
-        set({ categories: applyColorIndices(fetched, colorIndices), colorIndices });
+        const prev = get().categories;
+        // Optimistic update
+        set((state) => ({
+          categories: state.categories.map((c) => c.id === id ? { ...c, name } : c),
+        }));
+        try {
+          const repo = getCategoryRepository();
+          await repo.update(id, { name });
+        } catch (e) {
+          console.error("Failed to rename category:", e);
+          set({ categories: prev });
+          throw e;
+        }
       },
 
       duplicateCategory: async (id: string) => {
@@ -116,13 +124,23 @@ export const useCategoryStore = create<CategoryState>()(
       },
 
       deleteCategory: async (id: string) => {
-        const repo = getCategoryRepository();
-        await repo.delete(id);
-        const fetched = await repo.getAll();
-        const colorIndices = { ...get().colorIndices };
+        const prev = get().categories;
+        const prevColors = get().colorIndices;
+        // Optimistic update
+        const colorIndices = { ...prevColors };
         delete colorIndices[id];
-        const merged = migrateColorIndices(fetched, colorIndices);
-        set({ categories: applyColorIndices(fetched, merged), colorIndices: merged });
+        set((state) => ({
+          categories: state.categories.filter((c) => c.id !== id),
+          colorIndices,
+        }));
+        try {
+          const repo = getCategoryRepository();
+          await repo.delete(id);
+        } catch (e) {
+          console.error("Failed to delete category:", e);
+          set({ categories: prev, colorIndices: prevColors });
+          throw e;
+        }
       },
 
       addExerciseToCategory: async (categoryId, exerciseId) => {
@@ -134,11 +152,23 @@ export const useCategoryStore = create<CategoryState>()(
       },
 
       removeExerciseFromCategory: async (categoryId, exerciseId) => {
-        const repo = getCategoryRepository();
-        await repo.removeExerciseFromCategory(categoryId, exerciseId);
-        const fetched = await repo.getAll();
-        const colorIndices = migrateColorIndices(fetched, get().colorIndices);
-        set({ categories: applyColorIndices(fetched, colorIndices), colorIndices });
+        const prev = get().categories;
+        // Optimistic update
+        set((state) => ({
+          categories: state.categories.map((c) =>
+            c.id === categoryId
+              ? { ...c, exercises: c.exercises.filter((e) => e.id !== exerciseId) }
+              : c
+          ),
+        }));
+        try {
+          const repo = getCategoryRepository();
+          await repo.removeExerciseFromCategory(categoryId, exerciseId);
+        } catch (e) {
+          console.error("Failed to remove exercise from category:", e);
+          set({ categories: prev });
+          throw e;
+        }
       },
 
       getCategoryById: (id: string) => {

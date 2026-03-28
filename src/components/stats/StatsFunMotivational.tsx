@@ -1,5 +1,6 @@
 import type { FunStats } from "../../utils/statistics";
 import { formatDecimal } from "../../utils/formatNumber";
+import { STATS_MILESTONES, TIME } from "../../constants/ui-strings";
 
 interface Props {
   funStats: FunStats;
@@ -9,7 +10,7 @@ export function StatsFunMotivational({ funStats }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-        Milstolpar
+        {STATS_MILESTONES.TITLE}
       </span>
 
       {/* Badge row */}
@@ -34,38 +35,38 @@ export function StatsFunMotivational({ funStats }: Props) {
       <div className="flex flex-col gap-2">
         {/* Fun equivalents */}
         <div className="bg-card rounded-card p-4 animate-in">
-          <span className="text-[12px] opacity-50 uppercase tracking-wider">Totalt lyft</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">{STATS_MILESTONES.TOTAL_LIFTED}</span>
           <div className="text-[15px] font-bold mt-1">
             {funStats.totalKgInCars >= 1
-              ? `${formatDecimal(funStats.totalKgInCars)} bilar`
+              ? `${formatDecimal(funStats.totalKgInCars)} ${STATS_MILESTONES.CARS}`
               : funStats.totalKgInElephants >= 0.1
-                ? `${formatDecimal(funStats.totalKgInElephants)} elefanter`
-                : "Fortsätt lyfta!"}
+                ? `${formatDecimal(funStats.totalKgInElephants)} ${STATS_MILESTONES.ELEPHANTS}`
+                : STATS_MILESTONES.KEEP_LIFTING}
           </div>
           <div className="text-[12px] opacity-50 mt-0.5">
             {funStats.totalKgInCars >= 1
-              ? "i bilvikt (1 500 kg per bil)"
-              : "i elefantvikt (5 000 kg per elefant)"}
+              ? STATS_MILESTONES.CAR_DESCRIPTION
+              : STATS_MILESTONES.ELEPHANT_DESCRIPTION}
           </div>
         </div>
 
         {/* Days since first */}
         <div className="bg-card rounded-card p-4 animate-in" style={{ animationDelay: "0.04s" }}>
-          <span className="text-[12px] opacity-50 uppercase tracking-wider">Träningsålder</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">{STATS_MILESTONES.TRAINING_AGE}</span>
           <div className="text-[15px] font-bold mt-1">
-            {funStats.daysSinceFirstWorkout} dagar
+            {funStats.daysSinceFirstWorkout} {TIME.DAYS}
           </div>
-          <div className="text-[12px] opacity-50 mt-0.5">sedan ditt första pass</div>
+          <div className="text-[12px] opacity-50 mt-0.5">{STATS_MILESTONES.SINCE_FIRST_SESSION}</div>
         </div>
 
         {/* PB comparison */}
         <div className="bg-card rounded-card p-4 animate-in" style={{ animationDelay: "0.08s" }}>
-          <span className="text-[12px] opacity-50 uppercase tracking-wider">Personliga rekord</span>
+          <span className="text-[12px] opacity-50 uppercase tracking-wider">{STATS_MILESTONES.PERSONAL_RECORDS}</span>
           <div className="text-[15px] font-bold mt-1">
-            {funStats.pbCountThisMonth} nya PBs denna månad
+            {funStats.pbCountThisMonth} {STATS_MILESTONES.NEW_PBS_THIS_MONTH}
           </div>
           <div className="text-[12px] opacity-50 mt-0.5">
-            {funStats.pbCountLastMonth} förra månaden
+            {funStats.pbCountLastMonth} {STATS_MILESTONES.LAST_MONTH}
           </div>
         </div>
       </div>

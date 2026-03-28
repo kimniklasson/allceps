@@ -116,6 +116,7 @@ export async function migrateLocalDataToSupabase(): Promise<boolean> {
             if (logError.code === "23505") continue;
             throw logError;
           }
+          if (!newLog) continue;
 
           if (log.sets.length > 0) {
             const setsToInsert = log.sets.map((s) => ({

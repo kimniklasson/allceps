@@ -40,7 +40,11 @@ function syncToSupabase(patch: Partial<UserSettings>) {
     const existing = session.user.user_metadata?.settings ?? {};
     supabase.auth.updateUser({
       data: { settings: { ...existing, ...patch } },
+    }).catch((e) => {
+      console.error("Failed to sync settings to Supabase:", e);
     });
+  }).catch((e) => {
+    console.error("Failed to get session for settings sync:", e);
   });
 }
 

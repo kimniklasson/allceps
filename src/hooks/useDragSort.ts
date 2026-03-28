@@ -97,6 +97,10 @@ export function useDragSort<T extends { id: string }>(
     const tag = (e.target as HTMLElement).tagName;
     if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
 
+    // Clean up any lingering listeners from a previous interrupted drag
+    cleanupTouchListeners();
+    if (timerRef.current) clearTimeout(timerRef.current);
+
     const target = e.currentTarget as Element;
     const pointerId = e.pointerId;
     const fromIndex = items.findIndex((item) => item.id === id);

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { Category } from "../../types/models";
 import { SwipeActions } from "../ui/SwipeToDelete";
 import { getCategoryColor } from "../../utils/categoryColors";
+import { CATEGORIES, TIME } from "../../constants/ui-strings";
 
 interface CategoryListItemProps {
   category: Category;
@@ -18,9 +19,9 @@ function formatLastSession(isoDate: string): string {
   const hours = Math.floor((Date.now() - new Date(isoDate).getTime()) / 3_600_000);
   if (hours < 72) return `${hours} h`;
   const days = Math.floor(hours / 24);
-  if (days < 14) return `${days} ${days === 1 ? "dag" : "dagar"}`;
+  if (days < 14) return `${days} ${days === 1 ? TIME.DAY : TIME.DAYS}`;
   const weeks = Math.floor(days / 7);
-  return `${weeks} ${weeks === 1 ? "vecka" : "veckor"}`;
+  return `${weeks} ${weeks === 1 ? TIME.WEEK : TIME.WEEKS}`;
 }
 
 export function CategoryListItem({
@@ -50,7 +51,7 @@ export function CategoryListItem({
       <SwipeActions
         onDelete={() => onDelete(category.id)}
         onDuplicate={() => onDuplicate(category.id)}
-        confirmMessage={`Är du säker på att du vill ta bort kategorin "${category.name}"?`}
+        confirmMessage={CATEGORIES.CONFIRM_DELETE(category.name)}
       >
         <div
           className={[
@@ -73,7 +74,7 @@ export function CategoryListItem({
               {category.name}
             </p>
             <span className="text-[15px] leading-[18px] opacity-60">
-              {exerciseCount} {exerciseCount === 1 ? "övning" : "övningar"}
+              {exerciseCount} {exerciseCount === 1 ? CATEGORIES.EXERCISE_SINGULAR : CATEGORIES.EXERCISE_PLURAL}
             </span>
           </div>
 

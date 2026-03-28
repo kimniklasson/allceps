@@ -1,6 +1,7 @@
 import { supabase } from "../../../lib/supabase";
 import type { MuscleGroup } from "../../../types/models";
 import type { MuscleGroupRepository } from "../../types";
+import { validateName } from "../../../utils/validation";
 
 interface DbMuscleGroup {
   id: string;
@@ -36,9 +37,10 @@ export const supabaseMuscleGroupRepository: MuscleGroupRepository = {
 
   async create(name: string) {
     const userId = await getUserId();
+    const validated = validateName(name, "Muscle group name");
     const { data, error } = await supabase
       .from("muscle_groups")
-      .insert({ user_id: userId, name: name.trim() })
+      .insert({ user_id: userId, name: validated })
       .select()
       .single();
 
@@ -52,9 +54,10 @@ export const supabaseMuscleGroupRepository: MuscleGroupRepository = {
   },
 
   async update(id: string, name: string) {
+    const validated = validateName(name, "Muscle group name");
     const { data, error } = await supabase
       .from("muscle_groups")
-      .update({ name: name.trim() })
+      .update({ name: validated })
       .eq("id", id)
       .select()
       .single();

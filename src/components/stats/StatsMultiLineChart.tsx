@@ -72,7 +72,7 @@ export function StatsMultiLineChart({ seriesList, showBaseline = false, formatVa
     for (const s of seriesList) {
       for (const p of s.points) keys.add(p.timeKey);
     }
-    return Array.from(keys).sort();
+    return Array.from(keys).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   }, [seriesList]);
 
   const hasEnoughData = allTimeKeys.length >= 2;
@@ -122,6 +122,8 @@ export function StatsMultiLineChart({ seriesList, showBaseline = false, formatVa
           width={width}
           height={CHART_HEIGHT}
           className="block overflow-visible"
+          role="img"
+          aria-label={`Trend chart with ${seriesList.length} series over ${allTimeKeys.length} time periods`}
           onPointerDown={() => setTooltip(null)}
         >
           {/* Dashed 100% baseline */}

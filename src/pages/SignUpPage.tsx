@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { Header } from "../components/layout/Header";
 import { ScrollingGallery } from "../components/ui/ScrollingGallery";
+import { AUTH, COMMON } from "../constants/ui-strings";
 
 export function SignUpPage() {
   const { user, loading, signUp, signInWithGoogle } = useAuth();
@@ -53,15 +54,15 @@ export function SignUpPage() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h1 className="text-[20px] font-bold mb-3">Kolla din e-post</h1>
+          <h1 className="text-[20px] font-bold mb-3">{AUTH.CHECK_EMAIL}</h1>
           <p className="text-[15px] text-black/50 dark:text-white/50 mb-8">
-            Vi har skickat en bekräftelselänk till <strong className="text-black dark:text-white">{email}</strong>. Klicka på länken för att aktivera ditt konto.
+            {AUTH.CONFIRMATION_SENT(email)}
           </p>
           <Link
             to="/login"
             className="inline-block py-4 px-[34px] bg-black dark:bg-white text-white dark:text-black text-[12px] font-bold uppercase tracking-wider rounded-button"
           >
-            Tillbaka till inloggning
+            {AUTH.BACK_TO_LOGIN}
           </Link>
         </div>
       </div>
@@ -84,7 +85,7 @@ export function SignUpPage() {
           <div className="bg-card rounded-card p-4 border border-transparent">
             <input
               type="email"
-              placeholder="E-post"
+              placeholder={COMMON.EMAIL}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-[15px] outline-none"
@@ -95,7 +96,7 @@ export function SignUpPage() {
           <div className="bg-card rounded-card p-4 border border-transparent">
             <input
               type="password"
-              placeholder="Lösenord (minst 8 tecken)"
+              placeholder={AUTH.PASSWORD_MIN_CHARS}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-[15px] outline-none"
@@ -109,14 +110,14 @@ export function SignUpPage() {
             disabled={submitting}
             className="w-full py-4 bg-black dark:bg-white text-white dark:text-black text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50"
           >
-            {submitting ? "Skapar konto..." : "Skapa konto"}
+            {submitting ? AUTH.CREATING_ACCOUNT : AUTH.CREATE_ACCOUNT}
           </button>
         </form>
 
         {/* TODO: Enable when Google sign-in is implemented */}
         {false && <div className="w-full max-w-[345px] flex items-center gap-4 my-6">
           <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
-          <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">eller</span>
+          <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">{COMMON.OR}</span>
           <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
         </div>}
 
@@ -130,13 +131,13 @@ export function SignUpPage() {
             <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
           </svg>
-          Fortsätt med Google
+          {AUTH.CONTINUE_WITH_GOOGLE}
         </button>}
 
         <p className="mt-8 text-[12px] text-black/50 dark:text-white/50">
-          Redan har ett konto?{" "}
+          {AUTH.ALREADY_HAVE_ACCOUNT}{" "}
           <Link to="/login" className="text-black dark:text-white font-bold underline">
-            Logga in
+            {AUTH.LOGIN}
           </Link>
         </p>
       </div>

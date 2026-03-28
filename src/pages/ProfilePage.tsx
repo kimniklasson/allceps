@@ -7,14 +7,15 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Modal } from "../components/ui/Modal";
 import { useSettingsStore, type Appearance, type Sex } from "../stores/useSettingsStore";
 import { IconShow, IconHide } from "../components/ui/icons";
+import { PROFILE, COMMON, AUTH, TIME } from "../constants/ui-strings";
 
 const NAME_REGEX = /^[a-zA-ZåäöÅÄÖéèêëàâùûüïîçæœÉÈÊËÀÂÙÛÜÏÎÇÆŒ\s]+$/;
 
 function getProviderLabel(user: ReturnType<typeof useAuth>["user"]): string {
   const provider = user?.app_metadata?.provider;
-  if (provider === "google") return "Inloggad via Google";
-  if (provider === "github") return "Inloggad via GitHub";
-  return "Inloggad via e-post";
+  if (provider === "google") return AUTH.LOGGED_IN_VIA_GOOGLE;
+  if (provider === "github") return AUTH.LOGGED_IN_VIA_GITHUB;
+  return AUTH.LOGGED_IN_VIA_EMAIL;
 }
 
 export function ProfilePage() {
@@ -47,8 +48,8 @@ export function ProfilePage() {
 
   const handlePasswordSave = async () => {
     setPasswordError(null);
-    if (newPassword.length < 6) { setPasswordError("Lösenordet måste vara minst 6 tecken."); return; }
-    if (newPassword !== confirmPassword) { setPasswordError("Lösenorden matchar inte."); return; }
+    if (newPassword.length < 6) { setPasswordError(PROFILE.PASSWORD_MIN_6); return; }
+    if (newPassword !== confirmPassword) { setPasswordError(PROFILE.PASSWORDS_DONT_MATCH); return; }
     setSavingPassword(true);
     const { error } = await updatePassword(currentPassword, newPassword);
     setSavingPassword(false);
@@ -117,31 +118,31 @@ export function ProfilePage() {
   const providerLabel = getProviderLabel(user);
 
   const appearanceOptions: { value: Appearance; label: string }[] = [
-    { value: "ljus", label: "Ljus" },
-    { value: "mörkt", label: "Mörkt" },
-    { value: "auto", label: "Auto" },
+    { value: PROFILE.APPEARANCE_LIGHT_VALUE as Appearance, label: PROFILE.APPEARANCE_LIGHT },
+    { value: PROFILE.APPEARANCE_DARK_VALUE as Appearance, label: PROFILE.APPEARANCE_DARK },
+    { value: PROFILE.APPEARANCE_AUTO_VALUE as Appearance, label: PROFILE.APPEARANCE_AUTO },
   ];
 
   const sexOptions: { value: Sex; label: string }[] = [
-    { value: "man", label: "Man" },
-    { value: "kvinna", label: "Kvinna" },
+    { value: PROFILE.SEX_MALE_VALUE as Sex, label: PROFILE.SEX_MALE },
+    { value: PROFILE.SEX_FEMALE_VALUE as Sex, label: PROFILE.SEX_FEMALE },
   ];
 
   return (
     <div className="flex flex-col gap-10">
       {/* Title row */}
       <div className="flex flex-col items-center text-center">
-        <span className="text-[20px] font-bold leading-[1.22]">Kontoöversikt</span>
+        <span className="text-[20px] font-bold leading-[1.22]">{PROFILE.ACCOUNT_OVERVIEW}</span>
         <span className="text-[20px] leading-[1.22] opacity-50">{providerLabel}</span>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">Om dig</span>
+        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">{PROFILE.ABOUT_YOU}</span>
 
         {/* Name field */}
         <div className="flex flex-col gap-2">
           <label className={`border rounded-card flex items-center pl-6 pr-4 py-4 cursor-text ${nameError ? "border-red-300" : "border-black/10 dark:border-white/20"}`}>
-            <span className="flex-1 text-[15px]">Namn</span>
+            <span className="flex-1 text-[15px]">{COMMON.NAME}</span>
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -164,7 +165,7 @@ export function ProfilePage() {
 
         {/* Weight field */}
         <label className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4 cursor-text">
-          <span className="flex-1 text-[15px]">Vikt</span>
+          <span className="flex-1 text-[15px]">{PROFILE.WEIGHT}</span>
           <div className="flex items-center gap-1">
             {savingWeight && <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin opacity-40" />}
             <input
@@ -184,7 +185,7 @@ export function ProfilePage() {
 
         {/* Age field */}
         <label className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4 cursor-text">
-          <span className="flex-1 text-[15px]">Ålder</span>
+          <span className="flex-1 text-[15px]">{PROFILE.AGE}</span>
           <div className="flex items-center gap-1">
             {savingAge && <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin opacity-40" />}
             <input
@@ -198,13 +199,13 @@ export function ProfilePage() {
               style={{ width: `${Math.max(1, ageInput.length)}ch` }}
               className="text-[15px] bg-transparent outline-none text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
-            <span className="text-[15px] opacity-50">år</span>
+            <span className="text-[15px] opacity-50">{TIME.YEAR_SUFFIX}</span>
           </div>
         </label>
 
         {/* Sex selector */}
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-3">
-          <span className="flex-1 text-[15px]">Välj kön</span>
+          <span className="flex-1 text-[15px]">{PROFILE.SELECT_SEX}</span>
           <div className="flex rounded-full border border-black/10 dark:border-white/20 p-[5px] gap-[2px]">
             {sexOptions.map(({ value, label }) => (
               <button
@@ -231,8 +232,8 @@ export function ProfilePage() {
           style={{ height: 136 }}
         >
           <div className="flex-1 flex flex-col justify-between pl-6 pt-6 pb-6">
-            <p className="text-[15px] font-medium leading-snug opacity-80">
-              Lägg till och följ<br />din måttutveckling
+            <p className="text-[15px] font-medium leading-snug opacity-80 whitespace-pre-line">
+              {PROFILE.MEASUREMENTS_CTA}
             </p>
             <IconArrowLeft size={16} className="rotate-180" />
           </div>
@@ -245,12 +246,12 @@ export function ProfilePage() {
 
       {/* Settings section */}
       <div className="flex flex-col gap-2">
-        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">Inställningar</span>
+        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">{PROFILE.SETTINGS}</span>
 
         <div className="flex flex-col gap-2">
           {/* Appearance row */}
           <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-3">
-            <span className="flex-1 text-[15px]">Utseende</span>
+            <span className="flex-1 text-[15px]">{PROFILE.APPEARANCE}</span>
             <div className="flex rounded-full border border-black/10 dark:border-white/20 p-[5px] gap-[2px]">
               {appearanceOptions.map(({ value, label }) => (
                 <button
@@ -271,9 +272,9 @@ export function ProfilePage() {
 
           {/* Show calories toggle */}
           <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-3">
-            <span className="flex-1 text-[15px]">Visa kalorier</span>
+            <span className="flex-1 text-[15px]">{PROFILE.SHOW_CALORIES}</span>
             <div className="flex rounded-full border border-black/10 dark:border-white/20 p-[5px] gap-[2px]">
-              {([{ value: true, label: "Ja" }, { value: false, label: "Nej" }] as const).map(({ value, label }) => (
+              {([{ value: true, label: COMMON.YES }, { value: false, label: COMMON.NO }] as const).map(({ value, label }) => (
                 <button
                   key={label}
                   type="button"
@@ -295,19 +296,19 @@ export function ProfilePage() {
 
       {/* About section */}
       <div className="flex flex-col gap-1 pt-2">
-        <span className="text-[15px] font-bold leading-[18px]">Om appen (version 1.0)</span>
+        <span className="text-[15px] font-bold leading-[18px]">{PROFILE.ABOUT_APP}</span>
         <span className="text-[15px] leading-[18px] opacity-50">
-          Den här appen är designad av Kim Niklasson och framtagen med hjälp av AI.
+          {PROFILE.ABOUT_APP_DESCRIPTION}
         </span>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">Konto</span>
+        <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">{PROFILE.ACCOUNT}</span>
 
         {/* Email field */}
         <div className="border border-black/10 dark:border-white/20 rounded-card flex flex-col pl-6 pr-4 py-3 opacity-50">
           <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-            E-postadress
+            {COMMON.EMAIL_ADDRESS}
           </span>
           <input
             type="email"
@@ -321,7 +322,7 @@ export function ProfilePage() {
         <div className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-3">
           <div className="flex flex-col flex-1 opacity-50">
             <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-              Lösenord
+              {COMMON.PASSWORD}
             </span>
             <span className="text-[15px]">*********</span>
           </div>
@@ -330,7 +331,7 @@ export function ProfilePage() {
             onClick={() => { setShowPasswordModal(true); setPasswordError(null); setPasswordSuccess(false); }}
             className="px-4 py-2 rounded-button text-[12px] font-bold uppercase tracking-wider bg-black/5 dark:bg-white/10 text-black/60 dark:text-white/60 transition-colors"
           >
-            Ändra
+            {PROFILE.CHANGE}
           </button>
         </div>
       </div>
@@ -342,7 +343,7 @@ export function ProfilePage() {
           onClick={() => setShowLogoutConfirm(true)}
           className="w-full flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 rounded-full px-6 py-5 text-[12px] font-bold uppercase tracking-wider text-white transition-colors"
         >
-          Logga ut
+          {PROFILE.LOG_OUT}
           <IconLogout size={18} />
         </button>
 
@@ -353,7 +354,7 @@ export function ProfilePage() {
           disabled={deleting}
           className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-red-500 opacity-70 hover:opacity-100 transition-opacity mx-auto"
         >
-          {deleting ? "Tar bort..." : "Ta bort konto"}
+          {deleting ? PROFILE.DELETING : PROFILE.DELETE_ACCOUNT}
           <IconTrash size={16} />
         </button>
       </div>
@@ -361,12 +362,12 @@ export function ProfilePage() {
       <Modal
         isOpen={showPasswordModal}
         onClose={() => { setShowPasswordModal(false); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); setPasswordError(null); }}
-        title="Ändra lösenord"
+        title={PROFILE.CHANGE_PASSWORD}
       >
         <div className="flex flex-col gap-3">
           {/* Current password */}
           <label className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4 cursor-text">
-            <span className="flex-1 text-[15px]">Nuvarande</span>
+            <span className="flex-1 text-[15px]">{PROFILE.CURRENT_PASSWORD}</span>
             <input
               type={showCurrentPw ? "text" : "password"}
               value={currentPassword}
@@ -381,7 +382,7 @@ export function ProfilePage() {
 
           {/* New password */}
           <label className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4 cursor-text">
-            <span className="flex-1 text-[15px]">Nytt</span>
+            <span className="flex-1 text-[15px]">{PROFILE.NEW_PASSWORD}</span>
             <input
               type={showNewPw ? "text" : "password"}
               value={newPassword}
@@ -396,7 +397,7 @@ export function ProfilePage() {
 
           {/* Confirm new password */}
           <label className="border border-black/10 dark:border-white/20 rounded-card flex items-center pl-6 pr-4 py-4 cursor-text">
-            <span className="flex-1 text-[15px]">Bekräfta</span>
+            <span className="flex-1 text-[15px]">{PROFILE.CONFIRM_PASSWORD}</span>
             <input
               type={showConfirmPw ? "text" : "password"}
               value={confirmPassword}
@@ -411,7 +412,7 @@ export function ProfilePage() {
           </label>
 
           {passwordError && <span className="text-[12px] text-red-500 text-center">{passwordError}</span>}
-          {passwordSuccess && <span className="text-[12px] text-green-500 text-center">Lösenord uppdaterat!</span>}
+          {passwordSuccess && <span className="text-[12px] text-green-500 text-center">{PROFILE.PASSWORD_UPDATED}</span>}
 
           <button
             type="button"
@@ -425,7 +426,7 @@ export function ProfilePage() {
           >
             {savingPassword
               ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              : "Spara nytt lösenord"
+              : PROFILE.SAVE_NEW_PASSWORD
             }
           </button>
         </div>
@@ -433,16 +434,16 @@ export function ProfilePage() {
 
       <ConfirmDialog
         isOpen={showLogoutConfirm}
-        message="Är du säker på att du vill logga ut?"
-        confirmLabel="Logga ut"
+        message={PROFILE.CONFIRM_LOGOUT}
+        confirmLabel={PROFILE.LOG_OUT}
         onConfirm={handleConfirmSignOut}
         onCancel={() => setShowLogoutConfirm(false)}
       />
 
       <ConfirmDialog
         isOpen={showDeleteConfirm}
-        message="Är du säker på att du vill ta bort ditt konto? All din data kommer att raderas permanent."
-        confirmLabel="Ta bort"
+        message={PROFILE.CONFIRM_DELETE_ACCOUNT}
+        confirmLabel={COMMON.DELETE}
         onConfirm={handleConfirmDelete}
         onCancel={() => setShowDeleteConfirm(false)}
       />

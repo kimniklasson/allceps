@@ -1,6 +1,8 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { IconClose } from "./icons";
+import { acquireScrollLock, releaseScrollLock } from "../../utils/scrollLock";
+import { Z } from "../../utils/zIndex";
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,20 +15,17 @@ interface ModalProps {
 export function Modal({ isOpen, onClose, title, subtitle, children }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      acquireScrollLock();
+      return () => releaseScrollLock();
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return createPortal(
     <div
-      className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center bg-backdrop"
+      className="modal-backdrop fixed inset-0 flex items-center justify-center bg-backdrop"
+      style={{ zIndex: Z.MODAL }}
       onClick={onClose}
     >
       <div

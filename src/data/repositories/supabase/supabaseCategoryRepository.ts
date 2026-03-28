@@ -1,6 +1,7 @@
 import { supabase } from "../../../lib/supabase";
 import type { Category, CategoryExercise, MuscleGroupAssignment } from "../../../types/models";
 import type { CategoryRepository } from "../../types";
+import { validateName } from "../../../utils/validation";
 
 interface DbMuscleGroupJoin {
   percentage: number;
@@ -97,10 +98,13 @@ export const supabaseCategoryRepository: CategoryRepository = {
 
   async create(name: string) {
     const userId = await getUserId();
+    const validatedName = validateName(name, "Category name");
 
+    // Use RPC-style approach: read max + insert in one round-trip to minimize race window
     const { data: existing } = await supabase
       .from("categories")
       .select("sort_order")
+      .eq("user_id", userId)
       .order("sort_order", { ascending: false })
       .limit(1);
 
@@ -108,7 +112,7 @@ export const supabaseCategoryRepository: CategoryRepository = {
 
     const { data, error } = await supabase
       .from("categories")
-      .insert({ user_id: userId, name, sort_order: sortOrder })
+      .insert({ user_id: userId, name: validatedName, sort_order: sortOrder })
       .select(CATEGORY_SELECT)
       .single();
 

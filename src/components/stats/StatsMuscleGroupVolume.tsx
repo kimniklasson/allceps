@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { WorkoutSession } from "../../types/models";
 import { computeMuscleGroupVolume } from "../../utils/statistics";
+import { STATS_MUSCLE_GROUP_VOLUME } from "../../constants/ui-strings";
 
 interface Props {
   sessions: WorkoutSession[];
@@ -8,8 +9,8 @@ interface Props {
 }
 
 const periods = [
-  { label: "30 dagar", value: 30 as number | null },
-  { label: "All tid", value: null as number | null },
+  { label: STATS_MUSCLE_GROUP_VOLUME.PERIOD_30_DAYS, value: 30 as number | null },
+  { label: STATS_MUSCLE_GROUP_VOLUME.PERIOD_ALL_TIME, value: null as number | null },
 ];
 
 export function StatsMuscleGroupVolume({ sessions, userWeight }: Props) {
@@ -37,11 +38,11 @@ export function StatsMuscleGroupVolume({ sessions, userWeight }: Props) {
     return (
       <div className="flex flex-col gap-2">
         <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-          Mest tränade muskelgrupper
+          {STATS_MUSCLE_GROUP_VOLUME.TITLE}
         </span>
         <div className="rounded-card p-6 border border-black/10">
           <p className="text-[13px] opacity-50">
-            Tilldela muskelgrupper till dina övningar för att se fördelningen.
+            {STATS_MUSCLE_GROUP_VOLUME.EMPTY_DESCRIPTION}
           </p>
         </div>
       </div>
@@ -54,7 +55,7 @@ export function StatsMuscleGroupVolume({ sessions, userWeight }: Props) {
     <div ref={containerRef} className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <span className="text-[12px] font-bold uppercase tracking-wider opacity-50">
-          Mest tränade muskelgrupper
+          {STATS_MUSCLE_GROUP_VOLUME.TITLE}
         </span>
         <div className="flex gap-1">
           {periods.map((p) => (

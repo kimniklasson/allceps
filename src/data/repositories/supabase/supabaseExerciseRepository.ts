@@ -1,6 +1,7 @@
 import { supabase } from "../../../lib/supabase";
 import type { Exercise, MuscleGroupAssignment } from "../../../types/models";
 import type { ExerciseRepository } from "../../types";
+import { validateName, validateReps, validateWeight } from "../../../utils/validation";
 
 interface DbMuscleGroupJoin {
   percentage: number;
@@ -73,14 +74,15 @@ export const supabaseExerciseRepository: ExerciseRepository = {
 
   async create(data) {
     const userId = await getUserId();
+    const name = validateName(data.name, "Exercise name");
 
     const { data: result, error } = await supabase
       .from("global_exercises")
       .insert({
         user_id: userId,
-        name: data.name,
-        base_reps: data.baseReps,
-        base_weight: data.baseWeight,
+        name,
+        base_reps: validateReps(data.baseReps),
+        base_weight: validateWeight(data.baseWeight),
         is_bodyweight: data.isBodyweight,
       })
       .select(EXERCISE_SELECT)
@@ -106,9 +108,9 @@ export const supabaseExerciseRepository: ExerciseRepository = {
 
   async update(id, data) {
     const updateData: Record<string, unknown> = {};
-    if (data.name !== undefined) updateData.name = data.name;
-    if (data.baseReps !== undefined) updateData.base_reps = data.baseReps;
-    if (data.baseWeight !== undefined) updateData.base_weight = data.baseWeight;
+    if (data.name !== undefined) updateData.name = validateName(data.name, "Exercise name");
+    if (data.baseReps !== undefined) updateData.base_reps = validateReps(data.baseReps);
+    if (data.baseWeight !== undefined) updateData.base_weight = validateWeight(data.baseWeight);
     if (data.isBodyweight !== undefined) updateData.is_bodyweight = data.isBodyweight;
 
     if (Object.keys(updateData).length > 0) {

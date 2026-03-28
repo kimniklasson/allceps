@@ -24,9 +24,13 @@ export const useExerciseStore = create<ExerciseState>()(
       exercises: [],
 
       loadExercises: async () => {
-        const repo = getExerciseRepository();
-        const exercises = await repo.getAll();
-        set({ exercises });
+        try {
+          const repo = getExerciseRepository();
+          const exercises = await repo.getAll();
+          set({ exercises });
+        } catch (e) {
+          console.error("Failed to load exercises:", e);
+        }
       },
 
       createExercise: async (data) => {
@@ -46,11 +50,18 @@ export const useExerciseStore = create<ExerciseState>()(
       },
 
       deleteExercise: async (id) => {
-        const repo = getExerciseRepository();
-        await repo.delete(id);
+        const prev = get().exercises;
         set((state) => ({
           exercises: state.exercises.filter((e) => e.id !== id),
         }));
+        try {
+          const repo = getExerciseRepository();
+          await repo.delete(id);
+        } catch (e) {
+          console.error("Failed to delete exercise:", e);
+          set({ exercises: prev });
+          throw e;
+        }
       },
 
       getExerciseById: (id) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+	import React, { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/layout/Header'
 import { SharedForFutureYou } from '../components/layout/SharedForFutureYou'
 import { BottomNav } from '../components/layout/BottomNav'
@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { useSettingsStore } from '../stores/useSettingsStore'
+import { BODY, PROFILE, COMMON, BODY_PARTS_MALE, BODY_PARTS_FEMALE } from '../constants/ui-strings'
 
 const DARK_BG = 0x111111
 const DARK_MODEL = 0x3a3a3c
@@ -25,8 +26,8 @@ function useIsDark() {
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [appearance])
-  if (appearance === 'mörkt') return true
-  if (appearance === 'ljus') return false
+  if (appearance === PROFILE.APPEARANCE_DARK_VALUE) return true
+  if (appearance === PROFILE.APPEARANCE_LIGHT_VALUE) return false
   return systemDark
 }
 import { splitGeometryByX } from '../utils/bodyGeometry'
@@ -83,34 +84,34 @@ function makeDot(id: string, label: string, wx: number, wy: number, wz: number):
 
 const DOTS: Record<Gender, BodyDot[]> = {
   male: [
-    makeDot('neck',          'Nacke',    -1.7,  7.60, 0.5),
-    makeDot('shoulders',     'Axlar',    -1.7,  6.98, 0.5),
-    makeDot('chest',         'Bröst',    -1.7,  6.36, 0.5),
-    makeDot('waist',         'Midja',    -1.7,  5.45, 0.5),
-    makeDot('glutes',        'Rumpa',    -1.7,  4.41, 0.5),
-    makeDot('left-arm',      'Överarm',  -0.54, 6.19, 0.3),
-    makeDot('left-forearm',  'Underarm', -0.28, 5.49, 0.3),
-    makeDot('right-arm',     'Överarm',  -2.86, 6.19, 0.3),
-    makeDot('right-forearm', 'Underarm', -3.12, 5.49, 0.3),
-    makeDot('left-thigh',    'Lår',      -1.1,  3.56, 0.2),
-    makeDot('right-thigh',   'Lår',      -2.4,  3.56, 0.2),
-    makeDot('left-leg',      'Vad',      -1.1,  1.8,  0.2),
-    makeDot('right-leg',     'Vad',      -2.4,  1.8,  0.2),
+    makeDot('neck',          BODY_PARTS_MALE.NECK,      -1.7,  7.60, 0.5),
+    makeDot('shoulders',     BODY_PARTS_MALE.SHOULDERS, -1.7,  6.98, 0.5),
+    makeDot('chest',         BODY_PARTS_MALE.CHEST,     -1.7,  6.36, 0.5),
+    makeDot('waist',         BODY_PARTS_MALE.WAIST,     -1.7,  5.45, 0.5),
+    makeDot('glutes',        BODY_PARTS_MALE.GLUTES,    -1.7,  4.41, 0.5),
+    makeDot('left-arm',      BODY_PARTS_MALE.UPPER_ARM, -0.54, 6.19, 0.3),
+    makeDot('left-forearm',  BODY_PARTS_MALE.FOREARM,   -0.28, 5.49, 0.3),
+    makeDot('right-arm',     BODY_PARTS_MALE.UPPER_ARM, -2.86, 6.19, 0.3),
+    makeDot('right-forearm', BODY_PARTS_MALE.FOREARM,   -3.12, 5.49, 0.3),
+    makeDot('left-thigh',    BODY_PARTS_MALE.THIGH,     -1.1,  3.56, 0.2),
+    makeDot('right-thigh',   BODY_PARTS_MALE.THIGH,     -2.4,  3.56, 0.2),
+    makeDot('left-leg',      BODY_PARTS_MALE.CALF,      -1.1,  1.8,  0.2),
+    makeDot('right-leg',     BODY_PARTS_MALE.CALF,      -2.4,  1.8,  0.2),
   ],
   female: [
-    makeDot('neck',          'Nacke',    1.7,  7.33, 0.5),   // -24px y
-    makeDot('shoulders',     'Axlar',    1.7,  6.89, 0.5),   // -8px y
-    makeDot('chest',         'Bröst',    1.7,  6.36, 0.5),
-    makeDot('waist',         'Midja',    1.7,  5.45, 0.5),
-    makeDot('glutes',        'Rumpa',    1.7,  4.59, 0.5),   // +16px y
-    makeDot('left-arm',      'Överarm',  2.55, 6.19, 0.3),   // +8px x
-    makeDot('left-forearm',  'Underarm', 2.81, 5.40, 0.3),   // +8px x, -8px y
-    makeDot('right-arm',     'Överarm',  0.81, 6.19, 0.3),   // +24px x
-    makeDot('right-forearm', 'Underarm', 0.55, 5.40, 0.3),   // +24px x, -8px y
-    makeDot('left-thigh',    'Lår',      2.22, 3.56, 0.2),   // +80px -16px x
-    makeDot('right-thigh',   'Lår',      1.14, 3.56, 0.2),   // +64px -16px x
-    makeDot('left-leg',      'Vad',      2.31, 1.8,  0.2),   // +96px -24px x
-    makeDot('right-leg',     'Vad',      1.05, 1.8,  0.2),   // +56px -16px x
+    makeDot('neck',          BODY_PARTS_FEMALE.NECK,      1.7,  7.33, 0.5),   // -24px y
+    makeDot('shoulders',     BODY_PARTS_FEMALE.SHOULDERS, 1.7,  6.89, 0.5),   // -8px y
+    makeDot('chest',         BODY_PARTS_FEMALE.CHEST,     1.7,  6.36, 0.5),
+    makeDot('waist',         BODY_PARTS_FEMALE.WAIST,     1.7,  5.45, 0.5),
+    makeDot('glutes',        BODY_PARTS_FEMALE.GLUTES,    1.7,  4.59, 0.5),   // +16px y
+    makeDot('left-arm',      BODY_PARTS_FEMALE.UPPER_ARM, 2.55, 6.19, 0.3),   // +8px x
+    makeDot('left-forearm',  BODY_PARTS_FEMALE.FOREARM,   2.81, 5.40, 0.3),   // +8px x, -8px y
+    makeDot('right-arm',     BODY_PARTS_FEMALE.UPPER_ARM, 0.81, 6.19, 0.3),   // +24px x
+    makeDot('right-forearm', BODY_PARTS_FEMALE.FOREARM,   0.55, 5.40, 0.3),   // +24px x, -8px y
+    makeDot('left-thigh',    BODY_PARTS_FEMALE.THIGH,     2.22, 3.56, 0.2),   // +80px -16px x
+    makeDot('right-thigh',   BODY_PARTS_FEMALE.THIGH,     1.14, 3.56, 0.2),   // +64px -16px x
+    makeDot('left-leg',      BODY_PARTS_FEMALE.CALF,      2.31, 1.8,  0.2),   // +96px -24px x
+    makeDot('right-leg',     BODY_PARTS_FEMALE.CALF,      1.05, 1.8,  0.2),   // +56px -16px x
   ],
 }
 
@@ -140,7 +141,7 @@ const TICK_MIN = 10                 // px: outer extension of edge ticks
 
 export function BodyModelPage() {
   const { userSex } = useSettingsStore()
-  const gender: Gender = userSex === 'kvinna' ? 'female' : 'male'
+  const gender: Gender = userSex === PROFILE.SEX_FEMALE_VALUE ? 'female' : 'male'
   const isDark = useIsDark()
 
   const mountRef = useRef<HTMLDivElement>(null)
@@ -255,13 +256,13 @@ export function BodyModelPage() {
     const w = container.clientWidth
     const h = container.clientHeight
 
-    const initialGender = useSettingsStore.getState().userSex === 'kvinna' ? 'female' : 'male'
+    const initialGender = useSettingsStore.getState().userSex === PROFILE.SEX_FEMALE_VALUE ? 'female' : 'male'
     const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 200)
     camera.position.copy(HOME[initialGender].pos)
     cameraRef.current = camera
 
-    const isDarkInit = useSettingsStore.getState().appearance === 'mörkt' ||
-      (useSettingsStore.getState().appearance === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const isDarkInit = useSettingsStore.getState().appearance === PROFILE.APPEARANCE_DARK_VALUE ||
+      (useSettingsStore.getState().appearance === PROFILE.APPEARANCE_AUTO_VALUE && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setSize(w, h)
@@ -393,6 +394,10 @@ export function BodyModelPage() {
     return () => {
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('resize', onResize)
+      maleMeshRef.current?.geometry.dispose()
+      femaleMeshRef.current?.geometry.dispose()
+      matRef.current?.dispose()
+      controls.dispose()
       renderer.dispose()
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement)
     }
@@ -773,16 +778,16 @@ export function BodyModelPage() {
               animation: 'spin 0.8s linear infinite',
             }}
           />
-          Laddar modell...
+          {BODY.LOADING_MODEL}
         </div>
       )}
 
       {/* Delete-measurement confirmation modal */}
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        message="Är du säker på att du vill radera måttet permanent?"
-        confirmLabel="Radera"
-        cancelLabel="Avbryt"
+        message={BODY.CONFIRM_DELETE_MEASUREMENT}
+        confirmLabel={COMMON.DELETE_PERMANENT}
+        cancelLabel={COMMON.CANCEL}
         onConfirm={() => {
           if (deleteTarget) handleRemoveHistoryEntry(deleteTarget.dotId, deleteTarget.index)
           setDeleteTarget(null)

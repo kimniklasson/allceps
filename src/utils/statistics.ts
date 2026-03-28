@@ -2,6 +2,7 @@ import type { WorkoutSession } from "../types/models";
 import { calculateWorkoutTotals, calculateIntensity, calculateRestTimes, calculateCalories } from "./calculations";
 import type { Sex } from "../stores/useSettingsStore";
 import { computeHistoricalPBs } from "./personalBest";
+import { DAY_NAMES } from "../constants/ui-strings";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -78,7 +79,7 @@ export interface FunStats {
 
 // ── Helpers ────────────────────────────────────────────────
 
-const SWEDISH_DAYS = ["Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"];
+const SWEDISH_DAYS = [...DAY_NAMES];
 
 function getSessionDurationMs(session: WorkoutSession): number {
   if (!session.finishedAt) return 0;
@@ -721,7 +722,7 @@ export function computeCategoryStrengthIndex(sessions: WorkoutSession[]): Streng
     if (weekEntries.length < 2) continue;
 
     const points: StrengthIndexPoint[] = weekEntries.map(([weekKey, values]) => {
-      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
       return { monthKey: weekKey, label: "v" + weekKey.split("-W")[1], value: Math.round(avg) };
     });
 

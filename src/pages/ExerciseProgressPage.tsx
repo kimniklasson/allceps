@@ -5,11 +5,9 @@ import { useSettingsStore } from "../stores/useSettingsStore";
 import { computeExercisePRs, computeEventProgression, computeEventVolume } from "../utils/statistics";
 import { StatsLineChart } from "../components/stats/StatsLineChart";
 import { IconArrowLeft } from "../components/ui/icons";
+import { MONTH_NAMES, PROGRESS, TIME, EXERCISES } from "../constants/ui-strings";
 
-const MONTHS_SV = [
-  "Januari", "Februari", "Mars", "April", "Maj", "Juni",
-  "Juli", "Augusti", "September", "Oktober", "November", "December",
-];
+const MONTHS_SV = [...MONTH_NAMES];
 
 export function ExerciseProgressPage() {
   const { exerciseId } = useParams<{ exerciseId: string }>();
@@ -103,7 +101,7 @@ export function ExerciseProgressPage() {
   if (!pr) {
     return (
       <div className="flex flex-col items-center text-center pt-8">
-        <p className="text-[15px] opacity-50">Övningen hittades inte</p>
+        <p className="text-[15px] opacity-50">{EXERCISES.EXERCISE_NOT_FOUND}</p>
       </div>
     );
   }
@@ -140,7 +138,7 @@ export function ExerciseProgressPage() {
                 : "bg-black/5 dark:bg-white/10 opacity-60"
             }`}
           >
-            {mode === "year" ? "År" : "Månad"}
+            {mode === "year" ? TIME.YEAR : TIME.MONTH}
           </button>
         ))}
       </div>
@@ -164,15 +162,15 @@ export function ExerciseProgressPage() {
 
       {/* Charts */}
       {chartData.length > 0 ? (
-        <StatsLineChart key={`best-${viewMode}-${offset}`} data={chartData} unit={unit} title="Tyngsta lyft" />
+        <StatsLineChart key={`best-${viewMode}-${offset}`} data={chartData} unit={unit} title={PROGRESS.HEAVIEST_LIFT} />
       ) : (
         <div className="rounded-card border border-black/10 dark:border-white/10 p-4">
-          <p className="text-[12px] opacity-50 text-center">Inga pass under denna period</p>
+          <p className="text-[12px] opacity-50 text-center">{PROGRESS.NO_SESSIONS}</p>
         </div>
       )}
 
       {volumeChartData.length > 0 && (
-        <StatsLineChart key={`vol-${viewMode}-${offset}`} data={volumeChartData} unit={volumeUnit} title="Total volym" />
+        <StatsLineChart key={`vol-${viewMode}-${offset}`} data={volumeChartData} unit={volumeUnit} title={PROGRESS.TOTAL_VOLUME} />
       )}
     </div>
   );

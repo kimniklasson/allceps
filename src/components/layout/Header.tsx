@@ -1,6 +1,7 @@
 import { useNavigate, useLocation, useMatch } from "react-router-dom";
 import { IconButton } from "../ui/IconButton";
 import { IconArrowLeft, IconPlus } from "../ui/icons";
+import { EXERCISES } from "../../constants/ui-strings";
 
 // Top-level routes that live in the bottom nav — no back arrow here
 const TOP_LEVEL = ["/", "/profile", "/history", "/stats", "/login", "/signup"];
@@ -65,7 +66,7 @@ export function Header() {
           {/* Right — "+" button on category pages */}
           <div className="flex-1 flex justify-end">
             {isCategoryPage && (
-              <IconButton onClick={handleAddExercise} aria-label="Lägg till övning">
+              <IconButton onClick={handleAddExercise} aria-label={EXERCISES.ADD_EXERCISE_ARIA}>
                 <IconPlus size={20} />
               </IconButton>
             )}

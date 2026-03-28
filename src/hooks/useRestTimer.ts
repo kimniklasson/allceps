@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSessionStore } from "../stores/useSessionStore";
 
 /**
  * Tracks elapsed rest time since the last completed set.
- * Pauses when a set is in progress or session is paused.
- * Returns elapsed milliseconds.
+ * Reads state directly from the store to avoid recreating the RAF callback.
  */
 export function useRestTimer() {
   const { lastCompletedSetAt, activeSet, isPaused, isRunning } =
@@ -13,19 +12,19 @@ export function useRestTimer() {
   const [elapsed, setElapsed] = useState(0);
   const rafRef = useRef<number>(0);
 
-  const isResting = isRunning && !isPaused && lastCompletedSetAt && !activeSet;
-
-  const tick = useCallback(() => {
-    if (!lastCompletedSetAt) {
-      setElapsed(0);
-      return;
-    }
-    setElapsed(Date.now() - new Date(lastCompletedSetAt).getTime());
-    rafRef.current = requestAnimationFrame(tick);
-  }, [lastCompletedSetAt]);
+  const isResting = isRunning && !isPaused && !!lastCompletedSetAt && !activeSet;
 
   useEffect(() => {
     if (isResting) {
+      const tick = () => {
+        const state = useSessionStore.getState();
+        if (!state.lastCompletedSetAt) {
+          setElapsed(0);
+          return;
+        }
+        setElapsed(Date.now() - new Date(state.lastCompletedSetAt).getTime());
+        rafRef.current = requestAnimationFrame(tick);
+      };
       rafRef.current = requestAnimationFrame(tick);
     } else if (lastCompletedSetAt && !activeSet) {
       // Paused — show frozen value
@@ -39,7 +38,7 @@ export function useRestTimer() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [isResting, tick, lastCompletedSetAt, activeSet]);
+  }, [isResting, lastCompletedSetAt, activeSet]);
 
   return elapsed;
 }

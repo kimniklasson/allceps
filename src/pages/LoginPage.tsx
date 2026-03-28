@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { Header } from "../components/layout/Header";
 import { ScrollingGallery } from "../components/ui/ScrollingGallery";
+import { AUTH, COMMON } from "../constants/ui-strings";
 
 export function LoginPage() {
   const { user, loading, signIn, signInWithGoogle } = useAuth();
@@ -45,8 +46,8 @@ export function LoginPage() {
       {/* Form area */}
       <div className="flex flex-col items-center px-8 pt-40 pb-32">
         <div className="w-full max-w-[345px] mb-8 text-center">
-          <p className="text-[20px] font-bold">Välkommen till Forfutureyou!</p>
-          <p className="text-[20px]">Logga in eller skapa konto nedan</p>
+          <p className="text-[20px] font-bold">{AUTH.WELCOME}</p>
+          <p className="text-[20px]">{AUTH.LOGIN_SUBTITLE}</p>
         </div>
 
         {error && (
@@ -59,7 +60,7 @@ export function LoginPage() {
           <div className="bg-card rounded-card p-4 border border-transparent">
             <input
               type="email"
-              placeholder="E-post"
+              placeholder={COMMON.EMAIL}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-[15px] outline-none"
@@ -70,7 +71,7 @@ export function LoginPage() {
           <div className="bg-card rounded-card p-4 border border-transparent">
             <input
               type="password"
-              placeholder="Lösenord"
+              placeholder={COMMON.PASSWORD}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-[15px] outline-none"
@@ -83,14 +84,14 @@ export function LoginPage() {
             disabled={submitting}
             className="w-full py-4 bg-black dark:bg-white text-white dark:text-black text-[12px] font-bold uppercase tracking-wider rounded-button disabled:opacity-50"
           >
-            {submitting ? "Loggar in..." : "Logga in"}
+            {submitting ? AUTH.LOGGING_IN : AUTH.LOGIN}
           </button>
         </form>
 
         {/* TODO: Enable when Google sign-in is implemented */}
         {false && <div className="w-full max-w-[345px] flex items-center gap-4 my-6">
           <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
-          <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">eller</span>
+          <span className="text-[12px] text-black/40 dark:text-white/40 uppercase tracking-wider">{COMMON.OR}</span>
           <div className="flex-1 h-px bg-black/10 dark:bg-white/10" />
         </div>}
 
@@ -104,13 +105,13 @@ export function LoginPage() {
             <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
           </svg>
-          Fortsätt med Google
+          {AUTH.CONTINUE_WITH_GOOGLE}
         </button>}
 
         <p className="mt-8 text-[12px] text-black/50 dark:text-white/50">
-          Inget konto?{" "}
+          {AUTH.NO_ACCOUNT}{" "}
           <Link to="/signup" className="text-black dark:text-white font-bold underline">
-            Skapa konto
+            {AUTH.CREATE_ACCOUNT}
           </Link>
         </p>
       </div>
